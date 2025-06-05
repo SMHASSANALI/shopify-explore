@@ -8,7 +8,7 @@ export const metadata = {
 export default async function ProductsPage() {
   const query = `
     {
-      products(first: 10) {
+      products(first: 250) {
         edges {
           node {
             id

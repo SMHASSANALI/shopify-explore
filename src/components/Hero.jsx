@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useRef } from "react";
-import bg from "../../public/images/R02BG.jpg";
-import ring from "../../public/images/R02Ring.png";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
+import CustomLink from "./global/CustomLink";
 
 export default function Hero({ url }) {
   const containerRef = useRef(null);
@@ -47,7 +46,7 @@ export default function Hero({ url }) {
     >
       {/* Text Section */}
       <div className="w-6/12 flex flex-col items-start justify-center h-[60dvh]">
-        <div className="p-4 max-w-[500px]">
+        <div className="p-4 max-w-2xl">
           <h2 className="text-black font-extrabold text-5xl">
             Discover the COLMI R02 Smart Ring
           </h2>
@@ -66,17 +65,17 @@ export default function Hero({ url }) {
             R02 Smart Ring helps you track your health, sleep, and activity
             seamlessly, all from your finger.
           </p>
-
-          <button className="transition duration-300 cursor-pointer bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white font-bold py-2 px-8 rounded focus:outline-none focus:shadow-outline mt-4">
-            Explore More
-          </button>
+          <div className="pt-6">
+            <CustomLink href="/product" text={"Shop Now"} invert={false} />
+          </div>
         </div>
       </div>
 
       {/* Visual Section */}
       <div className="relative h-[60dvh] w-6/12 cursor-pointer overflow-hidden bg-black">
-        {/* Background Image */}
-        <motion.div
+        <Image src={url} alt="Hero" fill style={{ objectFit: "cover" }} />
+
+        {/* <motion.div
           style={{ x: bgTranslateX, y: bgTranslateY, scale: 1.07 }}
           transition={{ type: "spring" }}
           className="w-full h-full absolute inset-0 -z-0"
@@ -91,10 +90,8 @@ export default function Hero({ url }) {
           />
         </motion.div>
 
-        {/* Overlay */}
         <div className="absolute inset-0 bg-black/30 z-10 pointer-events-none" />
 
-        {/* Ring Image */}
         <motion.div
           style={{ x: ringTranslateX, y: ringTranslateY }}
           className="absolute inset-0 flex items-center justify-center z-20"
@@ -109,7 +106,6 @@ export default function Hero({ url }) {
           />
         </motion.div>
 
-        {/* Text Overlay */}
         <motion.div
           style={{ x: textTranslateX, y: textTranslateY }}
           className="absolute inset-0 w-full h-[180px] items-center justify-end z-10 flex flex-col"
@@ -120,7 +116,7 @@ export default function Hero({ url }) {
           <p className="text-7xl font-extrabold text-white drop-shadow-2xl">
             SMART RING
           </p>
-        </motion.div>
+        </motion.div> */}
       </div>
     </section>
   );

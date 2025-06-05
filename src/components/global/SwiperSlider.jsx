@@ -214,11 +214,11 @@ const SwiperSlider = ({ title, data, endpoint }) => {
               768: {
                 slidesPerView: 2.5,
               },
-              1024: {
-                slidesPerView: 3,
+              1120: {
+                slidesPerView: 4,
               },
-              1300: {
-                slidesPerView: 6,
+              1420: {
+                slidesPerView: 5,
               },
             }}
             loop={true}
@@ -240,11 +240,11 @@ const SwiperSlider = ({ title, data, endpoint }) => {
                         alt={item.node.image.altText || item.node.title}
                         width={1200}
                         height={800}
-                        className="w-full h-[270px] sm:h-[350px] object-cover rounded-t-lg"
+                        className="w-full h-[270px] sm:h-[350px] object-cover p-1 rounded-t-lg"
                       />
                     )}
                     <div className="p-3 sm:p-4 flex flex-col gap-1">
-                      <h2 className="text-white text-lg sm:text-2xl font-semibold">
+                      <h2 className="text-white text-base sm:text-lg font-semibold">
                         {item.node.title}
                       </h2>
                       {item.node.description && (

@@ -46,7 +46,7 @@ const Navbar = async () => {
           </Link>
         </div>
       </header>
-      <nav className="border-y py-2 ">
+      <nav className="border-y py-2 overflow-x-auto">
         <ul className="flex divide-x-[1px] justify-start items-center ">
           {collections.map(({ node }) => (
             <li

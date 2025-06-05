@@ -12,7 +12,7 @@ export default async function CollectionPage({ params }) {
     query CollectionByHandle($handle: String!) {
       collectionByHandle(handle: $handle) {
         title
-        products(first: 10) {
+        products(first: 50) {
           edges {
             node {
               id
