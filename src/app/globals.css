@@ -1,24 +1,60 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fdf6f6;
+  --background: #fffaf4;
   --foreground: #171717;
-  --primary: #1a3c58;
-  --primary-light: #2c516f;
-  --primary-dark: #0b1e2d;
+  --primary-dark: #2c3e50;
+  --primary-light: #a2c3d9;
+  --accent: #718237;
+  --secondary: #d4a056;
 
-  --font-nerko: "grotesk", "sans-serif";
-  --font-inter: "Inter", sans-serif;
+  --font-montserrat: "Montserrat", "serif";
+  --font-poppins: "Poppins", serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter);
-  font-size: 16px;
-  line-height: 1.5;
+  font-family: var(--font-montserrat);
+  font-size: 14px;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+  font-family: var(--font-poppins);
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  font-family: var(--font-poppins);
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: normal;
+  margin: 0;
+  padding: 0;
+}
+
+h3,
+a,
+button,
+span {
+  font-family: var(--font-poppins);
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: normal;
+}
+
+.product-title {
+  @apply line-clamp-2 text-ellipsis;
+  font-family: var(--font-montserrat);
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: normal;
 }

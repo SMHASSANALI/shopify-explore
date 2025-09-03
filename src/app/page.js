@@ -1,132 +1,160 @@
-import CategoryAdSec from "@/components/CategoryAdSec";
 import CustomLink from "@/components/global/CustomLink";
 import SwiperSlider from "@/components/global/SwiperSlider";
-import Hero from "@/components/Hero";
-import { fetchShopify } from "@/lib/shopify";
+import { fetchCollectionByHandle, fetchShopify } from "@/lib/shopify";
+import HeroWrapper from "@/components/hero/HeroWrapper";
+import Link from "next/link";
+import Image from "next/image";
+import BentoWrapper from "@/components/bento/BentoWrapper";
+import { toTitleCase } from "@/utils/toTitleCase";
 
 export default async function Home() {
-  
-  // Query for collections
-  const collectionsQuery = `
-    {
-      collections(first: 9) {
-        edges {
-          node {
-            id
-            title
-            handle
-            image {
-              src
-              altText
-            }
-          }
-        }
-      }
-    }
-  `;
-
-  // Query for products in "Spring Slowdown Sale" collection
-  const productsQuery = `
-    query CollectionByHandle($handle: String!) {
-      collectionByHandle(handle: $handle) {
-        id
-        title
-        products(first: 7) {
+  const getAllCollectionQuery = {
+    getAllCollections: `
+      query {
+        collections(first: 10) {
           edges {
             node {
               id
               title
               handle
-              images(first: 1) {
-                edges {
-                  node {
-                    src
-                    altText
-                  }
-                }
+              image {
+                src
+                altText
               }
             }
           }
         }
       }
-    }
-  `;
-
-  const collectionsData = await fetchShopify(collectionsQuery);
-  const collections = collectionsData?.collections?.edges || [];
-
-  const collectionProductHandle = "spring-slowdown-sale"
-  const collectionProductsData = await fetchShopify(productsQuery, {
-    handle: collectionProductHandle,
-  });
-  const collectionProdtucts = collectionProductsData?.collectionByHandle?.products?.edges || [];
-
-  // Prepare product data for CategoryAdSec
-  const collectionProdtuctsImages = collectionProdtucts.map(({ node }) => ({
-    src: node.images.edges[0]?.node.src || "/images/placeholder.jpg",
-    altText: node.images.edges[0]?.node.altText || node.title,
-    handle: node.handle,
-  }));
-
-  // Ensure at least 7 items for pictureArray, using placeholders if needed
-  const fallbackImage = {
-    src: "/images/placeholder.jpg",
-    altText: "Placeholder product image",
-    handle: "#",
+    `,
   };
-  while (collectionProdtuctsImages.length < 7) {
-    collectionProdtuctsImages.push(fallbackImage);
-  }
+
+  const allCollections = await fetchShopify(
+    getAllCollectionQuery.getAllCollections,
+    {
+      first: 10,
+    }
+  );
+
+  const under20_99Collection = await fetchCollectionByHandle(
+    "everything-under-20-99"
+  );
+  const springSlowdownSaleCollection = await fetchCollectionByHandle(
+    "spring-slowdown-sale"
+  );
 
   return (
-    <main className="mx-auto px-6">
-      <section className="sticky top-0 z-0">
-        <Hero
-          url={
-            "https://cdn.shopify.com/s/files/1/0895/2954/9134/files/Simple_Modern_Photo_Collage_Autumn_Fashion_Sale_Banner.png?v=1747742254"
-          }
-        />
-        {/* Promo Banner */}
-        <section className="mb-12">
-          <div className="shadow-inner shadow-black/50 bg-[var(--primary-dark)] m-1 p-6 rounded-lg text-center flex flex-row items-center justify-between gap-4">
-            <div className="flex flex-col items-start text-white">
-              <h2 className="text-3xl font-bold text-white mb-2">
-                LIMITED OFFER
-              </h2>
-              <p className="text-lg font-medium">
-                Spring Slowdown Sale - Flat 15% off on selected items!
-              </p>
-            </div>
-            <CustomLink
-              text="Shop Now"
-              href="/collections/spring-slowdown-sale"
-              invert={true}
-            />
+    <main className="mx-auto">
+      <div className="bg-[var(--secondary)]/1 space-y-[50px] py-[50px]">
+        <HeroWrapper handle="hero-banners" />
+
+        <div className="max-w-[1400px] mx-auto space-y-[10px]">
+          <div className="flex flex-row items-center justify-between border-b-4 border-gray-300 pb-2">
+            <h1 className="font-semibold">Shop By Categories</h1>
+            <Link href={"/collections"} className="hover:text-[var(--accent)]">
+              View All Categories
+            </Link>
           </div>
-        </section>
+          <div className="flex flex-row overflow-x-auto overflow-y-hidden gap-2 bg-white p-2 rounded-lg">
+            {allCollections.collections.edges.length > 0 &&
+              allCollections.collections.edges.map((item) => (
+                <Link
+                  key={item.node.id}
+                  href={`/collections/${item.node.handle}`}
+                  className="hover:text-[var(--accent)] flex flex-col items-center gap-2"
+                >
+                  <div className="h-[130px] w-[130px] relative rounded-sm overflow-hidden">
+                    <Image
+                      src={item.node.image.src}
+                      alt={
+                        item.node.image.altText
+                          ? item.node.image.altText
+                          : item.node.title
+                      }
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="font-extralight text-center">
+                    {toTitleCase(item.node.title)}
+                  </span>
+                </Link>
+              ))}
+          </div>
+        </div>
+      </div>
+
+      <section className="bg-[#f8fcff] flex flex-col py-[50px]">
+        <SwiperSlider
+          title={toTitleCase(under20_99Collection.title)}
+          data={under20_99Collection.products}
+        />
       </section>
 
-      <main className="bg-[var(--background)] relative z-10">
-        {/* Collections */}
-        <section className="mb-16 py-12 px-6 bg-white rounded-xl shadow-lg">
-          <SwiperSlider
-            title="Shop by Collection"
-            data={collections}
-            endpoint={"collections"}
-          />
-          <div className="flex justify-center mt-24">
-            <CustomLink
-              text="View All Collections"
-              href="/collections"
-              invert={false}
-            />
-          </div>
-        </section>
-        {/* Featured Collection AD */}
-        <section className="">
-          <CategoryAdSec productImages={collectionProdtuctsImages} handle={collectionProductHandle} />
-        </section>
-      </main>
+      <BentoWrapper />
+
+      <section className="bg-neutral-100 flex flex-col py-[50px]">
+        <SwiperSlider
+          title={toTitleCase(springSlowdownSaleCollection.title)}
+          data={springSlowdownSaleCollection.products}
+        />
+      </section>
+
+      <HeroWrapper handle="hero-banners" />
     </main>
   );
+}
+
+{
+  /* Video section */
+}
+{
+  /* <section className="flex flex-row h-[100dvh]">
+  <div className="lg:w-1/2 h-full">
+    <div className="relative h-full w-fit rounded-l-lg overflow-hidden shadow-lg">
+      <video
+        playsInline
+        autoPlay
+        loop
+        muted
+        controls
+        preload="metadata"
+        poster="https://haaaib.com/cdn/shop/files/preview_images/733257c79f554fcbbdfbd77e6f2c0268.thumbnail.0000000000_2500x.jpg"
+        className="w-full h-full object-cover"
+        aria-label="Promotional video showcasing jewelry collection"
+      >
+        <source
+          src="https://haaaib.com/cdn/shop/videos/c/vp/733257c79f554fcbbdfbd77e6f2c0268/733257c79f554fcbbdfbd77e6f2c0268.HD-1080p-3.3Mbps-49549370.mp4"
+          type="video/mp4"
+        />
+        <source
+          src="https://haaaib.com/cdn/shop/videos/c/vp/733257c79f554fcbbdfbd77e6f2c0268/733257c79f554fcbbdfbd77e6f2c0268.webm"
+          type="video/webm"
+        />
+        <p>
+          Your browser does not support the video tag. Please view our
+          collection images instead.
+        </p>
+      </video>
+    </div>
+  </div>
+  <div className="lg:w-1/2 h-full relative">
+    <div className="sticky top-0 p-[30px] flex flex-col h-screen justify-center">
+      <h2 className="text-5xl max-w-2xl font-semibold font-[lora] mb-2 uppercase">
+        A Legacy of elegance, reimagined.
+      </h2>
+      <p className="max-w-xl mb-4">
+        Jewelry carries more than beauty - It holds memmories, milestones,
+        and meaning. Our pieces are crafted to celebrate the stories you
+        wear and the mommnts you'll never forget.
+      </p>
+      <div className="w-fit">
+        <CustomLink
+          text="Shop Now"
+          href="/collections/jewelry"
+          invert={false}
+        />
+      </div>
+    </div>
+  </div>
+</section> */
 }

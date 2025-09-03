@@ -1,9 +1,9 @@
 import { fetchShopify } from "@/lib/shopify";
 import Image from "next/image";
-import AddToCartButton from "@/components/AddToCartButton";
+import AddToCartButton from "@/components/global/AddToCartButton";
 
 export async function generateMetadata({ params }) {
-  const handle = params?.handle; // Ensure params is defined
+  const { handle } = await params; // Ensure params is defined
   if (!handle) {
     return { title: "Product Not Found | HA-AA-IB" };
   }
@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
-  const handle = params?.handle; // Ensure params is defined
+ const { handle } = await params;  // Ensure params is defined
   if (!handle) {
     return <div className="max-w-6xl mx-auto px-4 py-12">Product not found</div>;
   }
@@ -43,6 +43,7 @@ export default async function ProductPage({ params }) {
             }
           }
         }
+        tags
       }
     }
   `;

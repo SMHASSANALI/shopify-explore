@@ -12,11 +12,12 @@ export const metadata = {
 };
 
 export default async function CartPage({ searchParams }) {
+  const { resolvedSearchParams } = await searchParams;
   // Get cartId from cookies
   const cookieStore = await cookies();
   const cartId =
     cookieStore.get("cartId")?.value ||
-    searchParams?.cartId ||
+    resolvedSearchParams?.cartId ||
     (typeof window !== "undefined" ? localStorage.getItem("cartId") : null);
 
   if (!cartId) {
@@ -76,7 +77,7 @@ export default async function CartPage({ searchParams }) {
     cart.lines.edges[0]?.node?.merchandise?.priceV2?.currencyCode || "USD";
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-12">
+    <main className="max-w-[1600px] w-full mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold mb-10 text-gray-800">Your Cart</h1>
       {cart.lines.edges.length === 0 ? (
         <p className="text-gray-600 text-lg">Your cart is empty.</p>

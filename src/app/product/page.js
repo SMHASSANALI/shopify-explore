@@ -1,5 +1,5 @@
 import { fetchShopify } from "@/lib/shopify";
-import ProductCard from "@/components/ProductCard";
+import ProductCard from "@/components/global/ProductCardFalse";
 
 export const metadata = {
   title: "Products | HA-AA-IB",
@@ -26,9 +26,14 @@ export default async function ProductsPage() {
               edges {
                 node {
                   id
+                  price {
+                    amount
+                    currencyCode
+                  }
                 }
               }
             }
+            tags
           }
         }
       }
@@ -53,6 +58,12 @@ export default async function ProductsPage() {
               handle={node.handle}
               image={image}
               variantId={variantId}
+              tags={node.tags}
+              price={
+                node.variants?.edges[0]?.node?.price?.amount +
+                " " +
+                node.variants?.edges[0]?.node?.price?.currencyCode
+              }
             />
           );
         })}

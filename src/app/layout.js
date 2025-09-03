@@ -1,18 +1,20 @@
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Poppins, Montserrat } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/global/Navbar";
 import Footer from "@/components/global/Footer";
 
-const inter = Inter({
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-poppins",
   display: "swap",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
-const grotesk = Space_Grotesk({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-grotesk",
+  variable: "--font-montserrat",
   display: "swap",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata = {
@@ -25,7 +27,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${grotesk.variable} antialiased`}
+        className={`${poppins.variable} ${montserrat.variable} antialiased`}
       >
         <Navbar />
         {children}
