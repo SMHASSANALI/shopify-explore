@@ -4,35 +4,10 @@ import React, { useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
-import { MdArrowBack, MdArrowForward } from "react-icons/md";
-import Image from "next/image";
-import Link from "next/link";
-import { motion } from "framer-motion";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import ProductCard from "./ProductCard";
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-  hover: {
-    y: -8,
-    boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)",
-    transition: { duration: 0.3, ease: "easeOut" },
-  },
-  tap: { scale: 0.98, transition: { duration: 0.2 } },
-};
-
-const buttonVariants = {
-  rest: { scale: 1 },
-  hover: { scale: 1.1, transition: { duration: 0.2 } },
-  tap: { scale: 0.9, transition: { duration: 0.2 } },
-};
-
-const SwiperSlider = ({ title, data }) => {
+const ProductsSlider = ({ title, data }) => {
   const swiperRef = useRef(null);
 
   const handleNext = () => {
@@ -118,4 +93,4 @@ const SwiperSlider = ({ title, data }) => {
   );
 };
 
-export default SwiperSlider;
+export default ProductsSlider;

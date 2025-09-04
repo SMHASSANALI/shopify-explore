@@ -7,22 +7,12 @@ import logo from "../../../public/assets/haaaib-logo.svg";
 import { MdFacebook, MdPerson, MdSearch } from "react-icons/md";
 import { PiInstagramLogo } from "react-icons/pi";
 import { IoMdCart } from "react-icons/io";
-import CategoriesDropdown from "../Dropdowns/Dropdown"; // Import the new component
-import Dropdown from "../Dropdowns/Dropdown";
+import Dropdown from "../dropdowns/Dropdown";
 
 const Navbar = async () => {
   // Updated query to fetch up to 100 (or "all" for most stores)
   const query = `{
     collections(first: 100) {
-      edges {
-        node {
-          id
-          title
-          handle
-        }
-      }
-    }
-    blogs(first: 100) {
       edges {
         node {
           id

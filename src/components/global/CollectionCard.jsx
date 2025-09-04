@@ -15,26 +15,19 @@ const cardVariants = {
   tap: { scale: 0.98, transition: { duration: 0.2 } },
 };
 
-export default function CollectionCard({ id, title, handle, image, description }) {
+export default function CollectionCard({ edge }) {
   return (
-    <motion.div
-      variants={cardVariants}
-      initial="hidden"
-      animate="visible"
-      whileHover="hover"
-      whileTap="tap"
-      className="rounded-lg overflow-hidden bg-white border border-gray-100 shadow-sm"
-    >
+    <div className="rounded-lg overflow-hidden bg-white border border-gray-100 shadow-sm">
       <Link
-        href={`/collections/${handle}`}
+        href={`/collections/${edge.handle}`}
         className="flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        aria-label={`View collection: ${title}`}
+        aria-label={`View collection: ${edge.title}`}
       >
-        {image && (
+        {edge.image && (
           <div className="relative aspect-[4/3]">
             <Image
-              src={image.src}
-              alt={image.altText || title}
+              src={edge.image.src}
+              alt={edge.image.altText || edge.title}
               fill
               className="object-cover rounded-t-lg"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
@@ -44,9 +37,11 @@ export default function CollectionCard({ id, title, handle, image, description }
           </div>
         )}
         <div className="p-4 flex flex-col flex-1">
-          <h2 className="text-lg font-semibold text-gray-900 line-clamp-2">{title}</h2>
+          <h2 className="text-lg font-semibold text-gray-900 line-clamp-2">
+            {edge.title}
+          </h2>
         </div>
       </Link>
-    </motion.div>
+    </div>
   );
 }

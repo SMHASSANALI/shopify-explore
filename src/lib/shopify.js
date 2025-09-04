@@ -92,7 +92,7 @@ export async function addToCart(cartId, lines) {
   return data?.cartLinesAdd?.cart || null;
 }
 
-// Function to Fetch a Collection by Handle
+// Function to Fetch a Collection's Products by Handle
 export async function fetchCollectionByHandle(handle, options = {}) {
   const query = `
     query CollectionByHandle($handle: String!) {
@@ -128,6 +128,10 @@ export async function fetchCollectionByHandle(handle, options = {}) {
                     }
                   }
                 }
+              }
+              metafields(identifiers: [{namespace: "custom", key: "banner_link"}]) {
+                id
+                value
               }
             }
           }
@@ -173,7 +177,8 @@ export async function fetchCollectionByHandle(handle, options = {}) {
         },
         compareAtPrice,
         discountPercentage,
-        variants: node.variants,
+        variants: node.variants || [],
+        metafields: node.metafields || [],
       },
     };
   });
@@ -184,3 +189,90 @@ export async function fetchCollectionByHandle(handle, options = {}) {
   };
 }
 
+// Function to Fetch All Collections
+export async function fetchAllCollections(options = {}) {
+  const query = `query {
+        collections(first: ${options.first || 100}) {
+          edges {
+            node {
+              id
+              title
+              handle
+              image {
+                src
+                altText
+              }
+            }
+          }
+        }
+      }
+    `;
+
+  const variables = {};
+  const data = await fetchShopify(query, variables, {
+    cache: options.cache || "no-store",
+    revalidate: options.revalidate || 300,
+  });
+
+  if (!data?.collections) {
+    console.error(`No collections found.`);
+    return [];
+  }
+
+  return data.collections.edges.map(({ node }) => ({
+    id: node.id,
+    title: node.title,
+    handle: node.handle,
+    image: node.image,
+  }));
+}
+
+// Function to Fetch Blogs along with Articles
+export async function fetchBlogs(options = {}) {
+  const query = `
+    {
+      articles(first: ${options.first || 10}) {
+        edges {
+          node {
+            id
+            title
+            handle
+            content
+            excerpt
+            publishedAt
+            author {
+              name
+              bio
+            }
+            blog {
+              title
+              handle
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const variables = {};
+  const data = await fetchShopify(query, variables, {
+    cache: options.cache || "no-store",
+    revalidate: options.revalidate || 300,
+  });
+
+  if (!data?.articles) {
+    console.error(`No articles found.`);
+    return [];
+  }
+
+  return data.articles.edges.map(({ node }) => ({
+    id: node.id,
+    title: node.title,
+    handle: node.handle,
+    content: node.content,
+    excerpt: node.excerpt,
+    publishedAt: node.publishedAt,
+    author: node.author,
+    blog: node.blog,
+  }));
+}

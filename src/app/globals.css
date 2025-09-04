@@ -28,8 +28,6 @@ h1 {
   font-size: 24px;
   line-height: 1;
   letter-spacing: normal;
-  margin: 0;
-  padding: 0;
 }
 
 h2 {
@@ -37,8 +35,6 @@ h2 {
   font-size: 20px;
   line-height: 24px;
   letter-spacing: normal;
-  margin: 0;
-  padding: 0;
 }
 
 h3,
@@ -57,4 +53,27 @@ span {
   font-size: 20px;
   line-height: 24px;
   letter-spacing: normal;
+}
+
+.c-icon {
+  --star-active: #fece3c;
+  --star-inactive: #6c6962;
+  --star-outline: #6c6962;
+  fill: var(--star-inactive);
+  width: var(--size, 1.5rem);
+  height: var(--size, 1.5rem);
+}
+
+.c-icon.active {
+  fill: var(--star-active);
+  stroke: var(--star-outline);
+  stroke-width: 1px;
+}
+
+.c-icon--md {
+  --size: 40px;
+}
+
+.c-icon--lg {
+  --size: 64px;
 }
