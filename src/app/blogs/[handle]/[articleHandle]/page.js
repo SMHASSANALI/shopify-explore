@@ -84,14 +84,6 @@ export default async function ArticlePage({ params }) {
         <p className="text-black text-sm mt-4">
           Published on: {new Date(article.publishedAt).toLocaleDateString()}
         </p>
-        {article.author && (
-          <div className="mt-4">
-            <p className="text-black text-sm">
-              By {article.author.name}{" "}
-              {article.author.bio && `- ${article.author.bio}`}
-            </p>
-          </div>
-        )}
         <Link
           href={`/blogs/${blogHandle}`}
           className="text-[var(--accent)] hover:underline mt-4 inline-block"

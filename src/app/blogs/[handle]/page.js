@@ -1,4 +1,5 @@
 import { fetchShopify } from "@/lib/shopify";
+import Image from "next/image";
 import Link from "next/link";
 
 export default async function BlogPage({ params }) {
@@ -22,6 +23,13 @@ export default async function BlogPage({ params }) {
               author {
                 name
                 bio
+              }
+              image {
+                url
+                altText
+                height
+                width
+                id
               }
             }
           }
@@ -71,8 +79,8 @@ export default async function BlogPage({ params }) {
   }
 
   return (
-    <main className="w-full flex items-center justify-center min-h-screen">
-      <div className="max-w-[1400px] w-full py-8 ">
+    <main className="w-full flex min-h-screen">
+      <div className="max-w-[1400px] w-full py-8 mx-auto">
         <h1 className="text-3xl font-semibold text-black mb-6">{blog.title}</h1>
         {articles.length === 0 ? (
           <p className="text-black text-lg">
@@ -83,31 +91,41 @@ export default async function BlogPage({ params }) {
             {articles.map((edge) => (
               <li
                 key={edge.node.id}
-                className="bg-white rounded-md shadow p-4 hover:shadow-lg transition-shadow"
+                className="bg-white rounded-md shadow p-4 hover:shadow-lg transition-shadow flex flex-col justify-between"
               >
+                {edge.node.image ? (
+                  <div className="relative w-full h-32 rounded-t overflow-hidden mb-2">
+                    <Image
+                      src={edge.node.image.url}
+                      alt={edge.node.image.altText || edge.node.title}
+                      fill
+                      className="object-cover rounded"
+                    />
+                  </div>
+                ) : (
+                  <div className="relative w-full h-32 rounded-t overflow-hidden mb-2">
+                    <Image
+                      src="/images/placeholder.jpg"
+                      alt="Placeholder Image"
+                      fill
+                      className="object-cover rounded"
+                    />
+                  </div>
+                )}
                 <Link
                   href={`/blogs/${blogHandle}/${edge.node.handle}`}
                   className="text-lg font-semibold text-neutral-800 hover:text-[var(--accent)]"
                 >
                   {edge.node.title}
                 </Link>
-                <p className="text-neutral-600 text-sm mt-2 line-clamp-3">
+                <p className="text-neutral-600 text-sm mt-2 line-clamp-3 text-ellipsis">
                   {edge.node.excerpt || edge.node.content}
                 </p>
-                {edge.node.author && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    By {edge.node.author.name}
+                {edge.node.publishedAt && (
+                  <p className="text-xs text-gray-500 mt-2 ml-auto w-fit">
+                    Published On{" "}
+                    {new Date(edge.node.publishedAt).toLocaleDateString()}
                   </p>
-                )}
-                {edge.node.featuredImage && (
-                  <div className="relative w-full h-32 mt-2">
-                    <Image
-                      src={edge.node.featuredImage.url}
-                      alt={edge.node.featuredImage.altText || edge.node.title}
-                      fill
-                      className="object-cover rounded"
-                    />
-                  </div>
                 )}
               </li>
             ))}

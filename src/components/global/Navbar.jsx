@@ -21,7 +21,7 @@ const Navbar = async () => {
         }
       }
     }
-    articles(first: 100) {
+    blogs(first: 100) {
       edges {
         node {
           id
@@ -32,14 +32,14 @@ const Navbar = async () => {
     }
   }`;
 
-  // Data Extraction (add error handling as before if needed)
+  // Data Extraction 
   const fetchData = async () => {
     const data = await fetchShopify(query);
     return data;
   };
   const collectionsData = await fetchData();
   const collections = collectionsData?.collections?.edges || [];
-  const articles = collectionsData?.articles?.edges || [];
+  const blogs = collectionsData?.blogs?.edges || [];
 
   const collectionItems = collections.map((edge) => ({
     id: edge.node.id,
@@ -47,7 +47,7 @@ const Navbar = async () => {
     href: `/collections/${edge.node.handle}`,
   }));
 
-  const blogItems = articles.map((edge) => ({
+  const blogItems = blogs.map((edge) => ({
     id: edge.node.id,
     title: edge.node.title,
     href: `/blogs/${edge.node.handle}`,

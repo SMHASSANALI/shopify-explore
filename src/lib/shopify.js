@@ -126,6 +126,7 @@ export async function fetchCollectionByHandle(handle, options = {}) {
                       amount
                       currencyCode
                     }
+                    availableForSale
                   }
                 }
               }
@@ -179,6 +180,7 @@ export async function fetchCollectionByHandle(handle, options = {}) {
         discountPercentage,
         variants: node.variants || [],
         metafields: node.metafields || [],
+        availableForSale: node.variants.edges[0]?.node.availableForSale || false,
       },
     };
   });
@@ -275,4 +277,125 @@ export async function fetchBlogs(options = {}) {
     author: node.author,
     blog: node.blog,
   }));
+}
+
+// Function to Fetch every Product (for /products page) except for those whose price is 0
+// Supports optional filters: availability, priceMin, priceMax, sortKey, after for pagination
+export async function fetchAllProducts(options = {}) {
+  const { availability, priceMin, priceMax, sortKey, first = 30, after = null } = options;
+  let queryFilter = '';
+
+  // Availability filter
+  if (availability) {
+    if (availability === 'inStock') queryFilter += 'available_for_sale:true ';
+    if (availability === 'outOfStock') queryFilter += 'available_for_sale:false ';
+  }
+
+  // Price filter
+  if (priceMin || priceMax) {
+    if (priceMin) queryFilter += `variants.price>${priceMin} `;
+    if (priceMax) queryFilter += `variants.price<${priceMax} `;
+  }
+
+  const query = `
+    {
+      products(first: ${first}, after: ${after ? `"${after}"` : null}, query: "${queryFilter.trim()}", sortKey: ${sortKey || 'BEST_SELLING'}) {
+        edges {
+          node {
+            id
+            title
+            handle
+            description
+            tags
+            images(first: 1) {
+              edges {
+                node {
+                  src
+                  altText
+                }
+              }
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  id
+                  price {
+                    amount
+                    currencyCode
+                  }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
+                  availableForSale
+                }
+              }
+            }
+            metafields(identifiers: [{namespace: "custom", key: "banner_link"}]) {
+              id
+              value
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  `;
+
+  const variables = {};
+  const data = await fetchShopify(query, variables, {
+    cache: options.cache || "no-store",
+    revalidate: options.revalidate || 300,
+  });
+
+  if (!data?.products) {
+    console.error(`No products found.`);
+    return { products: [], hasNextPage: false, endCursor: null };
+  }
+
+  // Filter out products with price 0 and map to desired structure
+  const products = data.products.edges
+    .map(({ node }) => {
+      const price = parseFloat(node.variants.edges[0]?.node.price.amount) || 0;
+      if (price === 0) return null; // Exclude products with price 0
+
+      const compareAtPrice =
+        parseFloat(node.variants.edges[0]?.node.compareAtPrice?.amount) || null;
+      const discountPercentage =
+        compareAtPrice && price < compareAtPrice
+          ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
+          : null;
+
+      return {
+        node: {
+          id: node.id,
+          title: node.title,
+          handle: node.handle,
+          price,
+          currencyCode:
+            node.variants.edges[0]?.node.price.currencyCode || "USD",
+          description: node.description,
+          tags: node.tags,
+          image: node.images.edges[0]?.node || {
+            src: "/images/placeholder.jpg",
+            altText: node.title,
+          },
+          compareAtPrice,
+          discountPercentage,
+          variants: node.variants || [],
+          metafields: node.metafields || [],
+          availableForSale: node.variants.edges[0]?.node.availableForSale || false, // Add availability
+        },
+      };
+    })
+    .filter((product) => product !== null); // Remove null entries
+
+  return {
+    products,
+    hasNextPage: data.products.pageInfo.hasNextPage,
+    endCursor: data.products.pageInfo.endCursor,
+  };
 }

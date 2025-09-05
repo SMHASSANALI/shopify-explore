@@ -3,16 +3,28 @@ import Link from "next/link";
 import React from "react";
 import AddToCartButton from "./AddToCartButton";
 
-const ProductCard = ({ product }) => {
-
+const ProductCard = ({ product, compressed = false }) => {
   return (
-    <div className="rounded-lg overflow-hidden bg-white border-2 border-gray-400/40 shadow-sm h-[427px] w-[262px]">
+    <div
+      className={`rounded-lg overflow-hidden bg-white border-2 border-gray-400/40 shadow-sm ${
+        compressed ? "h-[390px] w-[220px]" : "h-[427px] w-[262px]"
+      }`}
+    >
       <Link
         href={`/product/${product.node.handle}`}
         className="flex flex-col h-full relative z-10"
       >
+        {!product.node.availableForSale && (
+          <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded z-20">
+            Out of Stock
+          </div>
+        )}
         {product.node.image && (
-          <div className="relative aspect-[1/1] flex items-center justify-center w-[250px] mx-auto my-1">
+          <div
+            className={`relative aspect-[1/1] flex items-center justify-center ${
+              compressed ? "w-[210px]" : "w-[250px]"
+            } mx-auto my-1`}
+          >
             <Image
               src={product.node.image.src}
               alt={product.node.image.altText || product.node.title}
@@ -23,7 +35,11 @@ const ProductCard = ({ product }) => {
           </div>
         )}
         <div className="p-3 flex flex-col justify-start flex-1 gap-1.5">
-          <h2 className="product-title h-[50px]">{product.node.title}</h2>
+          {compressed ? (
+            <h2 className="product-title h-[50px]">{product.node.title}</h2>
+          ) : (
+            <h3 className="product-title h-[50px]">{product.node.title}</h3>
+          )}
           {/* <div className="flex items-center">
             {[...Array(5)].map((_, i) => (
               <svg

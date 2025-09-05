@@ -42,7 +42,7 @@ export default async function BlogsPage() {
         {blogs.length === 0 ? (
           <p className="text-white text-lg">No blogs available.</p>
         ) : (
-          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 border">
             {blogs.map((edge) => (
               <li
                 key={edge.node.id}

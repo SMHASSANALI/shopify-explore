@@ -77,3 +77,10 @@ span {
 .c-icon--lg {
   --size: 64px;
 }
+
+.tag {
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: normal;
+  font-family: var(--font-poppins);
+}

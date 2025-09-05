@@ -29,7 +29,7 @@ export default function Hero({ banners }) {
   };
 
   return (
-    <section className="flex flex-row items-center justify-center max-w-[1400px] mx-auto">
+    <section className="flex flex-row items-center justify-center max-w-[1400px] py-[50px] mx-auto">
       <section className="w-full relative">
         <button
           onClick={handlePrev}

@@ -10,56 +10,25 @@ import Image from "next/image";
 import BentoWrapper from "@/components/bento/BentoWrapper";
 import { toTitleCase } from "@/utils/toTitleCase";
 import ReviewsSlider from "@/components/global/ReviewsSlider";
+import CollectionsSection from "@/components/global/CollectionsSection";
 
 export default async function Home() {
-  const allCollections = await fetchAllCollections({ first: 10 });
-
   const under20_99Collection = await fetchCollectionByHandle(
     "everything-under-20-99"
   );
   const springSlowdownSaleCollection = await fetchCollectionByHandle(
     "spring-slowdown-sale"
   );
-  const recentArticles = await fetchBlogs({ first: 3 });
-
+  const recentBlogs = await fetchBlogs({ first: 3 });
   const heroBanners = await fetchCollectionByHandle("hero-banners");
   const adBanners = await fetchCollectionByHandle("ad-banners");
 
   return (
     <main className="mx-auto">
-      <div className="bg-[var(--secondary)]/1 space-y-[50px] py-[50px]">
+      <div className="bg-[var(--secondary)]/1">
         <HeroWrapper banners={heroBanners.products} />
 
-        <div className="max-w-[1400px] mx-auto space-y-[50px]">
-          <div className="flex flex-row items-center justify-between border-b-4 border-gray-300 pb-2">
-            <h1 className="font-semibold">Shop By Categories</h1>
-            <Link href={"/collections"} className="hover:text-[var(--accent)]">
-              View All Categories
-            </Link>
-          </div>
-          <div className="flex flex-row overflow-x-auto overflow-y-hidden gap-2 bg-white p-2 rounded-lg">
-            {allCollections.length > 0 &&
-              allCollections.map((item) => (
-                <Link
-                  key={item.id}
-                  href={`/collections/${item.handle}`}
-                  className="hover:text-[var(--accent)] flex flex-col items-center gap-2"
-                >
-                  <div className="h-[130px] w-[130px] relative rounded-sm overflow-hidden">
-                    <Image
-                      src={item.image.src}
-                      alt={item.image.altText ? item.image.altText : item.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <span className="font-extralight text-center">
-                    {toTitleCase(item.title)}
-                  </span>
-                </Link>
-              ))}
-          </div>
-        </div>
+        <CollectionsSection />
       </div>
 
       <section className="bg-[#f8fcff] flex flex-col py-[50px]">
@@ -86,43 +55,34 @@ export default async function Home() {
 
       <div className="max-w-[1400px] mx-auto space-y-[50px] py-[50px]">
         <div className="flex flex-row items-center justify-between border-b-4 border-gray-300 pb-2">
-          <h1 className="font-semibold">Recent Blogs</h1>
+          <h1 className="font-semibold">Recent Articles</h1>
           <Link href={"/blogs"} className="hover:text-[var(--accent)]">
             View All Blogs
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {recentArticles.length > 0 ? (
-            recentArticles.map((article) => (
+          {recentBlogs.length > 0 ? (
+            recentBlogs.map((blog) => (
               <Link
-                key={article.id}
-                href={`/blogs/${article.blog.handle}/${article.handle}`}
-                className="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                key={blog.id}
+                href={`/blogs/${blog.blog.handle}/${blog.handle}`}
+                className="p-4 bg-white rounded-lg shadow-md flex flex-col justify-between hover:shadow-lg transition-shadow"
               >
-                <div className="relative w-full h-48">
+                <div className="relative w-full h-32 rounded-t overflow-hidden mb-2">
                   <Image
-                    src={
-                      article.featuredImage?.url || "/images/placeholder.jpg"
-                    }
-                    alt={article.featuredImage?.altText || article.title}
+                    src={blog.featuredImage?.url || "/images/placeholder.jpg"}
+                    alt={blog.featuredImage?.altText || blog.title}
                     fill
                     className="object-cover"
                   />
                 </div>
-                <div className="p-4 h-44 flex flex-col">
-                  <h3 className="text-lg font-semibold mb-2">
-                    {article.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 line-clamp-3 text-ellipsis">
-                    {article.excerpt || article.content}
-                  </p>
-                  <div className="text-xs text-gray-500 mt-auto flex flex-row items-center justify-between">
-                    <p className="text-black font-semibold ml-auto">
-                      Published on{" "}
-                      {new Date(article.publishedAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
+                <h3 className="text-lg font-semibold mb-2">{blog.title}</h3>
+                <p className="text-sm text-gray-600 line-clamp-3 text-ellipsis">
+                  {blog.excerpt || blog.content}
+                </p>
+                <p className="text-black font-semibold ml-auto w-fit text-xs">
+                  Published on {new Date(blog.publishedAt).toLocaleDateString()}
+                </p>
               </Link>
             ))
           ) : (
