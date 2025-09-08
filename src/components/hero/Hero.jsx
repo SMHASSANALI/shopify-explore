@@ -77,6 +77,7 @@ export default function Hero({ banners }) {
                             src={`${edge.node.image.src}?width=1400&format=webp`}
                             alt={edge.node.image.altText || edge.node.title}
                             fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1400px) 100vw, 100vw"
                             className="object-cover"
                             loading="lazy"
                           />

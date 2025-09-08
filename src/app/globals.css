@@ -84,3 +84,12 @@ span {
   letter-spacing: normal;
   font-family: var(--font-poppins);
 }
+
+.detailmodule_html ul {
+  list-style: disc;
+  margin-left : 15px;
+}
+
+.detailmodule_html ul li{
+  padding: 5px 0;
+}

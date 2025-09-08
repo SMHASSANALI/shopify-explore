@@ -106,7 +106,7 @@ export async function fetchCollectionByHandle(handle, options = {}) {
               handle
               description
               tags
-              images(first: 1) {
+              images(first: 10) {
                 edges {
                   node {
                     src
@@ -114,25 +114,27 @@ export async function fetchCollectionByHandle(handle, options = {}) {
                   }
                 }
               }
-              variants(first: 1) {
+              variants(first: 50) {
                 edges {
                   node {
                     id
-                    price {
-                      amount
-                      currencyCode
-                    }
-                    compareAtPrice {
-                      amount
-                      currencyCode
-                    }
                     availableForSale
+                    price { amount currencyCode }
+                    compareAtPrice { amount currencyCode }
+                    image { src altText }
+                    selectedOptions { name value }
                   }
                 }
               }
-              metafields(identifiers: [{namespace: "custom", key: "banner_link"}]) {
+              metafields(identifiers: [
+                {namespace: "custom", key: "banner_link"},
+                {namespace: "reviews", key: "rating"},
+                {namespace: "reviews", key: "rating_count"}
+              ]) {
                 id
                 value
+                key
+                type
               }
             }
           }
@@ -155,13 +157,37 @@ export async function fetchCollectionByHandle(handle, options = {}) {
   const collection = data.collectionByHandle;
   const products = collection.products?.edges || [];
   const productData = products.map(({ node }) => {
-    const price = parseFloat(node.variants.edges[0]?.node.price.amount) || 0;
-    const compareAtPrice =
-      parseFloat(node.variants.edges[0]?.node.compareAtPrice?.amount) || null;
+    const variants = (node.variants?.edges || []).map(({ node: v }) => {
+      const priceAmount = parseFloat(v.price?.amount) || 0;
+      const compareAmount = v.compareAtPrice?.amount
+        ? parseFloat(v.compareAtPrice.amount)
+        : null;
+      return {
+        id: v.id,
+        availableForSale: !!v.availableForSale,
+        price: priceAmount,
+        currencyCode: v.price?.currencyCode || "USD",
+        compareAtPrice: compareAmount,
+        image: v.image || null,
+        selectedOptions: v.selectedOptions || [],
+        title: (v.selectedOptions || [])
+          .map((o) => `${o.name}: ${o.value}`)
+          .join(" / "),
+      };
+    });
+
+    const images = (node.images?.edges || []).map(({ node: img }) => img);
+    const minPriceVariant = variants.reduce(
+      (min, v) => (min && min.price <= v.price ? min : v),
+      variants[0] || null
+    );
+    const price = minPriceVariant ? minPriceVariant.price : 0;
+    const compareAtPrice = minPriceVariant?.compareAtPrice || null;
     const discountPercentage =
       compareAtPrice && price < compareAtPrice
         ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
         : null;
+    const anyAvailable = variants.some((v) => v.availableForSale);
 
     return {
       node: {
@@ -169,18 +195,20 @@ export async function fetchCollectionByHandle(handle, options = {}) {
         title: node.title,
         handle: node.handle,
         price,
-        currencyCode: node.variants.edges[0]?.node.price.currencyCode || "USD",
+        minPrice: price,
+        currencyCode: minPriceVariant?.currencyCode || "USD",
         description: node.description,
         tags: node.tags,
-        image: node.images.edges[0]?.node || {
-          src: "/images/placeholder.jpg",
+        image: node.images?.edges?.[0]?.node || {
+          src: "/assets/placeholder.jpg",
           altText: node.title,
         },
+        images,
         compareAtPrice,
         discountPercentage,
-        variants: node.variants || [],
+        variants,
         metafields: node.metafields || [],
-        availableForSale: node.variants.edges[0]?.node.availableForSale || false,
+        availableForSale: anyAvailable,
       },
     };
   });
@@ -307,40 +335,31 @@ export async function fetchAllProducts(options = {}) {
             handle
             description
             tags
-            images(first: 1) {
+            images(first: 10) {
               edges {
-                node {
-                  src
-                  altText
-                }
+                node { src altText }
               }
             }
-            variants(first: 1) {
+            variants(first: 50) {
               edges {
                 node {
                   id
-                  price {
-                    amount
-                    currencyCode
-                  }
-                  compareAtPrice {
-                    amount
-                    currencyCode
-                  }
                   availableForSale
+                  price { amount currencyCode }
+                  compareAtPrice { amount currencyCode }
+                  image { src altText }
+                  selectedOptions { name value }
                 }
               }
             }
-            metafields(identifiers: [{namespace: "custom", key: "banner_link"}]) {
-              id
-              value
-            }
+            metafields(identifiers: [
+              {namespace: "custom", key: "banner_link"},
+              {namespace: "reviews", key: "rating"},
+              {namespace: "reviews", key: "rating_count"}
+            ]) { id value key type }
           }
         }
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
+        pageInfo { hasNextPage endCursor }
       }
     }
   `;
@@ -359,39 +378,65 @@ export async function fetchAllProducts(options = {}) {
   // Filter out products with price 0 and map to desired structure
   const products = data.products.edges
     .map(({ node }) => {
-      const price = parseFloat(node.variants.edges[0]?.node.price.amount) || 0;
-      if (price === 0) return null; // Exclude products with price 0
-
-      const compareAtPrice =
-        parseFloat(node.variants.edges[0]?.node.compareAtPrice?.amount) || null;
-      const discountPercentage =
-        compareAtPrice && price < compareAtPrice
-          ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
+      const variants = (node.variants?.edges || []).map(({ node: v }) => {
+        const priceAmount = parseFloat(v.price?.amount) || 0;
+        const compareAmount = v.compareAtPrice?.amount
+          ? parseFloat(v.compareAtPrice.amount)
           : null;
+        return {
+          id: v.id,
+          availableForSale: !!v.availableForSale,
+          price: priceAmount,
+          currencyCode: v.price?.currencyCode || "USD",
+          compareAtPrice: compareAmount,
+          image: v.image || null,
+          selectedOptions: v.selectedOptions || [],
+          title: (v.selectedOptions || [])
+            .map((o) => `${o.name}: ${o.value}`)
+            .join(" / "),
+        };
+      });
+
+      const images = (node.images?.edges || []).map(({ node: img }) => img);
+      // Exclude products where all variant prices are 0
+      const minPriceVariant = variants.reduce(
+        (min, v) => (min && min.price <= v.price ? min : v),
+        variants[0] || null
+      );
+      const minPrice = minPriceVariant ? minPriceVariant.price : 0;
+      if (!minPrice || minPrice === 0) return null;
+
+      const compareAtPrice = minPriceVariant?.compareAtPrice || null;
+      const discountPercentage =
+        compareAtPrice && minPrice < compareAtPrice
+          ? Math.round(((compareAtPrice - minPrice) / compareAtPrice) * 100)
+          : null;
+      const anyAvailable = variants.some((v) => v.availableForSale);
 
       return {
         node: {
           id: node.id,
           title: node.title,
           handle: node.handle,
-          price,
-          currencyCode:
-            node.variants.edges[0]?.node.price.currencyCode || "USD",
+          price: minPrice,
+          minPrice: minPrice,
+          currencyCode: minPriceVariant?.currencyCode || "USD",
           description: node.description,
           tags: node.tags,
-          image: node.images.edges[0]?.node || {
-            src: "/images/placeholder.jpg",
+          image: node.images?.edges?.[0]?.node || {
+            src: "/assets/placeholder.jpg",
             altText: node.title,
           },
+          images,
           compareAtPrice,
           discountPercentage,
-          variants: node.variants || [],
+          variants,
           metafields: node.metafields || [],
-          availableForSale: node.variants.edges[0]?.node.availableForSale || false, // Add availability
+          availableForSale: anyAvailable,
         },
       };
     })
-    .filter((product) => product !== null); // Remove null entries
+    .filter((product) => product !== null);
 
   return {
     products,
@@ -399,3 +444,4 @@ export async function fetchAllProducts(options = {}) {
     endCursor: data.products.pageInfo.endCursor,
   };
 }
+

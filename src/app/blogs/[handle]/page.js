@@ -105,10 +105,12 @@ export default async function BlogPage({ params }) {
                 ) : (
                   <div className="relative w-full h-32 rounded-t overflow-hidden mb-2">
                     <Image
-                      src="/images/placeholder.jpg"
+                      src="/assets/placeholder.jpg"
                       alt="Placeholder Image"
                       fill
                       className="object-cover rounded"
+                      sizes="100vw"
+                      priority
                     />
                   </div>
                 )}

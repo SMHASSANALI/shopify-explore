@@ -1,9 +1,12 @@
 import { fetchShopify } from "@/lib/shopify";
 import Image from "next/image";
 import AddToCartButton from "@/components/global/AddToCartButton";
+import ProductsSlider from "@/components/global/ProductsSlider";
+import ProductDetailClient from "@/components/products/ProductDetailClient";
+import Breadcrumbs from "@/components/global/Breadcrumbs";
 
 export async function generateMetadata({ params }) {
-  const { handle } = await params; // Ensure params is defined
+  const { handle } = await params;
   if (!handle) {
     return { title: "Product Not Found | HA-AA-IB" };
   }
@@ -13,9 +16,11 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
- const { handle } = await params;  // Ensure params is defined
+  const { handle } = await params;
   if (!handle) {
-    return <div className="max-w-6xl mx-auto px-4 py-12">Product not found</div>;
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-12">Product not found</div>
+    );
   }
 
   const query = `
@@ -23,27 +28,32 @@ export default async function ProductPage({ params }) {
       productByHandle(handle: $handle) {
         id
         title
-        description
-        images(first: 10) {
-          edges {
-            node {
-              src
-              altText
-            }
-          }
-        }
-        variants(first: 1) {
+        descriptionHtml
+        images(first: 10) { edges { node { src altText } } }
+        collections(first: 3) { edges { node { id title handle } } }
+        totalInventory
+        variants(first: 50) {
           edges {
             node {
               id
-              price {
-                amount
-                currencyCode
-              }
+              availableForSale
+              price { amount currencyCode }
+              compareAtPrice { amount currencyCode }
+              image { src altText }
+              selectedOptions { name value }
             }
           }
         }
         tags
+        metafields(identifiers: [
+          { namespace: "reviews", key: "rating" },
+          { namespace: "reviews", key: "rating_count" }
+        ]) {
+            id
+            key
+            value
+            type
+        }
       }
     }
   `;
@@ -51,41 +61,54 @@ export default async function ProductPage({ params }) {
   const variables = { handle };
   const data = await fetchShopify(query, variables);
   const product = data?.productByHandle;
+  const totalInventory = product?.totalInventory || 0;
   const images = product?.images?.edges || [];
-  const price = product?.variants?.edges[0]?.node?.price;
-  const variantId = product?.variants?.edges[0]?.node?.id;
+  const reviews = product?.metafields || [];
+  const variants = (product?.variants?.edges || []).map(({ node: v }) => ({
+    id: v.id,
+    price: v.price,
+    compareAtPrice: v.compareAtPrice,
+    tags: product.tags,
+    image: v.image,
+    availableForSale: v.availableForSale,
+    selectedOptions: v.selectedOptions,
+    collections: product.collections,
+    title: (v.selectedOptions || [])
+      .map((o) => `${o.name}: ${o.value}`)
+      .join(" / "),
+  }));
 
   if (!product) {
-    return <div className="max-w-6xl mx-auto px-4 py-12">Product not found</div>;
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-12">Product not found</div>
+    );
   }
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-12">
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Product Images */}
-        <div className="space-y-4">
-          {images.map(({ node }, index) => (
-            <Image
-              key={index}
-              src={node.src}
-              alt={node.altText || product.title}
-              width={500}
-              height={300}
-              className="w-full h-auto object-cover rounded-lg"
-            />
-          ))}
-        </div>
-        {/* Product Details */}
-        <div>
-          <h1 className="text-3xl font-bold mb-4">{product.title}</h1>
-          <p className="text-gray-600 mb-4">{product.description}</p>
-          {price && (
-            <p className="text-xl font-semibold mb-4">
-              {price.amount} {price.currencyCode}
-            </p>
-          )}
-          <AddToCartButton variantId={variantId} />
-        </div>
+    <main className="max-w-[1400px] mx-auto px-4 py-8">
+      <Breadcrumbs className="mb-8" overrides={{ product: "Products" }} />
+      <ProductDetailClient
+        title={product.title}
+        description={product.descriptionHtml}
+        images={images}
+        tags={product.tags}
+        collections={product.collections}
+        variants={variants}
+        totalInventory={totalInventory}
+        reviews={reviews}
+      />
+      <div className="mt-12">
+        {/* Trending / related products */}
+        <ProductsSlider
+          title="Our Trending Products"
+          data={
+            (
+              await (
+                await import("@/lib/shopify")
+              ).fetchAllProducts({ first: 20 })
+            ).products
+          }
+        />
       </div>
     </main>
   );

@@ -17,14 +17,14 @@ const cardVariants = {
 
 export default function CollectionCard({ edge }) {
   return (
-    <div className="rounded-lg overflow-hidden bg-white border border-gray-100 shadow-sm">
+    <div>
       <Link
         href={`/collections/${edge.handle}`}
-        className="flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        className="flex flex-col h-full "
         aria-label={`View collection: ${edge.title}`}
       >
-        {edge.image && (
-          <div className="relative aspect-[4/3]">
+        {edge.image ? (
+          <div className="relative aspect-[1/1] rounded-lg overflow-hidden">
             <Image
               src={edge.image.src}
               alt={edge.image.altText || edge.title}
@@ -33,14 +33,20 @@ export default function CollectionCard({ edge }) {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/30 to-transparent" />
+          </div>
+        ) : (
+          <div className="relative aspect-[1/1] rounded-lg overflow-hidden">
+            <Image
+              src="/assets/placeholder.jpg"
+              alt={edge.title}
+              fill
+              className="object-cover rounded-t-lg"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+              loading="lazy"
+            />
           </div>
         )}
-        <div className="p-4 flex flex-col flex-1">
-          <h2 className="text-lg font-semibold text-gray-900 line-clamp-2">
-            {edge.title}
-          </h2>
-        </div>
+        <h2 className="line-clamp-2 text-center pt-3">{edge.title}</h2>
       </Link>
     </div>
   );

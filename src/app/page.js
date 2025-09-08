@@ -1,6 +1,5 @@
 import ProductsSlider from "@/components/global/ProductsSlider";
 import {
-  fetchAllCollections,
   fetchBlogs,
   fetchCollectionByHandle,
 } from "@/lib/shopify";
@@ -68,12 +67,14 @@ export default async function Home() {
                 href={`/blogs/${blog.blog.handle}/${blog.handle}`}
                 className="p-4 bg-white rounded-lg shadow-md flex flex-col justify-between hover:shadow-lg transition-shadow"
               >
-                <div className="relative w-full h-32 rounded-t overflow-hidden mb-2">
+                <div className="relative w-full h-64 rounded-t overflow-hidden mb-2">
                   <Image
-                    src={blog.featuredImage?.url || "/images/placeholder.jpg"}
+                    src={blog.featuredImage?.url || "/assets/placeholder.jpg"}
                     alt={blog.featuredImage?.altText || blog.title}
                     fill
                     className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                    loading="lazy"
                   />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{blog.title}</h3>

@@ -5,7 +5,7 @@ import { createCart, addToCart } from "@/lib/shopify";
 import { useRouter } from "next/navigation";
 import { setCookie } from "cookie";
 
-export default function AddToCartButton({ variantId }) {
+export default function AddToCartButton({ variantId, quantity = 1, disabled = false }) {
   const [cartId, setCartId] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const router = useRouter();
@@ -35,7 +35,7 @@ export default function AddToCartButton({ variantId }) {
     if (!cartId || !variantId) return;
 
     setIsAdding(true);
-    const lines = [{ merchandiseId: variantId, quantity: 1 }];
+    const lines = [{ merchandiseId: variantId, quantity: Math.max(1, Number(quantity) || 1) }];
     const updatedCart = await addToCart(cartId, lines);
 
     if (updatedCart) {
@@ -53,7 +53,7 @@ export default function AddToCartButton({ variantId }) {
   return (
     <button
       onClick={handleAddToCart}
-      disabled={isAdding || !cartId}
+      disabled={disabled || isAdding || !cartId}
       className="bg-[var(--primary-dark)] text-white px-6 py-2 rounded-md hover:bg-[var(--primary-dark)]/90 transition disabled:bg-gray-400 cursor-pointer disabled:cursor-not-allowed w-full"
     >
       {isAdding ? "Adding..." : "Add to Cart"}

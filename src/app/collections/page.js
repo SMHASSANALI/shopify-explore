@@ -1,7 +1,7 @@
 import { fetchAllCollections, fetchShopify } from "@/lib/shopify";
 import CollectionCard from "@/components/global/CollectionCard";
 import { Suspense } from "react";
-import BreadCrumb from "@/components/global/BreadCrumb";
+import Breadcrumbs from "@/components/global/Breadcrumbs";
 
 export const metadata = {
   title: "Collections | HA-AA-IB",
@@ -22,8 +22,8 @@ export default async function CollectionsPage() {
 
   return (
     <main className="max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      
       <header className="mb-8">
+        <Breadcrumbs className="!mb-6" overrides={{ collections: "Collections" }} />
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
           All Collections
         </h1>
@@ -39,9 +39,13 @@ export default async function CollectionsPage() {
         }
       >
         {allCollections.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
             {allCollections.map((edge) => {
-              if (edge.title !== "Hero Banners" && edge.title !== "Bento Images" && edge.title !== "Ad Banners" ) {
+              if (
+                edge.title !== "Hero Banners" &&
+                edge.title !== "Bento Images" &&
+                edge.title !== "Ad Banners"
+              ) {
                 return <CollectionCard key={edge.id} edge={edge} />;
               }
             })}

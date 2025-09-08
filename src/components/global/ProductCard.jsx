@@ -1,36 +1,54 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useMemo, useState } from "react";
 import AddToCartButton from "./AddToCartButton";
+import StarRating from "./StarRating";
 
 const ProductCard = ({ product, compressed = false }) => {
+  const variants = product?.node?.variants || [];
+  const chosenVariant = useMemo(() => {
+    const available = variants.find((v) => v.availableForSale);
+    return available || variants[0] || null;
+  }, [variants]);
+  const [isHover, setIsHover] = useState(false);
+  const images = product?.node?.images || [];
+  const primaryImage = images[0] || product?.node?.image;
+  const secondaryImage = images[1] || images[0] || product?.node?.image;
+  const displayImage = isHover ? secondaryImage : primaryImage;
+  const displayPrice = chosenVariant?.price ?? product?.node?.price;
+
   return (
     <div
       className={`rounded-lg overflow-hidden bg-white border-2 border-gray-400/40 shadow-sm ${
-        compressed ? "h-[390px] w-[220px]" : "h-[427px] w-[262px]"
+        compressed ? "h-[400px] w-[220px]" : "h-[440px] w-[262px]"
       }`}
     >
       <Link
         href={`/product/${product.node.handle}`}
         className="flex flex-col h-full relative z-10"
+        onMouseEnter={() => setIsHover(true)}
+        onMouseLeave={() => setIsHover(false)}
       >
-        {!product.node.availableForSale && (
+        {chosenVariant && !chosenVariant.availableForSale && (
           <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded z-20">
             Out of Stock
           </div>
         )}
-        {product.node.image && (
+        {displayImage && (
           <div
             className={`relative aspect-[1/1] flex items-center justify-center ${
               compressed ? "w-[210px]" : "w-[250px]"
             } mx-auto my-1`}
           >
             <Image
-              src={product.node.image.src}
-              alt={product.node.image.altText || product.node.title}
+              src={displayImage.src}
+              alt={displayImage.altText || product.node.title}
               fill
               className="object-contain rounded-md overflow-hidden"
               loading="lazy"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
           </div>
         )}
@@ -40,30 +58,50 @@ const ProductCard = ({ product, compressed = false }) => {
           ) : (
             <h3 className="product-title h-[50px]">{product.node.title}</h3>
           )}
-          {/* <div className="flex items-center">
-            {[...Array(5)].map((_, i) => (
-              <svg
-                key={i}
-                xmlns="http://www.w3.org/2000/svg"
-                className={`h-4 w-4 ${
-                  i < product.node.rating
-                    ? "text-yellow-500"
-                    : "text-yellow-500"
-                }`}
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M10 15.27L16.18 18l-1.64-7.03L19 9.24l-7.19-.61L10 2 7.19 8.63 0 9.24l5.46 1.73L3.82 18z" />
-              </svg>
-            ))}
-          </div> */}
+          {/* Rating below title (default 0 when missing) */}
+          {(() => {
+            try {
+              const validMetafields = Array.isArray(product.node.metafields)
+                ? product.node.metafields.filter((m) => m)
+                : [];
+              const ratingField = validMetafields.find((m) => m.key === "rating");
+              const countField = validMetafields.find((m) => m.key === "rating_count");
+              const parsed = ratingField?.value ? JSON.parse(ratingField.value) : null;
+              const value = parsed?.value ? Number(parsed.value) : 0;
+              const scaleMin = parsed?.scale_min ? Number(parsed.scale_min) : 1;
+              const scaleMax = parsed?.scale_max ? Number(parsed.scale_max) : 5;
+              const count = countField?.value ? Number(countField.value) : 0;
+              return (
+                <StarRating
+                  ratingValue={value}
+                  scaleMin={scaleMin}
+                  scaleMax={scaleMax}
+                  ratingCount={count}
+                  size={14}
+                  showText={true}
+                  className="mb-1"
+                />
+              );
+            } catch (e) {
+              return (
+                <StarRating
+                  ratingValue={0}
+                  scaleMin={1}
+                  scaleMax={5}
+                  ratingCount={0}
+                  size={14}
+                  showText={true}
+                  className="mb-1"
+                />
+              );
+            }
+          })()}
           <p className="flex items-center justify-between font-semibold text-lg text-red-500 mt-auto">
-            £ {product.node.price}
+            £ {displayPrice}
           </p>
+          {/* Variant selection removed: show only first available variant */}
           <div className="mt-auto w-full relative z-20">
-            <AddToCartButton
-              variantId={product.node.variants.edges[0]?.node.id}
-            />
+            <AddToCartButton variantId={chosenVariant?.id || variants[0]?.id} />
           </div>
         </div>
       </Link>
