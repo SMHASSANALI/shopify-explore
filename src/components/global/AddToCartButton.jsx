@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { createCart, addToCart } from "@/lib/shopify";
 import { useRouter } from "next/navigation";
-import { setCookie } from "cookie";
 
 export default function AddToCartButton({ variantId, quantity = 1, disabled = false }) {
   const [cartId, setCartId] = useState(null);
@@ -39,10 +38,8 @@ export default function AddToCartButton({ variantId, quantity = 1, disabled = fa
     const updatedCart = await addToCart(cartId, lines);
 
     if (updatedCart) {
-      // Set cartId in cookie
-      document.cookie = `cartId=${encodeURIComponent(
-        updatedCart.id
-      )}; path=/; max-age=86400`; // 24-hour expiry
+      // Set cartId in cookie for server-side access
+      document.cookie = `cartId=${encodeURIComponent(updatedCart.id)}; path=/; max-age=604800`; // 7 days
       router.push("/cart");
     } else {
       console.error("❌ Failed to add to cart");

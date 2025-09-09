@@ -1,11 +1,15 @@
-import { fetchShopify } from "@/lib/shopify";
+import { getCart } from "@/lib/shopify";
 import { cookies } from "next/headers";
 import {
   calculateTotal,
-  updateQuantityMutation,
-  removeItemMutation,
+  updateCartQuantity,
+  removeCartItems,
 } from "@/utils/helper";
 import { revalidatePath } from "next/cache";
+import Breadcrumbs from "@/components/global/Breadcrumbs";
+import Link from "next/link";
+import { MdDelete, MdRemove } from "react-icons/md";
+import Image from "next/image";
 
 export const metadata = {
   title: "Cart | HA-AA-IB",
@@ -16,9 +20,7 @@ export default async function CartPage({ searchParams }) {
   // Get cartId from cookies
   const cookieStore = await cookies();
   const cartId =
-    cookieStore.get("cartId")?.value ||
-    resolvedSearchParams?.cartId ||
-    (typeof window !== "undefined" ? localStorage.getItem("cartId") : null);
+    cookieStore.get("cartId")?.value || resolvedSearchParams?.cartId;
 
   if (!cartId) {
     return (
@@ -30,46 +32,10 @@ export default async function CartPage({ searchParams }) {
   }
 
   // Fetch cart data
-  const query = `
-    query getCart($cartId: ID!) {
-      cart(id: $cartId) {
-        id
-        checkoutUrl
-        lines(first: 10) {
-          edges {
-            node {
-              id
-              quantity
-              merchandise {
-                ... on ProductVariant {
-                  id
-                  product {
-                    title
-                    images(first: 1) {
-                      edges {
-                        node {
-                          src
-                          altText
-                        }
-                      }
-                    }
-                  }
-                  priceV2 {
-                    amount
-                    currencyCode
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
-
-  const variables = { cartId };
-  const data = await fetchShopify(query, variables);
-  const cart = data?.cart || { lines: { edges: [] }, checkoutUrl: "#" };
+  const cart = (await getCart(cartId)) || {
+    lines: { edges: [] },
+    checkoutUrl: "#",
+  };
 
   // Calculate total
   const total = calculateTotal(cart.lines.edges);
@@ -77,164 +43,171 @@ export default async function CartPage({ searchParams }) {
     cart.lines.edges[0]?.node?.merchandise?.priceV2?.currencyCode || "USD";
 
   return (
-    <main className="max-w-[1600px] w-full mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-10 text-gray-800">Your Cart</h1>
-      {cart.lines.edges.length === 0 ? (
-        <p className="text-gray-600 text-lg">Your cart is empty.</p>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
-          <div className="lg:col-span-2">
-            <div className="border rounded-lg overflow-hidden">
-              <div className="grid grid-cols-5 gap-4 p-4 bg-gray-100 font-semibold text-gray-700">
-                <div className="col-span-2">Product</div>
-                <div>Price</div>
-                <div>Quantity</div>
-                <div>Subtotal</div>
-              </div>
-              <div className="divide-y divide-gray-200">
-                {cart.lines.edges.map(({ node }) => {
-                  const image = node.merchandise.product.images.edges[0]?.node;
-                  const price = parseFloat(node.merchandise.priceV2.amount);
-                  const subtotal = (price * node.quantity).toFixed(2);
-
-                  return (
-                    <div
-                      key={node.id}
-                      className="grid grid-cols-5 gap-4 p-4 items-center border-b border-gray-200 last:border-b-0"
-                    >
-                      {/* Product Image and Title */}
-                      <div className="col-span-2 flex items-center gap-4">
-                        {image && (
-                          <img
-                            src={image.src}
-                            alt={
-                              image.altText || node.merchandise.product.title
-                            }
-                            className="w-20 h-24 object-cover rounded"
-                          />
-                        )}
-                        <h3 className="text-lg font-medium text-gray-800">
-                          {node.merchandise.product.title}
-                        </h3>
-                      </div>
-                      {/* Price */}
-                      <div>
-                        <p className="text-gray-600">
-                          {price} {node.merchandise.priceV2.currencyCode}
-                        </p>
-                      </div>
-                      {/* Quantity Controls */}
-                      <div className="flex items-center gap-2">
-                        <form
-                          action={async () => {
-                            "use server";
-                            const newQuantity = Math.max(1, node.quantity - 1);
-                            const lines = [
-                              { id: node.id, quantity: newQuantity },
-                            ];
-                            await fetchShopify(updateQuantityMutation, {
-                              cartId,
-                              lines,
-                            });
-                            revalidatePath("/cart");
-                          }}
-                        >
-                          <button
-                            type="submit"
-                            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                          >
-                            -
-                          </button>
-                        </form>
-                        <span className="px-3">{node.quantity}</span>
-                        <form
-                          action={async () => {
-                            "use server";
-                            const newQuantity = node.quantity + 1;
-                            const lines = [
-                              { id: node.id, quantity: newQuantity },
-                            ];
-                            await fetchShopify(updateQuantityMutation, {
-                              cartId,
-                              lines,
-                            });
-                            revalidatePath("/cart");
-                          }}
-                        >
-                          <button
-                            type="submit"
-                            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                          >
-                            +
-                          </button>
-                        </form>
-                      </div>
-                      {/* Subtotal and Remove */}
-                      <div className="flex items-center justify-between">
-                        <p className="text-gray-800 font-medium">
-                          {subtotal} {node.merchandise.priceV2.currencyCode}
-                        </p>
-                        <form
-                          action={async () => {
-                            "use server";
-                            const lineIds = [node.id];
-                            await fetchShopify(removeItemMutation, {
-                              cartId,
-                              lineIds,
-                            });
-                            revalidatePath("/cart");
-                          }}
-                        >
-                          <button
-                            type="submit"
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            <svg
-                              className="w-5 h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M6 18L18 6M6 6l12 12"
-                              ></path>
-                            </svg>
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-          {/* Summary */}
-          <div className="lg:col-span-1">
-            <div className="border rounded-lg p-6 sticky top-12 bg-gray-50">
-              <h2 className="text-2xl font-semibold mb-4 text-gray-800 ">
-                Order Summary
-              </h2>
-              <div className="flex justify-between mb-4">
-                <span className="text-gray-600">Total</span>
-                <span className="text-lg font-bold text-gray-800">
-                  {total} {currencyCode}
-                </span>
-              </div>
-              <a
-                href={cart.checkoutUrl}
-                className="block w-full text-center bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold"
-              >
-                Proceed to Checkout
-              </a>
-            </div>
-          </div>
+    <main className="bg-white min-h-screen pt-[60px]">
+      <section className="max-w-[1400px] w-full mx-auto">
+        <Breadcrumbs className="!mb-8" overrides={{ cart: "Cart" }} />
+        <div className="flex flex-row items-center justify-between border-b-4 border-gray-300 pb-2">
+          <h1 className="font-semibold">Shopping Cart</h1>
+          <Link href={"/"} className="hover:text-[var(--accent)]">
+            Continue Shopping
+          </Link>
         </div>
-      )}
+        {cart.lines.edges.length === 0 ? (
+          <p className="text-gray-600 text-lg">Your cart is empty.</p>
+        ) : (
+          <div className="flex flex-col pt-[60px]">
+            {/* Cart Items */}
+            <div className="bg-[var(--secondary)]/5">
+              <table className="w-full">
+                <thead className="p-4 border-b border-gray-400">
+                  <tr>
+                    <th className="p-1">Products</th>
+                    <th className="p-1">Quantity</th>
+                    <th className="p-1">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {cart.lines.edges.map(({ node }) => {
+                    const image =
+                      node.merchandise.product.images.edges[0]?.node;
+                    const price = parseFloat(node.merchandise.priceV2.amount);
+                    const variantType =
+                      node.merchandise.product.variants.edges[0]?.node
+                        .selectedOptions[0]?.value;
+                    const subtotal = (price * node.quantity).toFixed(2);
+
+                    return (
+                      <tr
+                        key={node.id}
+                        className="p-4 items-center border-b border-gray-200 last:border-b-0"
+                      >
+                        {/* Product Image and Title */}
+                        <td className="p-2">
+                          <div className="flex flex-row items-center justify-start gap-4">
+                            {image && (
+                              <div className="relative h-[250px] w-[250px] aspect-[1/1]">
+                                <Image
+                                  src={image.src}
+                                  alt={
+                                    image.altText ||
+                                    node.merchandise.product.title
+                                  }
+                                  fill
+                                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                                />
+                              </div>
+                            )}
+                            <div>
+                              <h2 className="font-light pb-1">
+                                {node.merchandise.product.title}
+                              </h2>
+                              <h2 className="font-semibold pb-2">
+                                £ {price}{" "}
+                                {node.merchandise.priceV2.currencyCode}
+                              </h2>
+                              <h3 className="font-light">{variantType}</h3>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Quantity and Remove controls */}
+                        <td className="p-2">
+                          <div className="flex flex-row items-center justify-center border border-gray-400 rounded bg-white">
+                            <div className="flex flex-row items-center justify-between w-8/12">
+                              <form
+                                action={async () => {
+                                  "use server";
+                                  const newQuantity = Math.max(
+                                    1,
+                                    node.quantity - 1
+                                  );
+                                  const lines = [
+                                    { id: node.id, quantity: newQuantity },
+                                  ];
+                                  await updateCartQuantity(cartId, lines);
+                                  revalidatePath("/cart");
+                                }}
+                              >
+                                <button
+                                  type="submit"
+                                  className="px-2 py-1 cursor-pointer"
+                                >
+                                  -
+                                </button>
+                              </form>
+                              <span className="px-3">{node.quantity}</span>
+                              <form
+                                action={async () => {
+                                  "use server";
+                                  const newQuantity = node.quantity + 1;
+                                  const lines = [
+                                    { id: node.id, quantity: newQuantity },
+                                  ];
+                                  await updateCartQuantity(cartId, lines);
+                                  revalidatePath("/cart");
+                                }}
+                              >
+                                <button
+                                  type="submit"
+                                  className="px-2 py-1 cursor-pointer"
+                                >
+                                  +
+                                </button>
+                              </form>
+                            </div>
+                            <form
+                              action={async () => {
+                                "use server";
+                                const lineIds = [node.id];
+                                await removeCartItems(cartId, lineIds);
+                                revalidatePath("/cart");
+                              }}
+                              className="flex flex-row items-center justify-between"
+                            >
+                              <button
+                                className="p-1 cursor-pointer"
+                                type="submit"
+                              >
+                                <MdDelete size={16} />
+                              </button>
+                            </form>
+                          </div>
+                        </td>
+
+                        <td className="p-2">
+                          <p className="text-center">
+                            £ {subtotal} {node.merchandise.priceV2.currencyCode}
+                          </p>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {/* Summary */}
+            <div className="w-full">
+              <div className="p-6 max-w-4/12 ml-auto">
+                <h2 className="text-2xl font-semibold mb-4 text-gray-800 ">
+                  Order Summary
+                </h2>
+                <div className="flex justify-between mb-4">
+                  <span className="text-gray-600">Total</span>
+                  <span className="text-lg font-bold text-gray-800">
+                    £ {total} {currencyCode}
+                  </span>
+                </div>
+                <a
+                  href={cart.checkoutUrl}
+                  className="block w-full text-center bg-[var(--primary-dark)] text-white py-3 rounded-lg hover:bg-[var(--primary-dark)]/90 transition font-semibold"
+                >
+                  Proceed to Checkout
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
     </main>
   );
 }

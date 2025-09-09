@@ -92,6 +92,62 @@ export async function addToCart(cartId, lines) {
   return data?.cartLinesAdd?.cart || null;
 }
 
+// Shared fragment for cart lines
+const CART_LINES_FRAGMENT = `
+  fragment CartLines on Cart {
+    id
+    checkoutUrl
+    lines(first: 50) {
+      edges {
+        node {
+          id
+          quantity
+          merchandise {
+            ... on ProductVariant {
+              id
+              selectedOptions {
+                name
+                value
+              }
+              product {
+                title
+                images(first: 1) { edges { node { src altText } } }
+                variants(first: 50) {
+                  edges {
+                    node {
+                      id
+                      selectedOptions {
+                        name
+                        value
+                      }
+                    }
+                  }
+                }
+              }
+              priceV2 { amount currencyCode }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export async function getCart(cartId) {
+  if (!cartId) return null;
+  const query = `
+    ${CART_LINES_FRAGMENT}
+    query getCart($cartId: ID!) {
+      cart(id: $cartId) {
+        ...CartLines
+      }
+    }
+  `;
+  const variables = { cartId };
+  const data = await fetchShopify(query, variables);
+  return data?.cart || null;
+}
+
 // Function to Fetch a Collection's Products by Handle
 export async function fetchCollectionByHandle(handle, options = {}) {
   const query = `
@@ -310,13 +366,21 @@ export async function fetchBlogs(options = {}) {
 // Function to Fetch every Product (for /products page) except for those whose price is 0
 // Supports optional filters: availability, priceMin, priceMax, sortKey, after for pagination
 export async function fetchAllProducts(options = {}) {
-  const { availability, priceMin, priceMax, sortKey, first = 30, after = null } = options;
-  let queryFilter = '';
+  const {
+    availability,
+    priceMin,
+    priceMax,
+    sortKey,
+    first = 30,
+    after = null,
+  } = options;
+  let queryFilter = "";
 
   // Availability filter
   if (availability) {
-    if (availability === 'inStock') queryFilter += 'available_for_sale:true ';
-    if (availability === 'outOfStock') queryFilter += 'available_for_sale:false ';
+    if (availability === "inStock") queryFilter += "available_for_sale:true ";
+    if (availability === "outOfStock")
+      queryFilter += "available_for_sale:false ";
   }
 
   // Price filter
@@ -327,7 +391,9 @@ export async function fetchAllProducts(options = {}) {
 
   const query = `
     {
-      products(first: ${first}, after: ${after ? `"${after}"` : null}, query: "${queryFilter.trim()}", sortKey: ${sortKey || 'BEST_SELLING'}) {
+      products(first: ${first}, after: ${
+    after ? `"${after}"` : null
+  }, query: "${queryFilter.trim()}", sortKey: ${sortKey || "BEST_SELLING"}) {
         edges {
           node {
             id
@@ -445,3 +511,112 @@ export async function fetchAllProducts(options = {}) {
   };
 }
 
+export async function getPolicies() {
+  const query = `
+    query ShopPolicyList {
+      shop {
+        privacyPolicy {
+          id
+          title
+          url
+          body
+        }
+        refundPolicy {
+          id
+          title
+          url
+          body
+        }
+        termsOfService {
+          id
+          title
+          url
+          body
+        }
+      }
+    }
+  `;
+
+  const variables = {};
+  const data = await fetchShopify(query, variables);
+  return data?.shop || {};
+}
+
+// Shopify Customer Authentication
+export async function customerCreate({ email, password, firstName, lastName }) {
+  const query = `
+    mutation customerCreate($input: CustomerCreateInput!) {
+      customerCreate(input: $input) {
+        customer { id email firstName lastName }
+        userErrors { field message }
+      }
+    }
+  `;
+  const variables = { input: { email, password, firstName, lastName } };
+  const data = await fetchShopify(query, variables);
+  return (
+    data?.customerCreate || {
+      customer: null,
+      userErrors: [{ message: "Unknown error" }],
+    }
+  );
+}
+
+export async function customerAccessTokenCreate({ email, password }) {
+  const query = `
+    mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
+      customerAccessTokenCreate(input: $input) {
+        customerAccessToken { accessToken expiresAt }
+        userErrors { field message }
+      }
+    }
+  `;
+  const variables = { input: { email, password } };
+  const data = await fetchShopify(query, variables);
+  return (
+    data?.customerAccessTokenCreate || {
+      customerAccessToken: null,
+      userErrors: [{ message: "Unknown error" }],
+    }
+  );
+}
+
+export async function customerAccessTokenDelete({ accessToken }) {
+  const query = `
+    mutation customerAccessTokenDelete($customerAccessToken: String!) {
+      customerAccessTokenDelete(customerAccessToken: $customerAccessToken) {
+        deletedAccessToken
+        deletedCustomerAccessTokenId
+        userErrors { field message }
+      }
+    }
+  `;
+  const variables = { customerAccessToken: accessToken };
+  const data = await fetchShopify(query, variables);
+  return (
+    data?.customerAccessTokenDelete || {
+      userErrors: [{ message: "Unknown error" }],
+    }
+  );
+}
+
+// Fetch the currently logged in customer using Storefront API
+export async function getCustomer({ accessToken }) {
+  if (!accessToken) return null;
+  const query = `
+    query customerQuery($customerAccessToken: String!) {
+      customer(customerAccessToken: $customerAccessToken) {
+        id
+        email
+        firstName
+        lastName
+        phone
+        tags
+        defaultAddress { address1 address2 city province country zip }
+      }
+    }
+  `;
+  const variables = { customerAccessToken: accessToken };
+  const data = await fetchShopify(query, variables);
+  return data?.customer || null;
+}
