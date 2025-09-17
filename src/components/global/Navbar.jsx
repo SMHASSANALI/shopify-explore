@@ -6,7 +6,7 @@ import logo from "../../../public/assets/haaaib-logo.svg";
 import { MdFacebook, MdPerson, MdSearch } from "react-icons/md";
 import { PiInstagramLogo } from "react-icons/pi";
 import CartBadge from "./CartBadge";
-import Dropdown from "../dropdowns/Dropdown";
+import Dropdown from "../dropdowns/SelectDropdown";
 import SearchTrigger from "./SearchTrigger";
 
 const Navbar = async ({ customer }) => {
