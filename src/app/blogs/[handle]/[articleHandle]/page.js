@@ -72,7 +72,7 @@ export default async function ArticlePage({ params }) {
   }
 
   return (
-    <main className="w-full flex items-center justify-center min-h-screen">
+    <main className="w-full flex items-center justify-center min-h-screen p-3 md:p-0">
       <div className="max-w-[1400px] w-full py-8 ">
         <h1 className="text-3xl font-semibold text-black mb-6">
           {article.title}

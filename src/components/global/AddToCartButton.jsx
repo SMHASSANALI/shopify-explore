@@ -1,12 +1,76 @@
+// "use client";
+
+// import { useState, useEffect } from "react";
+// import { createCart, addToCart } from "@/lib/shopify";
+// import { useRouter } from "next/navigation";
+
+// export default function AddToCartButton({ variantId, quantity = 1, disabled = false }) {
+//   const [cartId, setCartId] = useState(null);
+//   const [isAdding, setIsAdding] = useState(false);
+//   const router = useRouter();
+
+//   // Initialize or retrieve cart on mount
+//   useEffect(() => {
+//     const initializeCart = async () => {
+//       if (!cartId) {
+//         const storedCartId = localStorage.getItem("cartId");
+//         if (storedCartId) {
+//           setCartId(storedCartId);
+//         } else {
+//           const newCart = await createCart();
+//           if (newCart?.id) {
+//             setCartId(newCart.id);
+//             localStorage.setItem("cartId", newCart.id);
+//           }
+//         }
+//       }
+//     };
+//     initializeCart();
+//   }, [cartId]);
+
+//   // Handle adding to cart
+//   const handleAddToCart = async (e) => {
+//     e.preventDefault(); // Only for ProductCard.jsx
+//     if (!cartId || !variantId) return;
+
+//     setIsAdding(true);
+//     const lines = [{ merchandiseId: variantId, quantity: Math.max(1, Number(quantity) || 1) }];
+//     const updatedCart = await addToCart(cartId, lines);
+
+//     if (updatedCart) {
+//       // Set cartId in cookie for server-side access
+//       document.cookie = `cartId=${encodeURIComponent(updatedCart.id)}; path=/; max-age=604800`; // 7 days
+//       router.push("/cart");
+//     } else {
+//       console.error("❌ Failed to add to cart");
+//     }
+//     setIsAdding(false);
+//   };
+
+//   return (
+//     <button
+//       onClick={handleAddToCart}
+//       disabled={disabled || isAdding || !cartId}
+//       className="bg-[var(--primary-dark)] text-white px-6 py-2 rounded-md hover:bg-[var(--primary-dark)]/90 transition disabled:bg-gray-400 cursor-pointer disabled:cursor-not-allowed w-full"
+//     >
+//       {isAdding ? "Adding..." : "Add to Cart"}
+//     </button>
+//   );
+// }
 "use client";
 
 import { useState, useEffect } from "react";
 import { createCart, addToCart } from "@/lib/shopify";
 import { useRouter } from "next/navigation";
 
-export default function AddToCartButton({ variantId, quantity = 1, disabled = false }) {
+export default function AddToCartButton({
+  variantId,
+  quantity = 1,
+  disabled = false,
+}) {
   const [cartId, setCartId] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [error, setError] = useState(null); // Add error state
   const router = useRouter();
 
   // Initialize or retrieve cart on mount
@@ -17,10 +81,17 @@ export default function AddToCartButton({ variantId, quantity = 1, disabled = fa
         if (storedCartId) {
           setCartId(storedCartId);
         } else {
-          const newCart = await createCart();
-          if (newCart?.id) {
-            setCartId(newCart.id);
-            localStorage.setItem("cartId", newCart.id);
+          try {
+            const newCart = await createCart();
+            if (newCart?.id) {
+              setCartId(newCart.id);
+              localStorage.setItem("cartId", newCart.id);
+            } else {
+              setError("Failed to create cart.");
+            }
+          } catch (err) {
+            setError("Error initializing cart.");
+            console.error("Cart initialization error:", err);
           }
         }
       }
@@ -30,30 +101,56 @@ export default function AddToCartButton({ variantId, quantity = 1, disabled = fa
 
   // Handle adding to cart
   const handleAddToCart = async (e) => {
-    e.preventDefault(); // Only for ProductCard.jsx
-    if (!cartId || !variantId) return;
+    // Remove e.preventDefault() since this is a standalone button
+    if (!cartId || !variantId || isAdding) return;
+
+    // Validate variantId format (basic check for Shopify ID)
+    const isValidVariantId = variantId.startsWith("gid://shopify/ProductVariant/");
+    if (!isValidVariantId) {
+      setError("Invalid product variant ID.");
+      return;
+    }
 
     setIsAdding(true);
-    const lines = [{ merchandiseId: variantId, quantity: Math.max(1, Number(quantity) || 1) }];
-    const updatedCart = await addToCart(cartId, lines);
+    setError(null); // Clear previous errors
 
-    if (updatedCart) {
-      // Set cartId in cookie for server-side access
-      document.cookie = `cartId=${encodeURIComponent(updatedCart.id)}; path=/; max-age=604800`; // 7 days
-      router.push("/cart");
-    } else {
-      console.error("❌ Failed to add to cart");
+    const lines = [
+      { merchandiseId: variantId, quantity: Math.max(1, Number(quantity) || 1) },
+    ];
+
+    try {
+      const updatedCart = await addToCart(cartId, lines);
+      if (updatedCart) {
+        // Update cartId in cookie and localStorage
+        document.cookie = `cartId=${encodeURIComponent(
+          updatedCart.id
+        )}; path=/; max-age=604800`; // 7 days
+        localStorage.setItem("cartId", updatedCart.id);
+        router.push(`/cart?ts=${Date.now()}`);
+        router.refresh();
+      } else {
+        setError("Failed to add item to cart.");
+      }
+    } catch (err) {
+      setError("Error adding to cart.");
+      console.error("Add to cart error:", err);
+    } finally {
+      setIsAdding(false);
     }
-    setIsAdding(false);
   };
 
   return (
-    <button
-      onClick={handleAddToCart}
-      disabled={disabled || isAdding || !cartId}
-      className="bg-[var(--primary-dark)] text-white px-6 py-2 rounded-md hover:bg-[var(--primary-dark)]/90 transition disabled:bg-gray-400 cursor-pointer disabled:cursor-not-allowed w-full"
-    >
-      {isAdding ? "Adding..." : "Add to Cart"}
-    </button>
+    <>
+      <button
+        onClick={handleAddToCart}
+        disabled={disabled || isAdding || !cartId || !!error}
+        className="bg-[var(--primary-dark)] text-white px-[12px] md:px-6 py-1 md:py-2 rounded-md hover:bg-[var(--primary-dark)]/90 transition disabled:bg-gray-400 cursor-pointer disabled:cursor-not-allowed w-full"
+      >
+        {isAdding ? "Adding..." : "Add to Cart"}
+      </button>
+      {error && (
+        <p className="text-red-500 !text-xs md:text-sm mt-2">{error}</p> // Display error message
+      )}
+    </>
   );
 }

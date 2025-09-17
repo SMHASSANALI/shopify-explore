@@ -1,14 +1,10 @@
 import { getCart } from "@/lib/shopify";
 import { cookies } from "next/headers";
-import {
-  calculateTotal,
-  updateCartQuantity,
-  removeCartItems,
-} from "@/utils/helper";
+import { calculateTotal, updateCartQuantity, removeCartItems } from "@/utils/helper";
 import { revalidatePath } from "next/cache";
 import Breadcrumbs from "@/components/global/Breadcrumbs";
 import Link from "next/link";
-import { MdDelete, MdRemove } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 import Image from "next/image";
 
 export const metadata = {
@@ -16,11 +12,9 @@ export const metadata = {
 };
 
 export default async function CartPage({ searchParams }) {
-  const { resolvedSearchParams } = await searchParams;
-  // Get cartId from cookies
   const cookieStore = await cookies();
-  const cartId =
-    cookieStore.get("cartId")?.value || resolvedSearchParams?.cartId;
+  const cartId = cookieStore.get("cartId")?.value || searchParams?.cartId;
+
 
   if (!cartId) {
     return (
@@ -31,24 +25,40 @@ export default async function CartPage({ searchParams }) {
     );
   }
 
-  // Fetch cart data
-  const cart = (await getCart(cartId)) || {
-    lines: { edges: [] },
-    checkoutUrl: "#",
-  };
+  let cart;
+  try {
+    cart = await getCart(cartId);
+    if (!cart) {
+      console.error("Cart not found for ID:", cartId);
+      return (
+        <main className="max-w-6xl mx-auto px-4 py-12">
+          <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
+          <p className="text-red-600">Cart not found. Please try again.</p>
+        </main>
+      );
+    }
+    console.log("Cart data:", cart);
+  } catch (error) {
+    console.error("Error fetching cart:", error);
+    return (
+      <main className="max-w-6xl mx-auto px-4 py-12">
+        <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
+        <p className="text-red-600">Error loading cart. Please try again.</p>
+      </main>
+    );
+  }
 
-  // Calculate total
   const total = calculateTotal(cart.lines.edges);
   const currencyCode =
-    cart.lines.edges[0]?.node?.merchandise?.priceV2?.currencyCode || "USD";
+    cart.lines.edges[0]?.node?.merchandise?.priceV2?.currencyCode || "GBP";
 
   return (
-    <main className="bg-white min-h-screen pt-[60px]">
+    <main className="bg-white min-h-screen pt-[60px] p-2 md:p-0">
       <section className="max-w-[1400px] w-full mx-auto">
         <Breadcrumbs className="!mb-8" overrides={{ cart: "Cart" }} />
         <div className="flex flex-row items-center justify-between border-b-4 border-gray-300 pb-2">
           <h1 className="font-semibold">Shopping Cart</h1>
-          <Link href={"/"} className="hover:text-[var(--accent)]">
+          <Link href="/product" className="hover:text-[var(--accent)]">
             Continue Shopping
           </Link>
         </div>
@@ -56,7 +66,6 @@ export default async function CartPage({ searchParams }) {
           <p className="text-gray-600 text-lg">Your cart is empty.</p>
         ) : (
           <div className="flex flex-col pt-[60px]">
-            {/* Cart Items */}
             <div className="bg-[var(--secondary)]/5">
               <table className="w-full">
                 <thead className="p-4 border-b border-gray-400">
@@ -68,12 +77,10 @@ export default async function CartPage({ searchParams }) {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {cart.lines.edges.map(({ node }) => {
-                    const image =
-                      node.merchandise.product.images.edges[0]?.node;
+                    const image = node.merchandise.image || node.merchandise.product.images.edges[0]?.node;
                     const price = parseFloat(node.merchandise.priceV2.amount);
                     const variantType =
-                      node.merchandise.product.variants.edges[0]?.node
-                        .selectedOptions[0]?.value;
+                      node.merchandise.selectedOptions?.[0]?.value || "Default";
                     const subtotal = (price * node.quantity).toFixed(2);
 
                     return (
@@ -81,11 +88,10 @@ export default async function CartPage({ searchParams }) {
                         key={node.id}
                         className="p-4 items-center border-b border-gray-200 last:border-b-0"
                       >
-                        {/* Product Image and Title */}
                         <td className="p-2">
-                          <div className="flex flex-row items-center justify-start gap-4">
+                          <div className="flex flex-col md:flex-row items-start md:items-center justify-start gap-2 md:gap-4">
                             {image && (
-                              <div className="relative h-[250px] w-[250px] aspect-[1/1]">
+                              <div className="relative h-[80px] w-[80px] md:h-[250px] md:w-[250px] aspect-[1/1]">
                                 <Image
                                   src={image.src}
                                   alt={
@@ -98,19 +104,16 @@ export default async function CartPage({ searchParams }) {
                               </div>
                             )}
                             <div>
-                              <h2 className="font-light pb-1">
+                              <h2 className="font-light pb-1 !text-sm md:!text-lg">
                                 {node.merchandise.product.title}
                               </h2>
-                              <h2 className="font-semibold pb-2">
-                                £ {price}{" "}
-                                {node.merchandise.priceV2.currencyCode}
+                              <h2 className="font-semibold pb-2 !text-sm md:!text-lg">
+                                £ {price} {node.merchandise.priceV2.currencyCode}
                               </h2>
-                              <h3 className="font-light">{variantType}</h3>
+                              <h3 className="font-light !text-sm md:!text-lg">{variantType}</h3>
                             </div>
                           </div>
                         </td>
-
-                        {/* Quantity and Remove controls */}
                         <td className="p-2">
                           <div className="flex flex-row items-center justify-center border border-gray-400 rounded bg-white">
                             <div className="flex flex-row items-center justify-between w-8/12">
@@ -173,7 +176,6 @@ export default async function CartPage({ searchParams }) {
                             </form>
                           </div>
                         </td>
-
                         <td className="p-2">
                           <p className="text-center">
                             £ {subtotal} {node.merchandise.priceV2.currencyCode}
@@ -185,10 +187,9 @@ export default async function CartPage({ searchParams }) {
                 </tbody>
               </table>
             </div>
-            {/* Summary */}
             <div className="w-full">
-              <div className="p-6 max-w-4/12 ml-auto">
-                <h2 className="text-2xl font-semibold mb-4 text-gray-800 ">
+              <div className="p-6 w-full md:w-4/12 ml-auto">
+                <h2 className="text-2xl font-semibold mb-4 text-gray-800">
                   Order Summary
                 </h2>
                 <div className="flex justify-between mb-4">

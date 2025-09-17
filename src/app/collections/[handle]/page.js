@@ -27,7 +27,7 @@ export default async function CollectionPage({ params }) {
   const { title, products: productData } = data;
 
   return (
-    <main className="w-full min-h-screen bg-white">
+    <main className="w-full min-h-screen bg-white p-2 md:p-0">
       <main className="max-w-[1400px] mx-auto">
         <CollectionsSection />
         <Breadcrumbs

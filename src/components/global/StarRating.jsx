@@ -69,7 +69,7 @@ export default function StarRating({
         ))}
       </div>
       {showText && (
-        <span className="text-sm text-gray-600">
+        <span className="md:text-sm !text-xs text-gray-600">
           {Number(ratingValue).toFixed(2)}{typeof ratingCount === "number" ? ` (${ratingCount})` : "0"}
         </span>
       )}

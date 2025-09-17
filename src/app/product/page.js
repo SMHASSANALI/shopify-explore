@@ -11,8 +11,8 @@ export default async function ProductsPage() {
   const { products: initialProducts, hasNextPage: initialHasNextPage, endCursor: initialEndCursor } = await fetchAllProducts({ first: 30 });
 
   return (
-    <main className="w-full min-h-screen bg-white">
-      <main className="max-w-[1400px] mx-auto">
+    <main className="w-full min-h-screen bg-white p-2 md:p-0">
+      <main className="max-w-[1400px] mx-auto mb-8">
         <CollectionsSection />
 
         <Breadcrumbs

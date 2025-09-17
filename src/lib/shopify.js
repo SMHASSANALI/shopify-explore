@@ -1,6 +1,49 @@
-console.log("Full process.env:", process.env);
+// app/lib/shopify.js
+import { generateRandomString, generateCodeChallenge } from "./auth-utils";
 
-export async function fetchShopify(query, variables = {}) {
+export const CART_LINES_FRAGMENT = `
+  fragment CartLines on Cart {
+    id
+    checkoutUrl
+    lines(first: 50) {
+      edges {
+        node {
+          id
+          quantity
+          merchandise {
+            ... on ProductVariant {
+              id
+              selectedOptions { name value }
+              image { src altText }
+              product {
+                title
+                images(first: 1) { edges { node { src altText } } }
+              }
+              priceV2 { amount currencyCode }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+// Validate all required environment variables
+// const requiredEnvVars = [
+//   "NEXT_PUBLIC_SHOPIFY_DOMAIN",
+//   "NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN",
+//   "NEXT_PUBLIC_SHOPIFY_SHOP_ID",
+//   "NEXT_PUBLIC_SHOPIFY_CLIENT_ID",
+//   "NEXT_PUBLIC_BASE_URL",
+// ];
+// const missingEnvVars = requiredEnvVars.filter((key) => process.env[key]);
+// if (missingEnvVars.length > 0) {
+//   console.error("❌ Missing required environment variables:", missingEnvVars);
+//   throw new Error("Missing required environment variables.");
+// }
+
+// Storefront API fetch function
+export async function fetchShopify(query, variables = {}, options = {}) {
   const shopifyDomain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN;
   const storefrontToken = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN;
 
@@ -13,28 +56,316 @@ export async function fetchShopify(query, variables = {}) {
     );
   }
 
-  const url = `https://${shopifyDomain}/api/2023-10/graphql.json`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": storefrontToken,
-    },
-    body: JSON.stringify({ query, variables }),
-    cache: "no-store", // Disable caching for this fetch
+  const url = `https://${shopifyDomain}/api/2025-07/graphql.json`;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": storefrontToken,
+      },
+      body: JSON.stringify({ query, variables }),
+      cache: options.cache || undefined,
+      next: { revalidate: options.revalidate ?? 3600 },
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`❌ Shopify API HTTP Error: ${res.status}`, errorText);
+      throw new Error(`Shopify API request failed with status ${res.status}`);
+    }
+
+    const json = await res.json();
+    if (json.errors) {
+      console.error("❌ Shopify GraphQL Errors:", json.errors);
+      throw new Error(json.errors.map((e) => e.message).join(", "));
+    }
+
+    return json.data;
+  } catch (error) {
+    console.error("❌ Fetch Shopify failed:", error.message);
+    throw error;
+  }
+}
+
+// Customer Account API fetch function
+export async function fetchCustomerAccountAPI(
+  query,
+  accessToken,
+  variables = {}
+) {
+  const token = accessToken;
+  console.log("Shopify.js token:", token);
+  const shopId = process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID;
+  if (!shopId || !accessToken) {
+    console.error("❌ Missing Customer Account API variables:", {
+      shopId,
+      accessToken: token,
+    });
+    throw new Error(
+      "Missing shop ID or access token for Customer Account API."
+    );
+  }
+
+  const url = `https://shopify.com/${shopId}/account/customer/api/2025-07/graphql`;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ query, variables }),
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      console.error("❌ Customer Account API HTTP Error:", res.status, error);
+      throw new Error(
+        `HTTP ${res.status}: ${error.message || "Unknown error"}`
+      );
+    }
+
+    const json = await res.json();
+    if (json.errors) {
+      console.error("❌ Customer Account API GraphQL Errors:", json.errors);
+      throw new Error(json.errors.map((e) => e.message).join(", "));
+    }
+
+    return json.data;
+  } catch (error) {
+    console.error("❌ Fetch Customer Account API failed:", error.message);
+    throw error;
+  }
+}
+
+// Customer Account API: Initiate OAuth flow
+export async function initiateCustomerAuth() {
+  const clientId = process.env.NEXT_PUBLIC_SHOPIFY_CLIENT_ID;
+  const shopId = process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+  if (!clientId || !shopId || !baseUrl) {
+    console.error("❌ Missing OAuth env vars:", { clientId, shopId, baseUrl });
+    throw new Error(
+      "Missing required env vars for Customer Account API OAuth."
+    );
+  }
+
+  const verifier = generateRandomString(43);
+  const state = generateRandomString(16);
+  const nonce = generateRandomString(16);
+  const codeChallenge = await generateCodeChallenge(verifier);
+
+  const params = new URLSearchParams({
+    scope: "openid email customer-account-api:full",
+    client_id: clientId,
+    response_type: "code",
+    redirect_uri: `${baseUrl}/callback`,
+    state,
+    nonce,
+    code_challenge: codeChallenge,
+    code_challenge_method: "S256",
+    locale: "en",
   });
 
-  const json = await res.json();
+  const authUrl = `https://shopify.com/authentication/${shopId}/oauth/authorize?${params.toString()}`;
+  return { authUrl, verifier, state, nonce };
+}
 
-  if (json.errors) {
-    console.error("❌ Shopify GraphQL Errors:", json.errors);
+// Customer Account API: Exchange code for tokens
+export async function exchangeCodeForToken(code, verifier, state, storedState) {
+  if (state !== storedState) {
+    throw new Error("Invalid state parameter");
+  }
+
+  const params = new URLSearchParams({
+    grant_type: "authorization_code",
+    client_id: process.env.NEXT_PUBLIC_SHOPIFY_CLIENT_ID,
+    redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/callback`,
+    code,
+    code_verifier: verifier,
+  });
+
+  try {
+    const response = await fetch(
+      `https://shopify.com/authentication/${process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID}/oauth/token`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params,
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error("❌ Token exchange failed:", error);
+      if (response.status === 400)
+        throw new Error(
+          `Invalid grant: ${error.error_description || "Check code/verifier"}`
+        );
+      if (response.status === 401)
+        throw new Error(
+          `Invalid client: ${error.error_description || "Check client_id"}`
+        );
+      throw new Error(
+        `Token exchange failed: ${error.error_description || "Unknown error"}`
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Exchange code error:", error.message);
+    throw error;
+  }
+}
+
+// Customer Account API: Refresh token
+export async function refreshCustomerToken(refreshToken) {
+  const params = new URLSearchParams({
+    grant_type: "refresh_token",
+    client_id: process.env.NEXT_PUBLIC_SHOPIFY_CLIENT_ID,
+    refresh_token: refreshToken,
+  });
+
+  try {
+    const response = await fetch(
+      `https://shopify.com/authentication/${process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID}/oauth/token`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params,
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error("❌ Token refresh failed:", error);
+      throw new Error(
+        `Token refresh failed: ${error.error_description || "Unknown error"}`
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("❌ Refresh token error:", error.message);
+    throw error;
+  }
+}
+
+// Customer Account API: Logout
+export async function customerLogout(idToken) {
+  const params = new URLSearchParams({
+    id_token_hint: idToken,
+    post_logout_redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/login`,
+  });
+
+  const logoutUrl = `https://shopify.com/authentication/${
+    process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID
+  }/logout?${params.toString()}`;
+  console.log("Logout URL:", logoutUrl);
+  return logoutUrl;
+}
+
+// Policy fetching (unchanged)
+export async function getPolicies() {
+  const query = `
+    query ShopPolicyList {
+      shop {
+        privacyPolicy {
+          id
+          title
+          url
+          body
+        }
+        refundPolicy {
+          id
+          title
+          url
+          body
+        }
+        termsOfService {
+          id
+          title
+          url
+          body
+        }
+      }
+    }
+  `;
+
+  try {
+    const data = await fetchShopify(query, {}, { revalidate: 86400 });
+    return (
+      data?.shop || {
+        privacyPolicy: null,
+        refundPolicy: null,
+        termsOfService: null,
+      }
+    );
+  } catch (error) {
+    console.error("Failed to fetch policies:", error.message);
+    return { privacyPolicy: null, refundPolicy: null, termsOfService: null };
+  }
+}
+
+// Customer creation (Storefront API, unchanged)
+export async function customerCreate({ email, password, firstName, lastName }) {
+  const query = `
+    mutation customerCreate($input: CustomerCreateInput!) {
+      customerCreate(input: $input) {
+        customer { id email firstName lastName }
+        customerUserErrors { field message }
+      }
+    }
+  `;
+  const variables = { input: { email, password, firstName, lastName } };
+  try {
+    const data = await fetchShopify(query, variables);
+    return (
+      data?.customerCreate || {
+        customer: null,
+        customerUserErrors: [{ message: "Unknown error" }],
+      }
+    );
+  } catch (error) {
+    console.error("❌ Customer create failed:", error.message);
+    return { customer: null, customerUserErrors: [{ message: error.message }] };
+  }
+}
+
+// Fetch customer data using Customer Account API
+export async function getCustomerAccount({ accessToken }) {
+  if (!accessToken) {
+    console.error("❌ No access token provided for getCustomerAccount");
     return null;
   }
 
-  return json.data;
+  const query = `
+    query customerQuery {
+      customer {
+        id
+        firstName
+        lastName
+        emailAddress {emailAddress}
+        phoneNumber {phoneNumber}
+        tags
+        defaultAddress { address1 address2 city country zip }
+      }
+    }
+  `;
+
+  try {
+    const data = await fetchCustomerAccountAPI(query, accessToken);
+    console.log("QUERY DATA: ", data);
+    return data?.customer || null;
+  } catch (error) {
+    console.error("❌ Get customer account failed:", error.message);
+    return null;
+  }
 }
 
-//  Function for Creating a Cart
+// Function for Creating a Cart
 export async function createCart() {
   const query = `
     mutation cartCreate {
@@ -47,7 +378,7 @@ export async function createCart() {
     }
   `;
   const data = await fetchShopify(query);
-  console.log("createCart Response:", data);
+  // console.log("createCart Response:", data);
   return data?.cartCreate?.cart || null;
 }
 
@@ -92,47 +423,6 @@ export async function addToCart(cartId, lines) {
   return data?.cartLinesAdd?.cart || null;
 }
 
-// Shared fragment for cart lines
-const CART_LINES_FRAGMENT = `
-  fragment CartLines on Cart {
-    id
-    checkoutUrl
-    lines(first: 50) {
-      edges {
-        node {
-          id
-          quantity
-          merchandise {
-            ... on ProductVariant {
-              id
-              selectedOptions {
-                name
-                value
-              }
-              product {
-                title
-                images(first: 1) { edges { node { src altText } } }
-                variants(first: 50) {
-                  edges {
-                    node {
-                      id
-                      selectedOptions {
-                        name
-                        value
-                      }
-                    }
-                  }
-                }
-              }
-              priceV2 { amount currencyCode }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
 export async function getCart(cartId) {
   if (!cartId) return null;
   const query = `
@@ -144,7 +434,7 @@ export async function getCart(cartId) {
     }
   `;
   const variables = { cartId };
-  const data = await fetchShopify(query, variables);
+  const data = await fetchShopify(query, variables, { revalidate: 0 });
   return data?.cart || null;
 }
 
@@ -509,114 +799,4 @@ export async function fetchAllProducts(options = {}) {
     hasNextPage: data.products.pageInfo.hasNextPage,
     endCursor: data.products.pageInfo.endCursor,
   };
-}
-
-export async function getPolicies() {
-  const query = `
-    query ShopPolicyList {
-      shop {
-        privacyPolicy {
-          id
-          title
-          url
-          body
-        }
-        refundPolicy {
-          id
-          title
-          url
-          body
-        }
-        termsOfService {
-          id
-          title
-          url
-          body
-        }
-      }
-    }
-  `;
-
-  const variables = {};
-  const data = await fetchShopify(query, variables);
-  return data?.shop || {};
-}
-
-// Shopify Customer Authentication
-export async function customerCreate({ email, password, firstName, lastName }) {
-  const query = `
-    mutation customerCreate($input: CustomerCreateInput!) {
-      customerCreate(input: $input) {
-        customer { id email firstName lastName }
-        userErrors { field message }
-      }
-    }
-  `;
-  const variables = { input: { email, password, firstName, lastName } };
-  const data = await fetchShopify(query, variables);
-  return (
-    data?.customerCreate || {
-      customer: null,
-      userErrors: [{ message: "Unknown error" }],
-    }
-  );
-}
-
-export async function customerAccessTokenCreate({ email, password }) {
-  const query = `
-    mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
-      customerAccessTokenCreate(input: $input) {
-        customerAccessToken { accessToken expiresAt }
-        userErrors { field message }
-      }
-    }
-  `;
-  const variables = { input: { email, password } };
-  const data = await fetchShopify(query, variables);
-  return (
-    data?.customerAccessTokenCreate || {
-      customerAccessToken: null,
-      userErrors: [{ message: "Unknown error" }],
-    }
-  );
-}
-
-export async function customerAccessTokenDelete({ accessToken }) {
-  const query = `
-    mutation customerAccessTokenDelete($customerAccessToken: String!) {
-      customerAccessTokenDelete(customerAccessToken: $customerAccessToken) {
-        deletedAccessToken
-        deletedCustomerAccessTokenId
-        userErrors { field message }
-      }
-    }
-  `;
-  const variables = { customerAccessToken: accessToken };
-  const data = await fetchShopify(query, variables);
-  return (
-    data?.customerAccessTokenDelete || {
-      userErrors: [{ message: "Unknown error" }],
-    }
-  );
-}
-
-// Fetch the currently logged in customer using Storefront API
-export async function getCustomer({ accessToken }) {
-  if (!accessToken) return null;
-  const query = `
-    query customerQuery($customerAccessToken: String!) {
-      customer(customerAccessToken: $customerAccessToken) {
-        id
-        email
-        firstName
-        lastName
-        phone
-        tags
-        defaultAddress { address1 address2 city province country zip }
-      }
-    }
-  `;
-  const variables = { customerAccessToken: accessToken };
-  const data = await fetchShopify(query, variables);
-  return data?.customer || null;
 }

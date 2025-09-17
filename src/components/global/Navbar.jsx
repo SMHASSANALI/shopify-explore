@@ -5,11 +5,11 @@ import { fetchShopify } from "@/lib/shopify";
 import logo from "../../../public/assets/haaaib-logo.svg";
 import { MdFacebook, MdPerson, MdSearch } from "react-icons/md";
 import { PiInstagramLogo } from "react-icons/pi";
-import { IoMdCart } from "react-icons/io";
+import CartBadge from "./CartBadge";
 import Dropdown from "../dropdowns/Dropdown";
-import { calculateTotal } from "@/lib/shopify"; // Import calculateTotal
+import SearchTrigger from "./SearchTrigger";
 
-const Navbar = async ({ cart, customer }) => {
+const Navbar = async ({ customer }) => {
   const query = `{
     collections(first: 10) {
       edges {
@@ -54,12 +54,10 @@ const Navbar = async ({ cart, customer }) => {
     href: `/blogs/${edge.node.handle}`,
   }));
 
-  const total = cart ? calculateTotal(cart.lines.edges) : "0.00";
-
   return (
-    <main className="w-full sticky top-0 z-[1000]">
+    <main className="w-full  md:sticky top-0 z-[1000]">
       <header className="w-full bg-[var(--accent)] flex items-center justify-center text-white">
-        <main className="max-w-[1400px] w-full py-1 flex flex-row relative">
+        <main className="max-w-[1400px] w-full py-1 hidden md:flex flex-row relative">
           <div className="w-fit flex flex-row gap-[10px]">
             <span>
               <MdFacebook size={"26px"} />
@@ -74,30 +72,29 @@ const Navbar = async ({ cart, customer }) => {
             </p>
           </div>
         </main>
+        <main className="py-1 w-full md:hidden block">
+          <p className="text-center !text-xs font-light">
+            Minimal. Aesthetic. Budget-friendly. FREE shipping
+          </p>
+        </main>
       </header>
-      <main className="w-full flex items-center justify-center bg-[var(--primary-dark)]">
-        <div className="flex flex-row items-center justify-between h-auto w-full max-w-[1400px] py-1.5">
-          <div className="w-3/12 h-full relative">
-            <Image
-              src={logo}
-              alt="Logo"
-              height={60}
-              width={160}
-              className="w-auto h-auto"
-            />
+      <main className="w-full flex items-center justify-center bg-[var(--primary-dark)] p-2">
+        <div className="flex flex-row items-center justify-between h-auto w-full max-w-[1400px] gap-2 py-1.5">
+          <div className="w-full md:w-3/12 h-full relative">
+            <Link href="/" className="flex items-start justify-start">
+              <Image
+                src={logo}
+                alt="Logo"
+                height={60}
+                width={160}
+                className="w-auto h-auto"
+              />
+            </Link>
           </div>
-          <div className="w-6/12 h-full flex flex-row items-center justify-center gap-[10px]">
-            <input
-              type="text"
-              placeholder="Search for Products..."
-              className="w-8/12 border border-white/20 rounded-md text-sm p-1.5 placeholder:text-white/50 text-white focus:outline-none focus:ring-1 focus:ring-white/50"
-              aria-label="Search products"
-            />
-            <button className="bg-[var(--accent)] text-white rounded-md p-1 cursor-pointer">
-              <MdSearch size={"28px"} />
-            </button>
+          <div className="md:flex hidden w-6/12 h-full">
+            <SearchTrigger />
           </div>
-          <div className="w-3/12 h-full flex flex-row items-center gap-[10px]">
+          <div className="w-3/12 h-full md:flex hidden flex-row items-center gap-[10px]">
             <div className="flex flex-row gap-1 items-end ml-auto">
               <MdPerson size={"30px"} color="white" />
               <div className="flex flex-col">
@@ -105,7 +102,11 @@ const Navbar = async ({ cart, customer }) => {
                   href="/account"
                   className="text-white !text-[12px] !font-extralight !leading-none hover:underline"
                 >
-                  {customer ? customer.email : "Account"}
+                  {customer
+                    ? `${customer.firstName || ""} ${
+                        customer.lastName || ""
+                      }`.trim() || customer.email
+                    : "Account"}
                 </Link>
                 <Link
                   href={customer ? "/logout" : "/login"}
@@ -115,21 +116,11 @@ const Navbar = async ({ cart, customer }) => {
                 </Link>
               </div>
             </div>
-            <Link href="/cart" className="flex flex-row gap-1 items-end">
-              <IoMdCart size={"30px"} color="white" />
-              <div>
-                <p className="text-white text-[12px] font-extralight leading-none">
-                  Cart
-                </p>
-                <p className="text-white !text-[14px] font-light leading-none">
-                  £ {total}
-                </p>
-              </div>
-            </Link>
+            <CartBadge />
           </div>
         </div>
       </main>
-      <nav className="w-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.3)] h-auto flex flex-row items-center justify-center">
+      <nav className="w-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.3)] h-auto md:flex hidden flex-row items-center justify-center">
         <main className="max-w-[1400px] py-2 w-full flex flex-row items-center justify-between">
           <div className="w-2/12">
             <Dropdown title="All Categories" items={collectionItems} />

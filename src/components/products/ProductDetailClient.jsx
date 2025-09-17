@@ -95,11 +95,11 @@ export default function ProductDetailClient({
   } catch {}
 
   return (
-    <div className="flex flex-row items-start justify-between gap-6 relative">
-      <div className="max-w-5/12 w-full sticky top-[24%]">
+    <div className="flex flex-col md:flex-row items-start justify-between gap-6 relative">
+      <div className="md:w-5/12 w-full relative md:sticky top-0 md:top-[24%]">
         <ProductGallery images={galleryImages} />
       </div>
-      <div className="max-w-5/12 w-full">
+      <div className="md:w-5/12 w-full">
         {/* rating and reviews */}
         {typeof ratingValue === "number" && (
           <div className="mb-3 flex flex-row items-center gap-2">

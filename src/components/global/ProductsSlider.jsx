@@ -27,19 +27,19 @@ const ProductsSlider = ({ title, data }) => {
   };
 
   return (
-    <section className="max-w-[1400px] mx-auto space-y-[20px]">
+    <section className="w-full md:max-w-[1400px] mx-auto space-y-[20px]">
       <div className="flex flex-row items-center justify-between border-b-4 border-gray-300 pb-2">
         <h1 className="font-semibold">{title}</h1>
         <div className="w-fit flex flex-row items-center gap-2">
           <button
             onClick={handlePrev}
-            className="rounded-full cursor-pointer flex items-center justify-center bg-[var(--accent)] p-1 text-white"
+            className="rounded-full cursor-pointer hidden md:flex items-center justify-center bg-[var(--accent)] p-1 text-white"
           >
             <IoIosArrowBack size={14} />
           </button>
           <button
             onClick={handleNext}
-            className="rounded-full cursor-pointer flex items-center justify-center bg-[var(--accent)] p-1 text-white"
+            className="rounded-full cursor-pointer hidden md:flex items-center justify-center bg-[var(--accent)] p-1 text-white"
           >
             <IoIosArrowForward size={14} />
           </button>
@@ -49,17 +49,17 @@ const ProductsSlider = ({ title, data }) => {
       <div
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="py-10"
+        className="py-[10px] md:py-10"
       >
         <Swiper
           modules={[Autoplay]}
-          spaceBetween={16}
+          spaceBetween={12}
           grabCursor
           touchRatio={1.5}
           breakpoints={{
-            0: { slidesPerView: 1.2 },
-            640: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
+            0: { slidesPerView: 1.5 },
+            640: { slidesPerView: 1.5 },
+            768: { slidesPerView: 1.5 },
             1024: { slidesPerView: 4 },
             1280: { slidesPerView: 5 },
           }}

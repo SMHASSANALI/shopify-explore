@@ -1,22 +1,15 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { fetchAllCollections } from "@/lib/shopify";
+// app/components/Footer.jsx
 import Image from "next/image";
 import Link from "next/link";
+import { fetchAllCollections } from "@/lib/shopify";
 import { FaFacebook, FaSquareInstagram } from "react-icons/fa6";
 import logo from "../../../public/assets/haaaib-logo.svg";
 
-const Footer = () => {
-  const [collections, setCollections] = useState(null);
-
-  useEffect(() => {
-    async function fetchCollections() {
-      const data = await fetchAllCollections({ first: 5 });
-      setCollections(data);
-    }
-    fetchCollections();
-  }, []);
+export default async function Footer() {
+  const collections = await fetchAllCollections({ first: 5 }).catch((error) => {
+    console.error("Failed to fetch collections for footer:", error.message);
+    return [];
+  });
 
   return (
     <footer className="w-full bg-[var(--primary-dark)] text-white p-4">
@@ -29,22 +22,21 @@ const Footer = () => {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
           />
         </div>
-        <div className="flex flex-row justify-between items-start border-b border-gray-400 pb-[50px]">
-          <div className="max-w-6/12 w-fit flex flex-row gap-[60px]">
+        <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-400 gap-[20px] pb-[50px]">
+          <div className="w-full md:max-w-6/12 md:w-fit flex flex-row gap-[60px]">
             <div>
               <h2 className="pb-4">Popular Collections</h2>
               <ul className="space-y-1">
-                {collections &&
-                  collections.map((collection) => (
-                    <li key={collection.id}>
-                      <Link
-                        className="!text-gray-400"
-                        href={`/collections/${collection.handle}`}
-                      >
-                        {collection.title}
-                      </Link>
-                    </li>
-                  ))}
+                {collections.map((collection) => (
+                  <li key={collection.id}>
+                    <Link
+                      className="!text-gray-400"
+                      href={`/collections/${collection.handle}`}
+                    >
+                      {collection.title}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
             <div>
@@ -63,7 +55,7 @@ const Footer = () => {
               </ul>
             </div>
           </div>
-          <div className="max-w-6/12 w-fit">
+          <div className="w-full md:max-w-6/12 md:w-fit">
             <h2 className="pb-4">Subscribe to our newsletter</h2>
             <p className="pb-1">
               Be the first to know about new collections and special offers.
@@ -94,6 +86,9 @@ const Footer = () => {
             <Link className="!text-sm !text-gray-400" href="/policies/refund">
               Return Policy
             </Link>
+            <Link className="!text-sm !text-gray-400" href="/policies/terms">
+              Terms of Service
+            </Link>
           </div>
           <div className="flex flex-row gap-1">
             <Link href="https://www.facebook.com/haaaib" target="_blank">
@@ -104,7 +99,7 @@ const Footer = () => {
             </Link>
           </div>
         </div>
-        <div className="flex flex-row justify-between items-center py-4 border-b border-gray-400">
+        <div className="flex flex-col-reverse md:flex-row justify-between items-center py-4 border-b border-gray-400">
           <p className="!text-gray-400">
             &copy; {new Date().getFullYear()} Haaaib, Powered by{" "}
             <Link className="!text-sm" href="https://www.shopify.com/">
@@ -121,24 +116,25 @@ const Footer = () => {
               alt="Visa Logo"
               width={30}
               height={20}
+              style={{ objectFit: "contain" }}
             />
             <Image
               src="/assets/masterCard.svg"
               alt="Mastercard Logo"
               width={30}
               height={20}
+              style={{ objectFit: "contain" }}
             />
             <Image
               src="/assets/paypal.svg"
               alt="Paypal Logo"
               width={30}
               height={20}
+              style={{ objectFit: "contain" }}
             />
           </div>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

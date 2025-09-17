@@ -79,7 +79,7 @@ export default async function BlogPage({ params }) {
   }
 
   return (
-    <main className="w-full flex min-h-screen">
+    <main className="w-full flex min-h-screen p-2 md:p-0">
       <div className="max-w-[1400px] w-full py-8 mx-auto">
         <h1 className="text-3xl font-semibold text-black mb-6">{blog.title}</h1>
         {articles.length === 0 ? (

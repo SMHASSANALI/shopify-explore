@@ -21,9 +21,11 @@ const ProductCard = ({ product, compressed = false }) => {
 
   return (
     <div
-      className={`rounded-lg overflow-hidden bg-white border-2 border-gray-400/40 shadow-sm ${
-        compressed ? "h-[400px] w-[220px]" : "h-[440px] w-[262px]"
-      }`}
+      className={`rounded-lg overflow-hidden bg-white border-2 border-gray-400/40 shadow-sm w-full h-auto ${
+        compressed
+          ? "max-w-[200px] sm:max-w-[220px] md:w-[240px] md:h-[400px]"
+          : "max-w-[250px] sm:max-w-[270px] md:w-[320px] md:h-[460px]"
+      } mx-auto`}
     >
       <Link
         href={`/product/${product.node.handle}`}
@@ -38,8 +40,10 @@ const ProductCard = ({ product, compressed = false }) => {
         )}
         {displayImage && (
           <div
-            className={`relative aspect-[1/1] flex items-center justify-center ${
-              compressed ? "w-[210px]" : "w-[250px]"
+            className={`relative aspect-[1/1] flex items-center justify-center w-full ${
+              compressed
+                ? "max-w-[190px] sm:max-w-[210px] md:w-[230px]"
+                : "max-w-[240px] sm:max-w-[260px] md:w-[310px]"
             } mx-auto my-1`}
           >
             <Image
@@ -48,15 +52,15 @@ const ProductCard = ({ product, compressed = false }) => {
               fill
               className="object-contain rounded-md overflow-hidden"
               loading="lazy"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+              sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 25vw, 20vw"
             />
           </div>
         )}
         <div className="p-3 flex flex-col justify-start flex-1 gap-1.5">
           {compressed ? (
-            <h2 className="product-title h-[50px]">{product.node.title}</h2>
+            <h2 className="product-title md:!text-lg !text-xs">{product.node.title}</h2>
           ) : (
-            <h3 className="product-title h-[50px]">{product.node.title}</h3>
+            <h3 className="product-title md:!text-lg !text-sm">{product.node.title}</h3>
           )}
           {/* Rating below title (default 0 when missing) */}
           {(() => {
@@ -64,9 +68,15 @@ const ProductCard = ({ product, compressed = false }) => {
               const validMetafields = Array.isArray(product.node.metafields)
                 ? product.node.metafields.filter((m) => m)
                 : [];
-              const ratingField = validMetafields.find((m) => m.key === "rating");
-              const countField = validMetafields.find((m) => m.key === "rating_count");
-              const parsed = ratingField?.value ? JSON.parse(ratingField.value) : null;
+              const ratingField = validMetafields.find(
+                (m) => m.key === "rating"
+              );
+              const countField = validMetafields.find(
+                (m) => m.key === "rating_count"
+              );
+              const parsed = ratingField?.value
+                ? JSON.parse(ratingField.value)
+                : null;
               const value = parsed?.value ? Number(parsed.value) : 0;
               const scaleMin = parsed?.scale_min ? Number(parsed.scale_min) : 1;
               const scaleMax = parsed?.scale_max ? Number(parsed.scale_max) : 5;
@@ -96,12 +106,16 @@ const ProductCard = ({ product, compressed = false }) => {
               );
             }
           })()}
-          <p className="flex items-center justify-between font-semibold text-lg text-red-500 mt-auto">
+          <p className="flex items-center justify-between font-semibold md:!text-lg !text-sm text-red-500 mt-auto">
             £ {displayPrice}
           </p>
           {/* Variant selection removed: show only first available variant */}
           <div className="mt-auto w-full relative z-20">
-            <AddToCartButton variantId={chosenVariant?.id || variants[0]?.id} />
+            <AddToCartButton
+              variantId={chosenVariant?.id || variants[0]?.id}
+              quantity={1}
+              disabled={!product.node.availableForSale}
+            />
           </div>
         </div>
       </Link>

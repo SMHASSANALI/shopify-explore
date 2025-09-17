@@ -22,21 +22,42 @@ export default function FilterPanel({ onFilterChange }) {
         <div className="flex flex-row justify-start gap-4">
           <label className="flex items-center gap-2">
             <input
-              type="checkbox"
+              type="radio"
+              name="availability"
               className="accent-[var(--accent)]"
-              checked={inStock}
-              onChange={(e) => setInStock(e.target.checked)}
+              checked={inStock && !outOfStock}
+              onChange={() => {
+                setInStock(true);
+                setOutOfStock(false);
+              }}
             />
             In Stock
           </label>
           <label className="flex items-center gap-2">
             <input
-              type="checkbox"
+              type="radio"
+              name="availability"
               className="accent-[var(--accent)]"
-              checked={outOfStock}
-              onChange={(e) => setOutOfStock(e.target.checked)}
+              checked={outOfStock && !inStock}
+              onChange={() => {
+                setInStock(false);
+                setOutOfStock(true);
+              }}
             />
             Out of Stock
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="availability"
+              className="accent-[var(--accent)]"
+              checked={!inStock && !outOfStock}
+              onChange={() => {
+                setInStock(false);
+                setOutOfStock(false);
+              }}
+            />
+            Any
           </label>
         </div>
       </div>

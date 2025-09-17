@@ -29,17 +29,17 @@ export default function Hero({ banners }) {
   };
 
   return (
-    <section className="flex flex-row items-center justify-center max-w-[1400px] py-[50px] mx-auto">
+    <section className="flex flex-row items-center justify-center max-w-[1400px] py-[20px] md:py-[50px] mx-auto">
       <section className="w-full relative">
         <button
           onClick={handlePrev}
-          className="absolute left-4 top-[50%] transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md cursor-pointer opacity-30 hover:opacity-100 transition-opacity"
+          className="hidden md:absolute left-4 top-[50%] transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md cursor-pointer opacity-30 hover:opacity-100 transition-opacity"
         >
           <MdArrowBack size={24} />
         </button>
         <button
           onClick={handleNext}
-          className="absolute right-4 top-[50%] transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md cursor-pointer opacity-30 hover:opacity-100 transition-opacity"
+          className="hidden md:absolute right-4 top-[50%] transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md cursor-pointer opacity-30 hover:opacity-100 transition-opacity"
         >
           <MdArrowForward size={24} />
         </button>
@@ -72,7 +72,7 @@ export default function Hero({ banners }) {
                       className="flex flex-col h-full"
                     >
                       {edge.node.image && (
-                        <div className="relative aspect-[19/6] w-[1400px] h-auto">
+                        <div className="relative aspect-[19/6] md:w-[1400px] w-full md:h-auto">
                           <Image
                             src={`${edge.node.image.src}?width=1400&format=webp`}
                             alt={edge.node.image.altText || edge.node.title}

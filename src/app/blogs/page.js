@@ -36,13 +36,13 @@ export default async function BlogsPage() {
   const blogs = data?.blogs?.edges || [];
 
   return (
-    <main className="w-full flex">
-      <div className="max-w-[1400px] mx-auto w-full border min-h-screen">
+    <main className="w-full flex p-2 md:p-0">
+      <div className="max-w-[1400px] mx-auto w-full min-h-screen">
         <h1 className="py-[50px]">Blogs</h1>
         {blogs.length === 0 ? (
           <p className="text-white text-lg">No blogs available.</p>
         ) : (
-          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 border">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {blogs.map((edge) => (
               <li
                 key={edge.node.id}

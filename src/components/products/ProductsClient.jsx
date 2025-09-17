@@ -98,14 +98,14 @@ export const ProductsClient = ({ initialProducts, initialHasNextPage, initialEnd
   }, []);
 
   return (
-    <div className="flex flex-row w-full h-full gap-[10px]">
-      <div className="relative w-2/12">
-        <div className="sticky top-[23%] h-fit py-2 w-full flex flex-col gap-[20px]">
+    <div className="flex flex-col md:flex-row w-full h-full gap-[10px]">
+      <div className="relative w-full md:w-2/12">
+        <div className="sticky top-[25%] h-fit py-2 w-full flex flex-col gap-[20px]">
           <h2 className="font-semibold">Filter:</h2>
           <FilterPanel onFilterChange={handleFilterChange} />
         </div>
       </div>
-      <div className="max-w-10/12 rounded flex flex-col gap-[20px]">
+      <div className="w-full md:w-10/12 rounded flex flex-col gap-[20px]">
         <div className="w-full bg-[var(--background)] py-1 px-2 flex flex-row justify-between items-center">
           <LayoutButtons onLayoutChange={handleLayoutChange} />
           <div>

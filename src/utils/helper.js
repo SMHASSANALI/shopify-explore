@@ -1,29 +1,4 @@
-import { fetchShopify } from '@/lib/shopify';
-
-const CART_LINES_FRAGMENT = `
-  fragment CartLines on Cart {
-    id
-    checkoutUrl
-    lines(first: 50) {
-      edges {
-        node {
-          id
-          quantity
-          merchandise {
-            ... on ProductVariant {
-              id
-              product {
-                title
-                images(first: 1) { edges { node { src altText } } }
-              }
-              priceV2 { amount currencyCode }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+import { fetchShopify, CART_LINES_FRAGMENT } from '@/lib/shopify';
 
 // Helper function to calculate total price
 export const calculateTotal = (lines) => {
