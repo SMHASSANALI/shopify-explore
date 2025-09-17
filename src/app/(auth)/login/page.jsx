@@ -47,7 +47,7 @@ export default function LoginPage() {
             id="login"
             className="bg-[var(--primary-dark)] text-white px-4 py-2 rounded cursor-pointer"
           >
-            Sign in with Shopify
+            Sign in
           </button>
         </form>
         <p className="mt-4 text-sm">

@@ -8,6 +8,7 @@ import { PiInstagramLogo } from "react-icons/pi";
 import CartBadge from "./CartBadge";
 import Dropdown from "../dropdowns/SelectDropdown";
 import SearchTrigger from "./SearchTrigger";
+import MobileDrawer from "./MobileDrawer";
 
 const Navbar = async ({ customer }) => {
   const query = `{
@@ -117,6 +118,11 @@ const Navbar = async ({ customer }) => {
               </div>
             </div>
             <CartBadge />
+          </div>
+          
+          {/* Mobile Navigation */}
+          <div className="md:hidden flex items-center gap-2">
+            <MobileDrawer collections={collections} blogs={blogs} />
           </div>
         </div>
       </main>
