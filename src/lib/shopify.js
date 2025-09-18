@@ -27,6 +27,8 @@ export const CART_LINES_FRAGMENT = `
     }
   }
 `;
+
+// Storefront API fetch function
 export async function fetchShopify(query, variables = {}, options = {}) {
   const shopifyDomain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN;
   const storefrontToken = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN;

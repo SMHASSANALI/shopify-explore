@@ -12,7 +12,7 @@ import MobileDrawer from "./MobileDrawer";
 
 const Navbar = async ({ customer }) => {
   const query = `{
-    collections(first: 5) {
+    collections(first: 100) {
       edges {
         node {
           id
@@ -141,7 +141,7 @@ const Navbar = async ({ customer }) => {
                   Home
                 </Link>
               </li>
-              {collections.slice(0, 7).map((edge) => (
+              {collections.slice(0, 5).map((edge) => (
                 <li key={edge.node.id}>
                   <Link
                     href={`/collections/${edge.node.handle}`}

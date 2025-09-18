@@ -13,7 +13,6 @@ const MobileDrawer = ({ collections, blogs }) => {
 
   return (
     <>
-      {/* Hamburger Menu Button */}
       <button
         onClick={toggleDrawer}
         className="md:hidden flex items-center justify-center p-2 text-white"
@@ -49,7 +48,7 @@ const MobileDrawer = ({ collections, blogs }) => {
         </div>
 
         {/* Navigation Content */}
-        <div className="flex flex-col h-full overflow-y-auto">
+        <div className="flex flex-col h-full overflow-y-auto pb-[200px]">
           {/* Home Link */}
           <div className="p-4 border-b border-gray-100">
             <Link
@@ -65,7 +64,7 @@ const MobileDrawer = ({ collections, blogs }) => {
           <div className="p-4 border-b border-gray-100">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">Categories</h3>
             <div className="space-y-2">
-              {collections.slice(0, 7).map((edge) => (
+              {collections.map((edge) => (
                 <Link
                   key={edge.node.id}
                   href={`/collections/${edge.node.handle}`}
