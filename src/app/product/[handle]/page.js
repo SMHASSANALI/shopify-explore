@@ -85,7 +85,7 @@ export default async function ProductPage({ params }) {
   }
 
   return (
-    <main className="max-w-[1400px] mx-auto px-4 py-8">
+    <main className="max-w-[1400px] mx-auto 2xl:p-0 lg:p-4 p-2">
       <Breadcrumbs className="mb-8" overrides={{ product: "Products" }} />
       <ProductDetailClient
         title={product.title}
@@ -98,9 +98,22 @@ export default async function ProductPage({ params }) {
         reviews={reviews}
       />
       <div className="mt-12">
-        {/* Trending / related products */}
+        {/* Related products */}
         <ProductsSlider
-          title="Our Trending Products"
+          title="You Might Also Like"
+          data={
+            (
+              await (
+                await import("@/lib/shopify")
+              ).fetchCollectionByHandle(product.collections.edges[0].node.handle)
+            ).products
+          }
+        />
+      </div>
+      <div className="mt-12">
+        {/* Trending products */}
+        <ProductsSlider
+          title="Not Right For You? Try These"
           data={
             (
               await (

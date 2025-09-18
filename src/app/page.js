@@ -23,7 +23,7 @@ export default async function Home() {
   const adBanners = await fetchCollectionByHandle("ad-banners");
 
   return (
-    <main className="mx-auto md:px-0 px-2">
+    <main className="mx-auto 2xl:px-0 lg:px-4 px-2">
       <div className="bg-[var(--secondary)]/1">
         <HeroWrapper banners={heroBanners.products} />
 
@@ -49,7 +49,7 @@ export default async function Home() {
       <HeroWrapper banners={adBanners.products} />
 
       <section className="bg-[#F8FCFF] flex flex-col py-[20px] md:py-[50px]">
-        {/* <ReviewsSlider /> */}
+        <ReviewsSlider />
       </section>
 
       <div className="max-w-[1400px] mx-auto space-y-[50px] py-[20px] md:py-[50px]">
@@ -59,7 +59,7 @@ export default async function Home() {
             View All Blogs
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {recentBlogs.length > 0 ? (
             recentBlogs.map((blog) => (
               <Link

@@ -116,8 +116,8 @@ export default function ProductDetailClient({
 
         {/* Title And Price */}
         <div className="mb-6">
-          <h2 className="font-bold mb-1">{title}</h2>
-          {priceLabel && <p className="text-lg font-bold">£ {priceLabel}</p>}
+          <h2 className="font-medium mb-1">{title}</h2>
+          {priceLabel && <p className="text-lg font-medium">£ {priceLabel}</p>}
         </div>
 
         {/* Variant Dropdown */}

@@ -60,15 +60,15 @@ export default function Breadcrumbs({
   if (!pathname) return null;
 
   return (
-    <nav aria-label="Breadcrumb" className={`${className} w-full`}>
-      <ol className="flex flex-wrap items-center gap-2 text-sm text-gray-600 font-semibold">
+    <nav aria-label="Breadcrumb" className={`${className} w-full !text-xs md:!text-sm`}>
+      <ol className="flex flex-row items-center gap-2 text-gray-600 font-semibold">
         <li>
           <Link href={baseHref} className="hover:underline">
             {baseLabel}
           </Link>
         </li>
         {items.map((item, idx) => (
-          <li key={item.href} className="flex items-center gap-1">
+          <li key={item.href} className="flex flex-row items-center gap-1">
             <span>
               <IoCaretForward size={16} />
             </span>
@@ -77,7 +77,7 @@ export default function Breadcrumbs({
                 {item.label}
               </Link>
             ) : (
-              <span className="capitalize" aria-current="page">
+              <span className="capitalize text-wrap line-clamp-1 text-ellipsis" aria-current="page">
                 {item.label}
               </span>
             )}

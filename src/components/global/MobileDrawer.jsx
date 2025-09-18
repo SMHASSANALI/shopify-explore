@@ -95,17 +95,6 @@ const MobileDrawer = ({ collections, blogs }) => {
             </div>
           </div>
 
-          {/* Contact Link */}
-          <div className="p-4 border-b border-gray-100">
-            <Link
-              href="/contact"
-              className="block text-lg font-semibold text-neutral-800 hover:text-[var(--accent)] py-2"
-              onClick={closeDrawer}
-            >
-              Contact
-            </Link>
-          </div>
-
           {/* Spacer to push content to top */}
           <div className="flex-1" />
         </div>

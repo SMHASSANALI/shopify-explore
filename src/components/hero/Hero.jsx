@@ -72,12 +72,13 @@ export default function Hero({ banners }) {
                       className="flex flex-col h-full"
                     >
                       {edge.node.image && (
-                        <div className="relative aspect-[19/6] md:w-[1400px] w-full md:h-auto">
+                        <div className="relative aspect-[19/6] lg:w-[1400px] w-full md:h-auto">
                           <Image
                             src={`${edge.node.image.src}?width=1400&format=webp`}
                             alt={edge.node.image.altText || edge.node.title}
                             fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1400px) 100vw, 100vw"
+                            // add sizes for tablet, mobile and desktop
+                            sizes="(max-width: 425px) 100vw, (max-width: 768px) 100vw, (max-width: 1400px) 100vw, 100vw"
                             className="object-cover"
                             loading="lazy"
                           />

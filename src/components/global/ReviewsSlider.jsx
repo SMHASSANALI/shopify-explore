@@ -64,7 +64,7 @@ const ReviewsSlider = () => {
   ];
 
   return (
-    <section className="max-w-[1400px] mx-auto space-y-[20px]">
+    <section className="w-full md:max-w-[1400px] mx-auto space-y-[20px]">
       <div className="flex flex-row items-center justify-between border-b-4 border-gray-300 pb-2">
         <h1 className="font-semibold">Loved By Customers</h1>
         <div className="w-fit flex flex-row items-center gap-2">
@@ -94,11 +94,11 @@ const ReviewsSlider = () => {
           grabCursor
           touchRatio={1.5}
           breakpoints={{
-            0: { slidesPerView: 1.2 },
-            640: { slidesPerView: 1.5 },
+            0: { slidesPerView: 1 },
+            425: { slidesPerView: 1.5 },
             768: { slidesPerView: 2 },
-            1024: { slidesPerView: 3.5 },
-            1280: { slidesPerView: 4 },
+            1024: { slidesPerView: 3 },
+            1280: { slidesPerView: 5 },
           }}
           loop
           autoplay={{
@@ -112,7 +112,7 @@ const ReviewsSlider = () => {
           {data.length > 0 ? (
             data.map((item, i) => (
               <SwiperSlide key={i}>
-                <div className="py-6 px-4 border border-gray-200 rounded-lg shadow-sm flex flex-col items-center justify-between w-[340px] h-[250px] bg-white">
+                <div className="py-6 px-4 border border-gray-200 rounded-lg shadow-sm flex flex-col items-center justify-between w-auto md:w-[340px] h-full md:h-[250px] bg-white">
                   <div className="flex flex-col gap-4 items-center text-center">
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
@@ -129,7 +129,7 @@ const ReviewsSlider = () => {
                     <p>"{item.review}"</p>
                   </div>
 
-                  <div className="flex flex-col items-center text-center">
+                  <div className="flex flex-col items-center text-center pt-4">
                     <h3>{item.reviewer}</h3>
                     <p>{item.location}</p>
                   </div>

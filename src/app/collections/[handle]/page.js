@@ -1,7 +1,7 @@
 import { fetchCollectionByHandle } from "@/lib/shopify";
-import { CollectionClient } from "@/components/products/CollectionClient";
 import CollectionsSection from "@/components/global/CollectionsSection";
 import Breadcrumbs from "@/components/global/Breadcrumbs";
+import { ProductsClient } from "@/components/products/ProductsClient";
 
 export async function generateMetadata({ params }) {
   const { handle } = await params; // Await params to resolve the Promise
@@ -14,6 +14,8 @@ export default async function CollectionPage({ params }) {
   const { handle } = await params; // Await params to resolve the Promise
 
   const data = await fetchCollectionByHandle(handle, { first: 250 });
+  const { products: initialProducts, hasNextPage: initialHasNextPage, endCursor: initialEndCursor } = data;
+
 
   if (!data || !data.title) {
     return (
@@ -27,7 +29,7 @@ export default async function CollectionPage({ params }) {
   const { title, products: productData } = data;
 
   return (
-    <main className="w-full min-h-screen bg-white p-2 md:p-0">
+    <main className="w-full min-h-screen bg-white 2xl:px-0 lg:px-4 px-2">
       <main className="max-w-[1400px] mx-auto">
         <CollectionsSection />
         <Breadcrumbs
@@ -35,7 +37,7 @@ export default async function CollectionPage({ params }) {
           overrides={{ collections: "Collections" }}
         />
 
-        <CollectionClient initialProducts={productData} />
+        <ProductsClient initialProducts={initialProducts} initialHasNextPage={initialHasNextPage} initialEndCursor={initialEndCursor} />
       </main>
     </main>
   );

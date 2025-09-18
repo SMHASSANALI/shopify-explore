@@ -57,15 +57,15 @@ const Navbar = async ({ customer }) => {
 
   return (
     <main className="w-full  md:sticky top-0 z-[1000]">
-      <header className="w-full bg-[var(--accent)] flex items-center justify-center text-white">
+      <header className="w-full bg-[var(--accent)] flex items-center justify-center text-white 2xl:px-0 lg:px-4 px-2">
         <main className="max-w-[1400px] w-full py-1 hidden md:flex flex-row relative">
           <div className="w-fit flex flex-row gap-[10px]">
-            <span>
+            <Link target="_blank" href={"https://www.facebook.com/haaaib"}>
               <MdFacebook size={"26px"} />
-            </span>
-            <span>
+            </Link>
+            <Link target="_blank" href={"https://www.instagram.com/haaaibuk"}>
               <PiInstagramLogo size={"26px"} />
-            </span>
+            </Link>
           </div>
           <div className="max-w-xl absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
             <p className="text-sm font-light">
@@ -79,7 +79,7 @@ const Navbar = async ({ customer }) => {
           </p>
         </main>
       </header>
-      <main className="w-full flex items-center justify-center bg-[var(--primary-dark)] p-2">
+      <main className="w-full flex items-center justify-center bg-[var(--primary-dark)] 2xl:px-0 lg:px-4 px-2">
         <div className="flex flex-row items-center justify-between h-auto w-full max-w-[1400px] gap-2 py-1.5">
           <div className="w-full md:w-3/12 h-full relative">
             <Link href="/" className="flex items-start justify-start">
@@ -119,19 +119,19 @@ const Navbar = async ({ customer }) => {
             </div>
             <CartBadge />
           </div>
-          
+
           {/* Mobile Navigation */}
           <div className="md:hidden flex items-center gap-2">
             <MobileDrawer collections={collections} blogs={blogs} />
           </div>
         </div>
       </main>
-      <nav className="w-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.3)] h-auto md:flex hidden flex-row items-center justify-center">
+      <nav className="w-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.3)] h-auto md:flex hidden flex-row items-center justify-center 2xl:px-0 lg:px-4 px-2">
         <main className="max-w-[1400px] py-2 w-full flex flex-row items-center justify-between">
-          <div className="w-2/12">
+          <div className="lg:w-2/12 w-3/12">
             <Dropdown title="All Categories" items={collectionItems} />
           </div>
-          <div className="max-w-8/12 overflow-x-auto overflow-y-hidden">
+          <div className="lg:w-8/12 w-6/12 overflow-x-auto overflow-y-hidden">
             <ul className="w-full h-full flex flex-row items-center justify-center divide-x-2 divide-gray-300">
               <li>
                 <Link
@@ -145,7 +145,7 @@ const Navbar = async ({ customer }) => {
                 <li key={edge.node.id}>
                   <Link
                     href={`/collections/${edge.node.handle}`}
-                    className="font-semibold text-neutral-800 hover:text-[var(--accent)] p-1"
+                    className="font-semibold text-neutral-800 hover:text-[var(--accent)] p-1 text-nowrap"
                   >
                     {edge.node.title}
                   </Link>
@@ -153,7 +153,7 @@ const Navbar = async ({ customer }) => {
               ))}
             </ul>
           </div>
-          <div className="w-2/12">
+          <div className="lg:w-2/12 w-3/12">
             <ul className="ml-auto w-fit h-full flex flex-row items-center justify-center divide-x-2 divide-gray-300">
               <li className="pr-2">
                 <Dropdown title="Blogs" items={blogItems} />

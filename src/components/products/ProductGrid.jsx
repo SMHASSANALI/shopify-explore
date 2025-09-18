@@ -5,8 +5,8 @@ import ProductCard from "@/components/global/ProductCard";
 export default function ProductGrid({ products, layout }) {
   return (
     <div
-      className={`grid grid-cols-${layout === 5 ? 2 : 2} md:grid-cols-${layout === 5 ? 5 : 4} ${
-        layout === 5 ? "gap-2" : "gap-4"
+      className={`flex flex-wrap ${
+        layout === 5 ? "space-y-4" : "space-y-6"
       } p-2 w-fit`}
     >
       {products.length > 0 ? (
