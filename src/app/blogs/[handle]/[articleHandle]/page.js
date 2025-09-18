@@ -1,4 +1,36 @@
 import Link from "next/link";
+import { fetchShopify } from "@/lib/shopify";
+
+export async function generateMetadata({ params }) {
+  const { handle: blogHandle, articleHandle } = await Promise.resolve(params);
+  const query = `
+    query ($blogHandle: String!, $articleHandle: String!) {
+      blog(handle: $blogHandle) {
+        title
+        articles(query: $articleHandle, first: 1) {
+          edges { node { title excerpt } }
+        }
+      }
+    }
+  `;
+  try {
+    const data = await fetchShopify(query, { blogHandle, articleHandle });
+    const blog = data?.blog;
+    const article = blog?.articles?.edges?.[0]?.node;
+    const title = article?.title || articleHandle;
+    const description = article?.excerpt || `Read ${title} on HAAAIB blog.`;
+    const canonical = `/blogs/${blogHandle}/${articleHandle}`;
+    return {
+      title: `${title} | HAAAIB Blog`,
+      description,
+      alternates: { canonical },
+      openGraph: { title: `${title} | HAAAIB Blog`, description, url: canonical },
+      twitter: { card: "summary", title: `${title} | HAAAIB Blog`, description },
+    };
+  } catch {
+    return { title: `${articleHandle} | HAAAIB Blog` };
+  }
+}
 import styles from "./article-page.module.css";
 import { fetchShopify } from "@/lib/shopify";
 

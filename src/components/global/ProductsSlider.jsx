@@ -33,12 +33,16 @@ const ProductsSlider = ({ title, data }) => {
         <div className="w-fit flex flex-row items-center gap-2">
           <button
             onClick={handlePrev}
+            aria-label="Previous products"
+            title="Previous products"
             className="rounded-full cursor-pointer hidden md:flex items-center justify-center bg-[var(--accent)] p-1 text-white"
           >
             <IoIosArrowBack size={14} />
           </button>
           <button
             onClick={handleNext}
+            aria-label="Next products"
+            title="Next products"
             className="rounded-full cursor-pointer hidden md:flex items-center justify-center bg-[var(--accent)] p-1 text-white"
           >
             <IoIosArrowForward size={14} />

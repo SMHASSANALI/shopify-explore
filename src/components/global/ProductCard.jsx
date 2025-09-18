@@ -38,7 +38,7 @@ const ProductCard = ({ product }) => {
           >
             <Image
               src={displayImage.src}
-              alt={displayImage.altText || product.node.title}
+            alt={displayImage.altText || `${product.node.title} product image`}
               fill
               className="object-cover"
               loading="lazy"

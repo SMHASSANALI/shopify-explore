@@ -70,12 +70,16 @@ const ReviewsSlider = () => {
         <div className="w-fit flex flex-row items-center gap-2">
           <button
             onClick={handlePrev}
+            aria-label="Previous reviews"
+            title="Previous reviews"
             className="rounded-full cursor-pointer flex items-center justify-center bg-[var(--accent)] p-1 text-white"
           >
             <IoIosArrowBack size={14} />
           </button>
           <button
             onClick={handleNext}
+            aria-label="Next reviews"
+            title="Next reviews"
             className="rounded-full cursor-pointer flex items-center justify-center bg-[var(--accent)] p-1 text-white"
           >
             <IoIosArrowForward size={14} />

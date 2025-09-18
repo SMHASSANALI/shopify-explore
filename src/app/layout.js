@@ -21,9 +21,77 @@ const montserrat = Montserrat({
 });
 
 export const metadata = {
-  title: "Haaaib",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.haaaib.com"),
+  title: {
+    default: "HAAAIB | Pinterest-perfect home & lifestyle for less",
+    template: "%s | HAAAIB",
+  },
   description:
-    "Discover elegant, trending home décor, fashion, and lifestyle accessories – all at budget-friendly prices. HAAAIB offers UK-wide delivery for Pinterest-perfect finds.",
+    "Discover elegant, trending home décor, fashion, and lifestyle accessories – all at budget-friendly prices. UK-wide delivery.",
+  applicationName: "HAAAIB",
+  generator: "Next.js",
+  referrer: "origin-when-cross-origin",
+  keywords: [
+    "home decor",
+    "lifestyle",
+    "fashion",
+    "uk",
+    "budget",
+    "pinterest aesthetic",
+    "online store",
+  ],
+  authors: [{ name: "HAAAIB" }],
+  creator: "HAAAIB",
+  publisher: "HAAAIB",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "HAAAIB",
+    title: "HAAAIB | Pinterest-perfect home & lifestyle for less",
+    description:
+      "Discover elegant, trending home décor, fashion, and lifestyle accessories – all at budget-friendly prices. UK-wide delivery.",
+    images: [
+      {
+        url: "/assets/haaaib-logo.svg",
+        width: 1200,
+        height: 630,
+        alt: "HAAAIB logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@haaaib",
+    creator: "@haaaib",
+    title: "HAAAIB | Pinterest-perfect home & lifestyle for less",
+    description:
+      "Discover elegant, trending home décor, fashion, and lifestyle accessories – all at budget-friendly prices. UK-wide delivery.",
+    images: [
+      {
+        url: "/assets/haaaib-logo.svg",
+        alt: "HAAAIB logo",
+      },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      maxVideoPreview: -1,
+      maxImagePreview: "large",
+      maxSnippet: -1,
+    },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    pinterest: process.env.NEXT_PUBLIC_PINTEREST_SITE_VERIFICATION || undefined,
+  },
 };
 
 export default async function RootLayout({ children }) {

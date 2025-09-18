@@ -11,6 +11,13 @@ import { toTitleCase } from "@/utils/toTitleCase";
 import ReviewsSlider from "@/components/global/ReviewsSlider";
 import CollectionsSection from "@/components/global/CollectionsSection";
 
+export const metadata = {
+  title: "Home",
+  description:
+    "Shop trending home décor, fashion and lifestyle pieces at HAAAIB. UK-wide delivery and budget-friendly prices.",
+  alternates: { canonical: "/" },
+};
+
 export default async function Home() {
   const under20_99Collection = await fetchCollectionByHandle(
     "everything-under-20-99"
@@ -20,10 +27,26 @@ export default async function Home() {
   );
   const recentBlogs = await fetchBlogs({ first: 3 });
 
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "HAAAIB",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.haaaib.com",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.haaaib.com"}/search?q={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <main className="mx-auto 2xl:px-0 lg:px-4 px-2">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
       <div className="bg-[var(--secondary)]/1">
-          <HeroWrapper banners={"hero-banners"} />
+        <HeroWrapper banners={"hero-banners"} />
 
         <CollectionsSection />
       </div>
@@ -44,7 +67,7 @@ export default async function Home() {
         />
       </section>
 
-        <HeroWrapper banners={"ad-banners"} />
+      <HeroWrapper banners={"ad-banners"} />
 
       <section className="bg-[#F8FCFF] flex flex-col py-[20px] md:py-[50px]">
         <ReviewsSlider />

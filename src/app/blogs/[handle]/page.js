@@ -1,4 +1,22 @@
 import { fetchShopify } from "@/lib/shopify";
+
+export async function generateMetadata({ params }) {
+  const { handle } = await Promise.resolve(params);
+  const query = `query ($handle: String!) { blog(handle: $handle) { title } }`;
+  try {
+    const data = await fetchShopify(query, { handle });
+    const title = data?.blog?.title || handle;
+    const canonical = `/blogs/${handle}`;
+    return {
+      title: `${title} | HAAAIB Blog`,
+      alternates: { canonical },
+      openGraph: { title: `${title} | HAAAIB Blog`, url: canonical },
+      twitter: { title: `${title} | HAAAIB Blog` },
+    };
+  } catch {
+    return { title: `${handle} | HAAAIB Blog` };
+  }
+}
 import Image from "next/image";
 import Link from "next/link";
 

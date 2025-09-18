@@ -5,9 +5,33 @@ import { ProductsClient } from "@/components/products/ProductsClient";
 
 export async function generateMetadata({ params }) {
   const { handle } = await params; // Await params to resolve the Promise
-  return {
-    title: `${handle} Collection | HA-AA-IB`,
-  };
+  try {
+    const data = await fetchCollectionByHandle(handle, { first: 1 });
+    const title = data?.title || handle;
+    const description = data?.description || `Explore ${title} at HAAAIB.`;
+    const image = data?.image?.src || data?.products?.[0]?.node?.image?.src || null;
+    const canonical = `/collections/${handle}`;
+    return {
+      title: `${title} | HAAAIB`,
+      description,
+      alternates: { canonical },
+      openGraph: {
+        type: "website",
+        url: canonical,
+        title: `${title} | HAAAIB`,
+        description,
+        images: image ? [{ url: image, alt: `${title} collection` }] : undefined,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${title} | HAAAIB`,
+        description,
+        images: image ? [image] : undefined,
+      },
+    };
+  } catch {
+    return { title: `${handle} | HAAAIB` };
+  }
 }
 
 export default async function CollectionPage({ params }) {

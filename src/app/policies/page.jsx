@@ -4,6 +4,12 @@ import { getPolicies } from "@/lib/shopify";
 
 export const revalidate = 300; // Revalidate every 5 minutes
 
+export const metadata = {
+  title: "Store Policies | HAAAIB",
+  description: "Read HAAAIB's privacy, refund and terms of service policies.",
+  alternates: { canonical: "/policies" },
+};
+
 export default async function PoliciesIndexPage() {
   let shop;
   try {

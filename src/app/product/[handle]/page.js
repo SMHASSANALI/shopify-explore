@@ -7,11 +7,40 @@ import Breadcrumbs from "@/components/global/Breadcrumbs";
 
 export async function generateMetadata({ params }) {
   const { handle } = await params;
-  if (!handle) {
-    return { title: "Product Not Found | HA-AA-IB" };
-  }
+  if (!handle) return { title: "Product Not Found | HAAAIB" };
+
+  const query = `
+    query ProductSEO($handle: String!) {
+      productByHandle(handle: $handle) {
+        title
+        description
+        images(first: 1) { edges { node { src altText } } }
+      }
+    }
+  `;
+  const data = await fetchShopify(query, { handle });
+  const product = data?.productByHandle;
+  const title = product?.title || handle;
+  const description = product?.description || `Buy ${title} at HAAAIB.`;
+  const image = product?.images?.edges?.[0]?.node?.src || null;
+  const canonical = `/product/${handle}`;
   return {
-    title: `${handle} | HA-AA-IB`,
+    title: `${title} | HAAAIB`,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: "product",
+      url: canonical,
+      title: `${title} | HAAAIB`,
+      description,
+      images: image ? [{ url: image, alt: product?.images?.edges?.[0]?.node?.altText || title }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | HAAAIB`,
+      description,
+      images: image ? [image] : undefined,
+    },
   };
 }
 
