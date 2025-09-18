@@ -19,13 +19,11 @@ export default async function Home() {
     "spring-slowdown-sale"
   );
   const recentBlogs = await fetchBlogs({ first: 3 });
-  const heroBanners = await fetchCollectionByHandle("hero-banners");
-  const adBanners = await fetchCollectionByHandle("ad-banners");
 
   return (
     <main className="mx-auto 2xl:px-0 lg:px-4 px-2">
       <div className="bg-[var(--secondary)]/1">
-        <HeroWrapper banners={heroBanners.products} />
+          <HeroWrapper banners={"hero-banners"} />
 
         <CollectionsSection />
       </div>
@@ -46,7 +44,7 @@ export default async function Home() {
         />
       </section>
 
-      <HeroWrapper banners={adBanners.products} />
+        <HeroWrapper banners={"ad-banners"} />
 
       <section className="bg-[#F8FCFF] flex flex-col py-[20px] md:py-[50px]">
         <ReviewsSlider />

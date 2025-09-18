@@ -3,11 +3,14 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import FilterPanel from "@/components/products/FilterPanel";
 import SortingSelect from "@/components/products/SortingSelect";
-import LayoutButtons from "@/components/products/LayoutButtons";
 import ProductGrid from "@/components/products/ProductGrid";
 import { fetchAllProducts } from "@/lib/shopify";
 
-export const ProductsClient = ({ initialProducts, initialHasNextPage, initialEndCursor }) => {
+export const ProductsClient = ({
+  initialProducts,
+  initialHasNextPage,
+  initialEndCursor,
+}) => {
   const [products, setProducts] = useState(initialProducts);
   const [hasNextPage, setHasNextPage] = useState(initialHasNextPage);
   const [endCursor, setEndCursor] = useState(initialEndCursor);
@@ -17,7 +20,6 @@ export const ProductsClient = ({ initialProducts, initialHasNextPage, initialEnd
     price: { min: 0, max: 100 },
   });
   const [sort, setSort] = useState("best-selling");
-  const [layout, setLayout] = useState(3);
 
   // Use useRef to store the initial and accumulated products for stable reference
   const allProductsRef = useRef(initialProducts);
@@ -54,12 +56,16 @@ export const ProductsClient = ({ initialProducts, initialHasNextPage, initialEnd
         break;
       case "price-ascending":
         filtered.sort(
-          (a, b) => (a.node.minPrice ?? a.node.price) - (b.node.minPrice ?? b.node.price)
+          (a, b) =>
+            (a.node.minPrice ?? a.node.price) -
+            (b.node.minPrice ?? b.node.price)
         );
         break;
       case "price-descending":
         filtered.sort(
-          (a, b) => (b.node.minPrice ?? b.node.price) - (a.node.minPrice ?? a.node.price)
+          (a, b) =>
+            (b.node.minPrice ?? b.node.price) -
+            (a.node.minPrice ?? a.node.price)
         );
         break;
       // Add more cases as needed
@@ -70,7 +76,11 @@ export const ProductsClient = ({ initialProducts, initialHasNextPage, initialEnd
 
   const loadMore = async () => {
     setIsLoadingMore(true);
-    const { products: newProducts, hasNextPage: newHasNextPage, endCursor: newEndCursor } = await fetchAllProducts({
+    const {
+      products: newProducts,
+      hasNextPage: newHasNextPage,
+      endCursor: newEndCursor,
+    } = await fetchAllProducts({
       first: 30,
       after: endCursor,
     });
@@ -92,10 +102,6 @@ export const ProductsClient = ({ initialProducts, initialHasNextPage, initialEnd
     setSort(newSort);
   }, []);
 
-  const handleLayoutChange = useCallback((newLayout) => {
-    setLayout(newLayout);
-  }, []);
-
   return (
     <div className="flex flex-col lg:flex-row w-full h-full gap-[10px]">
       <div className="relative w-full lg:w-2/12">
@@ -106,13 +112,12 @@ export const ProductsClient = ({ initialProducts, initialHasNextPage, initialEnd
       </div>
       <div className="w-full lg:w-10/12 rounded flex flex-col gap-[20px]">
         <div className="w-full bg-[var(--background)] py-1 px-2 flex flex-row justify-between items-center">
-          <LayoutButtons onLayoutChange={handleLayoutChange} />
           <div>
             <span className="font-light">Sort by:</span>
             <SortingSelect onSortChange={handleSortChange} />
           </div>
         </div>
-        <ProductGrid products={products} layout={layout} />
+        <ProductGrid products={products} />
         {hasNextPage && (
           <div className="text-center mt-4">
             <button

@@ -27,22 +27,6 @@ export const CART_LINES_FRAGMENT = `
     }
   }
 `;
-
-// Validate all required environment variables
-// const requiredEnvVars = [
-//   "NEXT_PUBLIC_SHOPIFY_DOMAIN",
-//   "NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN",
-//   "NEXT_PUBLIC_SHOPIFY_SHOP_ID",
-//   "NEXT_PUBLIC_SHOPIFY_CLIENT_ID",
-//   "NEXT_PUBLIC_BASE_URL",
-// ];
-// const missingEnvVars = requiredEnvVars.filter((key) => process.env[key]);
-// if (missingEnvVars.length > 0) {
-//   console.error("❌ Missing required environment variables:", missingEnvVars);
-//   throw new Error("Missing required environment variables.");
-// }
-
-// Storefront API fetch function
 export async function fetchShopify(query, variables = {}, options = {}) {
   const shopifyDomain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN;
   const storefrontToken = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN;

@@ -98,7 +98,7 @@ const ReviewsSlider = () => {
             425: { slidesPerView: 1.5 },
             768: { slidesPerView: 2 },
             1024: { slidesPerView: 3 },
-            1280: { slidesPerView: 5 },
+            1280: { slidesPerView: 4 },
           }}
           loop
           autoplay={{

@@ -19,7 +19,7 @@ export default function FilterPanel({ onFilterChange }) {
     <div className="flex flex-col gap-[30px]">
       <div className="flex flex-col gap-[10px]">
         <p className="pb-2 border-b">Availability</p>
-        <div className="flex flex-row justify-start gap-4">
+        <div className="flex lg:flex-col flex-row justify-start gap-4">
           <label className="flex items-center gap-2">
             <input
               type="radio"

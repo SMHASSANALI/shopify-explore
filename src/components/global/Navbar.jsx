@@ -12,7 +12,7 @@ import MobileDrawer from "./MobileDrawer";
 
 const Navbar = async ({ customer }) => {
   const query = `{
-    collections(first: 10) {
+    collections(first: 5) {
       edges {
         node {
           id
