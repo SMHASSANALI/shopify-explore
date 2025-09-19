@@ -50,9 +50,6 @@ span {
 .product-title {
   @apply line-clamp-2 text-ellipsis;
   font-family: var(--font-montserrat);
-  font-size: 20px;
-  line-height: 24px;
-  letter-spacing: normal;
 }
 
 .c-icon {

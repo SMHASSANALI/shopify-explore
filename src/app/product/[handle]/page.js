@@ -29,7 +29,7 @@ export async function generateMetadata({ params }) {
     description,
     alternates: { canonical },
     openGraph: {
-      type: "product",
+      // type: "product",
       url: canonical,
       title: `${title} | HAAAIB`,
       description,

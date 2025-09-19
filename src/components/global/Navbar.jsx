@@ -5,7 +5,7 @@ import { fetchShopify } from "@/lib/shopify";
 import logo from "../../../public/assets/haaaib-logo.svg";
 import { MdFacebook, MdPerson, MdSearch } from "react-icons/md";
 import { PiInstagramLogo } from "react-icons/pi";
-import CartBadge from "./CartBadge";
+import CartDrawer from "./CartDrawer";
 import Dropdown from "../dropdowns/SelectDropdown";
 import SearchTrigger from "./SearchTrigger";
 import MobileDrawer from "./MobileDrawer";
@@ -144,7 +144,7 @@ const Navbar = async ({ customer }) => {
                 </Link>
               </div>
             </div>
-            <CartBadge />
+            <CartDrawer />
           </div>
 
           {/* Mobile Navigation */}

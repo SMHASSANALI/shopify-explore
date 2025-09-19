@@ -5,6 +5,7 @@ import MobileBottomNav from "@/components/global/MobileBottomNav";
 import { cookies } from "next/headers";
 import { getCustomerAccount } from "@/lib/shopify";
 import Footer from "@/components/global/Footer";
+import { CustomerProvider } from "@/contexts/CustomerContext";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -115,10 +116,12 @@ export default async function RootLayout({ children }) {
       <body suppressHydrationWarning
         className={`${poppins.variable} ${montserrat.variable} antialiased`}
       >
-        <Navbar customer={customer} />
-        {children}
-        <Footer />
-        <MobileBottomNav />
+        <CustomerProvider customer={customer}>
+          <Navbar customer={customer} />
+          {children}
+          <Footer />
+          <MobileBottomNav />
+        </CustomerProvider>
       </body>
     </html>
   );

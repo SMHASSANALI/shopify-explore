@@ -5,8 +5,11 @@ import Link from "next/link";
 import React, { useMemo, useState } from "react";
 import AddToCartButton from "./AddToCartButton";
 import StarRating from "./StarRating";
+import WishlistButton from "./WishlistButton";
+import { useCustomer } from "@/contexts/CustomerContext";
 
 const ProductCard = ({ product }) => {
+  const customer = useCustomer();
   const variants = product?.node?.variants || [];
   const chosenVariant = useMemo(() => {
     const available = variants.find((v) => v.availableForSale);
@@ -49,7 +52,10 @@ const ProductCard = ({ product }) => {
           </div>
         )}
         <div className="p-1 mt-2 flex flex-col justify-start flex-1 gap-2 h-full">
-          <h3 className="product-title md:!text-[16px] leading-[110%] !tracking-tighter !text-sm md:h-[38px] h-[32px]">
+          <div className="ml-auto w-fit">
+            <WishlistButton product={product} customer={customer} />
+          </div>
+          <h3 className="product-title md:!text-[16px] leading-[110%] !tracking-tighter !text-sm md:h-[40px]">
             {product.node.title}
           </h3>
 
@@ -81,7 +87,6 @@ const ProductCard = ({ product }) => {
                   scaleMin={scaleMin}
                   scaleMax={scaleMax}
                   ratingCount={count}
-                  size={14}
                   showText={true}
                   className="mb-1"
                 />
@@ -100,14 +105,12 @@ const ProductCard = ({ product }) => {
               );
             }
           })()}
-          <div className="mt-auto h-full w-full relative z-20 flex flex-row items-center justify-between gap-[15px]">
             {/* Variant selection removed: show only first available variant */}
             <AddToCartButton
               variantId={chosenVariant?.id || variants[0]?.id}
               quantity={1}
               disabled={!product.node.availableForSale}
             />
-          </div>
         </div>
       </Link>
     </div>

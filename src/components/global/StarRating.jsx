@@ -62,10 +62,10 @@ export default function StarRating({
   const frac = normalized - full;
 
   return (
-    <div className={`flex items-center gap-2 ${className}`} aria-label={`Rating ${ratingValue} out of ${scaleMax}`}>
-      <div className="flex items-center gap-0.5">
+    <div className={`flex md:flex-row flex-col md:items-center gap-0 md:gap-2 ${className}`} aria-label={`Rating ${ratingValue} out of ${scaleMax}`}>
+      <div className="flex items-center gap-0.5 md:text-sm text-xs">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Star key={i} size={size} fill={i < full ? 1 : i === full ? frac : 0} />
+          <Star key={i} fill={i < full ? 1 : i === full ? frac : 0} />
         ))}
       </div>
       {showText && (

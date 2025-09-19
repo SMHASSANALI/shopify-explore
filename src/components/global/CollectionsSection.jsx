@@ -1,8 +1,7 @@
 import { fetchAllCollections } from "@/lib/shopify";
-import { toTitleCase } from "@/utils/toTitleCase";
-import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import CollectionsSlider from "./CollectionSlider";
 
 const CollectionsSection = async () => {
   const allCollections = await fetchAllCollections({ first: 10 });
@@ -14,30 +13,7 @@ const CollectionsSection = async () => {
           View All Categories
         </Link>
       </div>
-      <div className="flex flex-row overflow-x-auto overflow-y-hidden gap-2 bg-white p-2 rounded-lg">
-        {allCollections.length > 0 &&
-          allCollections.map((item) => (
-            <Link
-              key={item.id}
-              href={`/collections/${item.handle}`}
-              className="hover:text-[var(--accent)] flex flex-col items-center gap-2"
-            >
-              <div className="h-[130px] w-[130px] relative rounded-sm overflow-hidden">
-                <Image
-                  src={item.image.src}
-                  alt={item.image.altText ? item.image.altText : item.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                  loading="lazy"
-                />
-              </div>
-              <span className="font-extralight text-center">
-                {toTitleCase(item.title)}
-              </span>
-            </Link>
-          ))}
-      </div>
+      <CollectionsSlider data={allCollections} />
     </div>
   );
 };

@@ -72,8 +72,13 @@ export default function AddToCartButton({
           updatedCart.id
         )}; path=/; max-age=604800`; // 7 days
         localStorage.setItem("cartId", updatedCart.id);
-        router.push(`/cart?ts=${Date.now()}`);
-        router.refresh();
+        // Open cart drawer and refresh its content
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("cart:open", { detail: { cartId: updatedCart.id } })
+          );
+          window.dispatchEvent(new Event("cart:refresh"));
+        }
       } else {
         setError("Failed to add item to cart.");
       }
@@ -95,7 +100,7 @@ export default function AddToCartButton({
         {isAdding ? "Adding..." : "Add to Cart"}
       </button>
       {error && (
-        <p className="text-red-500 !text-xs md:text-sm mt-2">{error}</p> // Display error message
+        <p className="text-red-500 !text-xs md:text-sm mt-2">{error}</p>
       )}
     </>
   );
