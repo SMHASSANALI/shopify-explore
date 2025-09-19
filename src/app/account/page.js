@@ -27,6 +27,7 @@
 // }
 
 
+// app/(auth)/account/page.jsx
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getCustomerAccount, refreshCustomerToken } from "@/lib/shopify";
@@ -44,6 +45,7 @@ export default async function AccountPage() {
   });
 
   if (!token) {
+    console.log("No access token, redirecting to login");
     redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/login`);
   }
 
@@ -52,7 +54,9 @@ export default async function AccountPage() {
     const refreshToken = cookieStore.get("customer_refresh_token")?.value;
     if (refreshToken) {
       try {
+        console.log("Attempting token refresh with:", { refreshToken });
         const newTokens = await refreshCustomerToken(refreshToken);
+        console.log("Refresh Token Response:", newTokens);
         token = newTokens.access_token;
         cookieStore.set("customer_access_token", token, {
           path: "/",
@@ -66,11 +70,13 @@ export default async function AccountPage() {
         redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/login`);
       }
     } else {
+      console.log("No refresh token, redirecting to login");
       redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/login`);
     }
   }
 
   if (!customer) {
+    console.log("No customer data after refresh, redirecting to login");
     redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/login`);
   }
 

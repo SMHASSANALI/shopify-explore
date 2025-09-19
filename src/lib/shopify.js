@@ -320,6 +320,36 @@ export async function customerCreate({ email, password, firstName, lastName }) {
 }
 
 // Fetch customer data using Customer Account API
+// export async function getCustomerAccount({ accessToken }) {
+//   if (!accessToken) {
+//     console.error("❌ No access token provided for getCustomerAccount");
+//     return null;
+//   }
+
+//   const query = `
+//     query customerQuery {
+//       customer {
+//         id
+//         firstName
+//         lastName
+//         emailAddress {emailAddress}
+//         phoneNumber {phoneNumber}
+//         tags
+//         defaultAddress { address1 address2 city country zip }
+//       }
+//     }
+//   `;
+
+//   try {
+//     const data = await fetchCustomerAccountAPI(query, accessToken);
+//     console.log("QUERY DATA: ", data);
+//     return data?.customer || null;
+//   } catch (error) {
+//     console.error("❌ Get customer account failed:", error.message);
+//     return null;
+//   }
+// }
+
 export async function getCustomerAccount({ accessToken }) {
   if (!accessToken) {
     console.error("❌ No access token provided for getCustomerAccount");
@@ -342,10 +372,13 @@ export async function getCustomerAccount({ accessToken }) {
 
   try {
     const data = await fetchCustomerAccountAPI(query, accessToken);
-    console.log("QUERY DATA: ", data);
+    console.log("getCustomerAccount Response:", { accessToken, data });
     return data?.customer || null;
   } catch (error) {
-    console.error("❌ Get customer account failed:", error.message);
+    console.error("❌ Get customer account failed:", {
+      message: error.message,
+      accessToken,
+    });
     return null;
   }
 }
