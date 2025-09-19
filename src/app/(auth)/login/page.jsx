@@ -69,27 +69,27 @@ import { redirect } from "next/navigation";
 export const metadata = { title: "Login | HA-AA-IB" };
 
 export default function LoginPage() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  console.log("Login Env:", {
+    baseUrl,
+    shopId: process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID,
+    clientId: process.env.NEXT_PUBLIC_SHOPIFY_CLIENT_ID,
+  });
   async function loginAction() {
     "use server";
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    console.log("Login Env:", {
-      baseUrl,
-      shopId: process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID,
-      clientId: process.env.NEXT_PUBLIC_SHOPIFY_CLIENT_ID,
-    });
 
     const { authUrl, verifier, state } = await initiateCustomerAuth(baseUrl);
     const cookieStore = await cookies();
     cookieStore.set("oauth_verifier", verifier, {
       httpOnly: true,
       path: "/",
-      sameSite: "lax",
+      sameSite: "secure",
       maxAge: 600,
     });
     cookieStore.set("oauth_state", state, {
       httpOnly: true,
       path: "/",
-      sameSite: "lax",
+      sameSite: "secure",
       maxAge: 600,
     });
 
