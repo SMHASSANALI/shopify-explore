@@ -61,7 +61,6 @@
 //   );
 // }
 
-
 import { initiateCustomerAuth } from "@/lib/shopify";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -81,16 +80,18 @@ export default function LoginPage() {
     const { authUrl, verifier, state } = await initiateCustomerAuth(baseUrl);
     const cookieStore = await cookies();
     cookieStore.set("oauth_verifier", verifier, {
-      httpOnly: true,
+      httpOnly: false,
+      secure: true,
       path: "/",
-      sameSite: "secure",
-      maxAge: 600,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
     });
     cookieStore.set("oauth_state", state, {
-      httpOnly: true,
+      httpOnly: false,
+      secure: true,
       path: "/",
-      sameSite: "secure",
-      maxAge: 600,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     redirect(authUrl);
