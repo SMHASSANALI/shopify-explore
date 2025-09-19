@@ -1,62 +1,48 @@
 import Link from "next/link";
-import { fetchShopify } from "@/lib/shopify";
+import { fetchBlogs, fetchShopify } from "@/lib/shopify";
+import Image from "next/image";
 
 export default async function BlogsPage() {
-  // Query to fetch all blogs
-  const query = `
-    {
-      blogs(first: 10) {
-        edges {
-          node {
-            id
-            title
-            handle
-          }
-        }
-      }
-    }
-  `;
-
-  // Fetch data with error handling
-  const fetchData = async () => {
-    try {
-      const data = await fetchShopify(query);
-      if (!data?.blogs?.edges) {
-        console.error("No blogs data received:", data);
-        return { blogs: { edges: [] } };
-      }
-      return data;
-    } catch (error) {
-      console.error("Error fetching Shopify blogs:", error);
-      return { blogs: { edges: [] } };
-    }
-  };
-
-  const data = await fetchData();
-  const blogs = data?.blogs?.edges || [];
+  const recentBlogs = await fetchBlogs({ first: 100 });
 
   return (
     <main className="w-full flex p-2 md:p-0">
       <div className="max-w-[1400px] mx-auto w-full min-h-screen">
         <h1 className="py-[50px]">Blogs</h1>
-        {blogs.length === 0 ? (
+        {recentBlogs.length === 0 ? (
           <p className="text-white text-lg">No blogs available.</p>
         ) : (
-          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {blogs.map((edge) => (
-              <li
-                key={edge.node.id}
-                className="bg-white rounded-md shadow p-4 hover:shadow-lg transition-shadow"
-              >
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {recentBlogs.length > 0 ? (
+              recentBlogs.map((blog) => (
                 <Link
-                  href={`/blogs/${edge.node.handle}`}
-                  className="text-lg font-semibold text-neutral-800 hover:text-[var(--accent)]"
+                  key={blog.id}
+                  href={`/blogs/${blog.blog.handle}`}
+                  className="p-4 bg-white rounded-lg shadow-md flex flex-col justify-between hover:shadow-lg transition-shadow"
                 >
-                  {edge.node.title}
+                  <div className="relative w-full h-48 object-cover rounded-md overflow-hidden mb-4">
+                    <Image
+                      src={blog.image || "/public/assets/placeholder.jpg"}
+                      alt={blog.image?.altText || blog.title}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      fill
+                      className="object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{blog.title}</h3>
+                  <p className="text-sm text-gray-600 line-clamp-3 text-ellipsis mb-2">
+                    {blog.excerpt || blog.content}
+                  </p>
+                  <p className="text-black font-semibold ml-auto w-fit text-xs">
+                    Published on {new Date(blog.publishedAt).toLocaleDateString()}
+                  </p>
                 </Link>
-              </li>
-            ))}
-          </ul>
+              ))
+            ) : (
+              <p className="text-center text-gray-500">No articles available</p>
+            )}
+          </div>
         )}
       </div>
     </main>

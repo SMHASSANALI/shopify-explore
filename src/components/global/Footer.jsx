@@ -19,6 +19,7 @@ export default async function Footer() {
             src={logo}
             alt="logo"
             fill
+            priority
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
           />
         </div>
@@ -60,7 +61,7 @@ export default async function Footer() {
             <p className="pb-1">
               Be the first to know about new collections and special offers.
             </p>
-            <form className="flex flex-row w-full">
+            <form className="flex flex-row w-full gap-[10px]">
               <input
                 type="email"
                 placeholder="Enter your email"
@@ -83,7 +84,7 @@ export default async function Footer() {
             >
               Privacy Policy
             </Link>
-            <Link className="!text-sm !text-gray-400" href="/policies/refund">
+            <Link className="pr-2 !text-sm !text-gray-400" href="/policies/refund">
               Return Policy
             </Link>
             <Link className="!text-sm !text-gray-400" href="/policies/terms">
@@ -114,23 +115,26 @@ export default async function Footer() {
             <Image
               src="/assets/visa.svg"
               alt="Visa Logo"
-              width={30}
-              height={20}
-              style={{ objectFit: "contain" }}
+              width={40}
+              height={30}
+              style={{ objectFit: "contain", width: "40px", height: "30px" }}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
             <Image
               src="/assets/masterCard.svg"
               alt="Mastercard Logo"
-              width={30}
-              height={20}
-              style={{ objectFit: "contain" }}
+              width={40}
+              height={30}
+              style={{ objectFit: "contain", width: "40px", height: "30px" }}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
             <Image
               src="/assets/paypal.svg"
               alt="Paypal Logo"
-              width={30}
-              height={20}
-              style={{ objectFit: "contain" }}
+              width={40}
+              height={30}
+              style={{ objectFit: "contain", width: "40px", height: "30px" }}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
           </div>
         </div>

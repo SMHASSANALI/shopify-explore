@@ -32,7 +32,6 @@ export async function generateMetadata({ params }) {
   }
 }
 import styles from "./article-page.module.css";
-import { fetchShopify } from "@/lib/shopify";
 
 export default async function ArticlePage({ params }) {
   const { handle: blogHandle, articleHandle } = await Promise.resolve(params);

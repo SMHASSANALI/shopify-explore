@@ -61,9 +61,9 @@ const ProductsSlider = ({ title, data }) => {
           grabCursor
           touchRatio={1.5}
           breakpoints={{
-            0: { slidesPerView: 1.5 },
-            640: { slidesPerView: 1.5 },
-            768: { slidesPerView: 1.5 },
+            0: { slidesPerView: 2 },
+            425: { slidesPerView: 2 },
+            768: { slidesPerView: 3 },
             1024: { slidesPerView: 4 },
             1280: { slidesPerView: 5 },
           }}

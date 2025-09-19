@@ -1,9 +1,8 @@
-// components/HeroWrapper.tsx
 import { Suspense } from "react";
 import { fetchCollectionByHandle } from "@/lib/shopify";
 import Hero from "./Hero";
 
-export default async function HeroWrapper({ handle = "hero-banners" }) {
+export default async function HeroWrapper({ handle }) {
   const collection = await fetchCollectionByHandle(handle);
   const banners = collection.products || [];
 

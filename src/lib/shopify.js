@@ -246,9 +246,8 @@ export async function customerLogout(idToken) {
     post_logout_redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/login`,
   });
 
-  const logoutUrl = `https://shopify.com/authentication/${
-    process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID
-  }/logout?${params.toString()}`;
+  const logoutUrl = `https://shopify.com/authentication/${process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID
+    }/logout?${params.toString()}`;
   console.log("Logout URL:", logoutUrl);
   return logoutUrl;
 }
@@ -477,7 +476,6 @@ export async function fetchCollectionByHandle(handle, options = {}) {
 
   const variables = { handle };
   const data = await fetchShopify(query, variables, {
-    cache: options.cache || "no-store",
     revalidate: options.revalidate || 300,
   });
 
@@ -572,7 +570,6 @@ export async function fetchAllCollections(options = {}) {
 
   const variables = {};
   const data = await fetchShopify(query, variables, {
-    cache: options.cache || "no-store",
     revalidate: options.revalidate || 300,
   });
 
@@ -589,7 +586,7 @@ export async function fetchAllCollections(options = {}) {
   }));
 }
 
-// Function to Fetch Blogs along with Articles
+// Function to Fetch Blogs along with Articles and their images
 export async function fetchBlogs(options = {}) {
   const query = `
     {
@@ -609,6 +606,18 @@ export async function fetchBlogs(options = {}) {
             blog {
               title
               handle
+              articles(first: 1) {
+                edges {
+                  node {
+                    id
+                    title
+                    excerpt
+                    image {
+                      url
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -618,7 +627,6 @@ export async function fetchBlogs(options = {}) {
 
   const variables = {};
   const data = await fetchShopify(query, variables, {
-    cache: options.cache || "no-store",
     revalidate: options.revalidate || 300,
   });
 
@@ -636,6 +644,7 @@ export async function fetchBlogs(options = {}) {
     publishedAt: node.publishedAt,
     author: node.author,
     blog: node.blog,
+    image: node.blog?.articles?.edges?.[0]?.node?.image?.url,
   }));
 }
 
@@ -667,9 +676,8 @@ export async function fetchAllProducts(options = {}) {
 
   const query = `
     {
-      products(first: ${first}, after: ${
-    after ? `"${after}"` : null
-  }, query: "${queryFilter.trim()}", sortKey: ${sortKey || "BEST_SELLING"}) {
+      products(first: ${first}, after: ${after ? `"${after}"` : null
+    }, query: "${queryFilter.trim()}", sortKey: ${sortKey || "BEST_SELLING"}) {
         edges {
           node {
             id
@@ -708,7 +716,6 @@ export async function fetchAllProducts(options = {}) {
 
   const variables = {};
   const data = await fetchShopify(query, variables, {
-    cache: options.cache || "no-store",
     revalidate: options.revalidate || 300,
   });
 

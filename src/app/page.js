@@ -46,7 +46,7 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       <div className="bg-[var(--secondary)]/1">
-        <HeroWrapper banners={"hero-banners"} />
+        <HeroWrapper handle={"hero-banners"} />
 
         <CollectionsSection />
       </div>
@@ -67,7 +67,7 @@ export default async function Home() {
         />
       </section>
 
-      <HeroWrapper banners={"ad-banners"} />
+      <HeroWrapper handle={"ad-banners"} />
 
       <section className="bg-[#F8FCFF] flex flex-col py-[20px] md:py-[50px]">
         <ReviewsSlider />
@@ -85,21 +85,21 @@ export default async function Home() {
             recentBlogs.map((blog) => (
               <Link
                 key={blog.id}
-                href={`/blogs/${blog.blog.handle}/${blog.handle}`}
+                href={`/blogs/${blog.blog.handle}`}
                 className="p-4 bg-white rounded-lg shadow-md flex flex-col justify-between hover:shadow-lg transition-shadow"
               >
-                <div className="relative w-full h-64 rounded-t overflow-hidden mb-2">
+                <div className="relative w-full h-48 object-cover rounded-md overflow-hidden mb-4">
                   <Image
-                    src={blog.featuredImage?.url || "/assets/placeholder.jpg"}
-                    alt={blog.featuredImage?.altText || blog.title}
+                    src={blog.image || "/public/assets/placeholder.jpg"}
+                    alt={blog.image?.altText || blog.title}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                     fill
                     className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                     loading="lazy"
                   />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{blog.title}</h3>
-                <p className="text-sm text-gray-600 line-clamp-3 text-ellipsis">
+                <p className="text-sm text-gray-600 line-clamp-3 text-ellipsis mb-2">
                   {blog.excerpt || blog.content}
                 </p>
                 <p className="text-black font-semibold ml-auto w-fit text-xs">

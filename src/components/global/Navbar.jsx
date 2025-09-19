@@ -42,12 +42,23 @@ const Navbar = async ({ customer }) => {
 
   const collections = collectionsData?.collections?.edges || [];
   const blogs = collectionsData?.blogs?.edges || [];
-
-  const collectionItems = collections.map((edge) => ({
-    id: edge.node.id,
-    title: edge.node.title,
-    href: `/collections/${edge.node.handle}`,
-  }));
+  // push to the collectionsItems array if the title is not "Spooky Autumn", "Ad Banners", "Bento Images", "Hero Banners"
+  const collectionItems = collections
+    .filter((edge) => {
+      return (
+        edge.node.title !== "Spooky Autumn" &&
+        edge.node.title !== "Ad Banners" &&
+        edge.node.title !== "Bento Images" &&
+        edge.node.title !== "Hero Banners"
+      );
+    })
+    .map((edge) => {
+      return {
+        id: edge.node.id,
+        title: edge.node.title,
+        href: `/collections/${edge.node.handle}`,
+      };
+    });
 
   const blogItems = blogs.map((edge) => ({
     id: edge.node.id,
@@ -60,10 +71,20 @@ const Navbar = async ({ customer }) => {
       <header className="w-full bg-[var(--accent)] flex items-center justify-center text-white 2xl:px-0 lg:px-4 px-2">
         <main className="max-w-[1400px] w-full py-1 hidden md:flex flex-row relative">
           <div className="w-fit flex flex-row gap-[10px]">
-            <Link target="_blank" href={"https://www.facebook.com/haaaib"} aria-label="HAAAIB on Facebook" title="HAAAIB on Facebook">
+            <Link
+              target="_blank"
+              href={"https://www.facebook.com/haaaib"}
+              aria-label="HAAAIB on Facebook"
+              title="HAAAIB on Facebook"
+            >
               <MdFacebook size={"26px"} />
             </Link>
-            <Link target="_blank" href={"https://www.instagram.com/haaaibuk"} aria-label="HAAAIB on Instagram" title="HAAAIB on Instagram">
+            <Link
+              target="_blank"
+              href={"https://www.instagram.com/haaaibuk"}
+              aria-label="HAAAIB on Instagram"
+              title="HAAAIB on Instagram"
+            >
               <PiInstagramLogo size={"26px"} />
             </Link>
           </div>
@@ -82,13 +103,19 @@ const Navbar = async ({ customer }) => {
       <main className="w-full flex items-center justify-center bg-[var(--primary-dark)] 2xl:px-0 lg:px-4 px-2">
         <div className="flex flex-row items-center justify-between h-auto w-full max-w-[1400px] gap-2 py-1.5">
           <div className="w-full md:w-3/12 h-full relative">
-            <Link href="/" className="flex items-start justify-start" aria-label="HAAAIB Home" title="HAAAIB Home">
+            <Link
+              href="/"
+              className="flex items-start justify-start"
+              aria-label="HAAAIB Home"
+              title="HAAAIB Home"
+            >
               <Image
                 src={logo}
                 alt="HAAAIB logo"
                 height={60}
                 width={160}
                 className="w-auto h-auto"
+                priority
               />
             </Link>
           </div>

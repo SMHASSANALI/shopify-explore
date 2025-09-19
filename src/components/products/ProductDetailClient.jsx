@@ -211,7 +211,7 @@ export default function ProductDetailClient({
         </div>
 
         {/* Tags and Collections */}
-        <div className="flex flex-col gap-2 mb-6">
+        {/* <div className="flex flex-col gap-2 mb-6">
           <div className="flex flex-row w-full gap-4 items-center">
             <p className="font-bold">Type :</p>
             <div className="flex flex-row gap-2 flex-wrap">
@@ -229,7 +229,7 @@ export default function ProductDetailClient({
             <p className="font-bold">Tags :</p>
             <p>{tags.map((tag) => tag).join(", ")}</p>
           </div>
-        </div>
+        </div> */}
         {/* Product Description */}
         <div className="flex flex-col gap-4">
           <h3 className="font-semibold pb-3 border-b border-gray-300">

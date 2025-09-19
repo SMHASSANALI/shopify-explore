@@ -92,6 +92,15 @@ export const metadata = {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
     pinterest: process.env.NEXT_PUBLIC_PINTEREST_SITE_VERIFICATION || undefined,
   },
+  manifest: "/assets/favicon_io/site.webmanifest",
+  icons: {
+    icon: [
+      { url: "/assets/favicon_io/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/assets/favicon_io/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/assets/favicon_io/favicon.ico" },
+    ],
+    apple: "/assets/favicon_io/apple-touch-icon.png",
+  },
 };
 
 export default async function RootLayout({ children }) {
@@ -103,7 +112,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body
+      <body suppressHydrationWarning
         className={`${poppins.variable} ${montserrat.variable} antialiased`}
       >
         <Navbar customer={customer} />
