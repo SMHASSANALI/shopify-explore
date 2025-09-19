@@ -83,14 +83,14 @@ export default function LoginPage() {
       httpOnly: false,
       secure: true,
       path: "/",
-      sameSite: "lax",
+      sameSite: "none",
       maxAge: 24 * 60 * 60 * 1000,
     });
     cookieStore.set("oauth_state", state, {
       httpOnly: false,
       secure: true,
       path: "/",
-      sameSite: "lax",
+      sameSite: "none",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
