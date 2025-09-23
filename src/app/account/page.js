@@ -29,8 +29,10 @@
 
 // app/(auth)/account/page.jsx
 // src/app/account/page.js
+// src/app/account/page.js
 import { cookies } from "next/headers";
-import { getCustomerAccount, refreshCustomerToken } from "@/lib/shopify";
+import { getCustomerAccount } from "@/lib/shopify";
+import { refreshTokenAction } from "@/lib/actions";
 
 export default async function AccountPage() {
   const cookieStore = await cookies();
@@ -46,24 +48,28 @@ export default async function AccountPage() {
     );
   }
 
-  let customer = await getCustomerAccount({ accessToken });
-
-  if (!customer) {
-    // Try refreshing the token
-    const refreshToken = cookieStore.get("customer_refresh_token")?.value;
-    if (refreshToken) {
+  let customer = null;
+  try {
+    customer = await getCustomerAccount({ accessToken });
+  } catch (error) {
+    if (error.message.includes("HTTP 401")) {
+      // Token is invalid or expired, try refreshing
       try {
-        const { access_token, expires_in } = await refreshCustomerToken(refreshToken);
-        cookieStore.set("customer_access_token", access_token, {
-          path: "/",
-          httpOnly: true,
-          sameSite: "lax",
-          expires: new Date(Date.now() + expires_in * 1000),
-        });
-        customer = await getCustomerAccount({ accessToken: access_token });
-      } catch (error) {
-        console.error("Token refresh failed:", error.message);
+        const { access_token } = await refreshTokenAction();
+        accessToken = access_token; // Update accessToken with the new one
+        customer = await getCustomerAccount({ accessToken }); // Retry with new token
+      } catch (refreshError) {
+        console.error("Token refresh failed:", refreshError.message);
+        return (
+          <div className="flex flex-col gap-2 items-center justify-center min-h-screen">
+            <h1>Account</h1>
+            <p>Unable to refresh session. Please log in again.</p>
+            <a href="/login">Log in</a>
+          </div>
+        );
       }
+    } else {
+      console.error("Failed to fetch customer account:", error.message);
     }
   }
 
@@ -78,7 +84,7 @@ export default async function AccountPage() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-2 items-center justify-center min-h-screen">
       <h1>Account</h1>
       <p>Welcome, {customer.firstName} {customer.lastName}</p>
       <p>Email: {customer.emailAddress?.emailAddress}</p>

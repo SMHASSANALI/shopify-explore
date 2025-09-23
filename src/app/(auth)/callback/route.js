@@ -87,15 +87,14 @@ export async function GET(request) {
   const storedState = cookieStore.get("oauth_state")?.value;
   const verifier = cookieStore.get("oauth_verifier")?.value;
 
-  console.log("Callback Cookies:", {
-    state,
-    storedState,
-    verifier,
-    allCookies: cookieStore.getAll(), // Log all cookies for debugging
-  });
-
   if (!storedState) {
     console.error("No oauth_state cookie found");
+    console.log("Callback Cookies:", {
+      state,
+      storedState,
+      verifier,
+      allCookies: cookieStore.getAll(),
+    });
     return NextResponse.redirect(`${origin}/login?error=no-state-cookie`);
   }
 

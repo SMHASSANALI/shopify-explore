@@ -107,11 +107,11 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("customer_access_token")?.value;
-  console.log("Root Layout:", { accessToken });
+  console.log("Root Layout:", { accessToken, cookieStore });
   const customer = accessToken
     ? await getCustomerAccount({ accessToken })
     : null;
-
+  console.log("Root Layout:", { customer });
   return (
     <html lang="en">
       <body suppressHydrationWarning

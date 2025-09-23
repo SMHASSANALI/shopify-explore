@@ -73,12 +73,14 @@ export default function LoginPage() {
     baseUrl,
     shopId: process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID,
     clientId: process.env.NEXT_PUBLIC_SHOPIFY_CLIENT_ID,
+
   });
   async function loginAction() {
     "use server";
-
+    console.log("Login Action: Triggered" );
     const { authUrl, verifier, state } = await initiateCustomerAuth(baseUrl);
     const cookieStore = await cookies();
+    console.log("Login Action:", { authUrl, verifier, state });
     cookieStore.set("oauth_state", state, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
