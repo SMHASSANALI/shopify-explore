@@ -75,31 +75,74 @@ export async function fetchShopify(query, variables = {}, options = {}) {
 }
 
 // Customer Account API fetch function
-export async function fetchCustomerAccountAPI(
-  query,
-  accessToken,
-  variables = {}
-) {
-  const token = accessToken;
-  console.log("Shopify.js token:", token);
+// export async function fetchCustomerAccountAPI(
+//   query,
+//   accessToken,
+//   variables = {}
+// ) {
+//   const token = accessToken;
+//   console.log("Shopify.js token:", token);
+//   const shopId = process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID;
+//   if (!shopId || !accessToken) {
+//     console.error("❌ Missing Customer Account API variables:", {
+//       shopId,
+//       accessToken: token,
+//     });
+//     throw new Error(
+//       "Missing shop ID or access token for Customer Account API."
+//     );
+//   }
+
+//   const url = `https://shopify.com/${shopId}/account/customer/api/2025-07/graphql`;
+//   try {
+//     const res = await fetch(url, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//       body: JSON.stringify({ query, variables }),
+//     });
+
+//     if (!res.ok) {
+//       const error = await res.json();
+//       console.error("❌ Customer Account API HTTP Error:", res.status, error);
+//       throw new Error(
+//         `HTTP ${res.status}: ${error.message || "Unknown error"}`
+//       );
+//     }
+
+//     const json = await res.json();
+//     if (json.errors) {
+//       console.error("❌ Customer Account API GraphQL Errors:", json.errors);
+//       throw new Error(json.errors.map((e) => e.message).join(", "));
+//     }
+
+//     return json.data;
+//   } catch (error) {
+//     console.error("❌ Fetch Customer Account API failed:", error.message);
+//     throw error;
+//   }
+// }
+export async function fetchCustomerAccountAPI(query, accessToken, variables = {}) {
   const shopId = process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID;
   if (!shopId || !accessToken) {
     console.error("❌ Missing Customer Account API variables:", {
       shopId,
-      accessToken: token,
+      accessToken,
     });
-    throw new Error(
-      "Missing shop ID or access token for Customer Account API."
-    );
+    throw new Error("Missing shop ID or access token for Customer Account API.");
   }
 
   const url = `https://shopify.com/${shopId}/account/customer/api/2025-07/graphql`;
+  const authHeader = `Bearer ${accessToken}`;
+  console.log("Sending Authorization Header:", authHeader); // Debug log
   try {
     const res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: authHeader,
       },
       body: JSON.stringify({ query, variables }),
     });
@@ -107,9 +150,7 @@ export async function fetchCustomerAccountAPI(
     if (!res.ok) {
       const error = await res.json();
       console.error("❌ Customer Account API HTTP Error:", res.status, error);
-      throw new Error(
-        `HTTP ${res.status}: ${error.message || "Unknown error"}`
-      );
+      throw new Error(`HTTP ${res.status}: ${error.message || "Unknown error"}`);
     }
 
     const json = await res.json();

@@ -28,62 +28,60 @@
 
 
 // app/(auth)/account/page.jsx
+// src/app/account/page.js
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { getCustomerAccount, refreshCustomerToken } from "@/lib/shopify";
-import AccountTabs from "@/components/global/AccountTabs";
-
-export const metadata = { title: "Account | HAAAIB" };
 
 export default async function AccountPage() {
   const cookieStore = await cookies();
-  let token = cookieStore.get("customer_access_token")?.value;
-  console.log("AccountPage Cookies:", {
-    accessToken: token,
-    refreshToken: cookieStore.get("customer_refresh_token")?.value,
-    idToken: cookieStore.get("customer_id_token")?.value,
-  });
+  let accessToken = cookieStore.get("customer_access_token")?.value;
 
-  if (!token) {
-    console.log("No access token, redirecting to login");
-    redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/login`);
+  if (!accessToken) {
+    return (
+      <div>
+        <h1>Account</h1>
+        <p>Please log in to view your account.</p>
+        <a href="/login">Log in</a>
+      </div>
+    );
   }
 
-  let customer = await getCustomerAccount({ accessToken: token });
+  let customer = await getCustomerAccount({ accessToken });
+
   if (!customer) {
+    // Try refreshing the token
     const refreshToken = cookieStore.get("customer_refresh_token")?.value;
     if (refreshToken) {
       try {
-        console.log("Attempting token refresh with:", { refreshToken });
-        const newTokens = await refreshCustomerToken(refreshToken);
-        console.log("Refresh Token Response:", newTokens);
-        token = newTokens.access_token;
-        cookieStore.set("customer_access_token", token, {
+        const { access_token, expires_in } = await refreshCustomerToken(refreshToken);
+        cookieStore.set("customer_access_token", access_token, {
           path: "/",
           httpOnly: true,
           sameSite: "lax",
-          expires: new Date(Date.now() + newTokens.expires_in * 1000),
+          expires: new Date(Date.now() + expires_in * 1000),
         });
-        customer = await getCustomerAccount({ accessToken: token });
+        customer = await getCustomerAccount({ accessToken: access_token });
       } catch (error) {
         console.error("Token refresh failed:", error.message);
-        redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/login`);
       }
-    } else {
-      console.log("No refresh token, redirecting to login");
-      redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/login`);
     }
   }
 
   if (!customer) {
-    console.log("No customer data after refresh, redirecting to login");
-    redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/login`);
+    return (
+      <div>
+        <h1>Account</h1>
+        <p>Unable to fetch account details. Please try again.</p>
+        <a href="/login">Log in</a>
+      </div>
+    );
   }
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-8">Your Account</h1>
-      <AccountTabs customer={customer} />
-    </main>
+    <div>
+      <h1>Account</h1>
+      <p>Welcome, {customer.firstName} {customer.lastName}</p>
+      <p>Email: {customer.emailAddress?.emailAddress}</p>
+    </div>
   );
 }

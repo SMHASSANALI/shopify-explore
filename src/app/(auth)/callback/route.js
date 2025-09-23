@@ -61,6 +61,7 @@
 
 
 
+// src/app/auth/callback/route.js
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { exchangeCodeForToken } from "@/lib/shopify";
@@ -86,7 +87,17 @@ export async function GET(request) {
   const storedState = cookieStore.get("oauth_state")?.value;
   const verifier = cookieStore.get("oauth_verifier")?.value;
 
-  console.log("Callback Cookies:", { state, storedState, verifier });
+  console.log("Callback Cookies:", {
+    state,
+    storedState,
+    verifier,
+    allCookies: cookieStore.getAll(), // Log all cookies for debugging
+  });
+
+  if (!storedState) {
+    console.error("No oauth_state cookie found");
+    return NextResponse.redirect(`${origin}/login?error=no-state-cookie`);
+  }
 
   if (state !== storedState) {
     console.error("State mismatch:", { state, storedState });
@@ -99,8 +110,9 @@ export async function GET(request) {
   }
 
   try {
-    const { access_token, refresh_token, id_token, expires_in } =
-      await exchangeCodeForToken(code, verifier, state, storedState);
+    const tokenResponse = await exchangeCodeForToken(code, verifier, state, storedState);
+    console.log("Raw Token Response:", tokenResponse); // Debug raw response
+    const { access_token, refresh_token, id_token, expires_in } = tokenResponse;
     console.log("Callback Tokens:", { access_token, refresh_token, id_token, expires_in });
 
     const response = NextResponse.redirect(`${origin}/account`);
@@ -108,8 +120,7 @@ export async function GET(request) {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
-      expires: new Date(Date.now() + expires_in * 1000),
-      domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN || ".haaaib.com",
+      expires: new Date(Date.now() + (expires_in * 1000 || 3600 * 1000)), // Fallback to 1 hour
     });
     response.cookies.set("customer_refresh_token", refresh_token, {
       path: "/",
