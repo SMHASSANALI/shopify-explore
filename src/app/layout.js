@@ -107,6 +107,7 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("customer_access_token")?.value;
+  console.log("Root Layout:", { accessToken });
   const customer = accessToken
     ? await getCustomerAccount({ accessToken })
     : null;

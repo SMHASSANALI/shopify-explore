@@ -127,16 +127,13 @@ export async function fetchShopify(query, variables = {}, options = {}) {
 export async function fetchCustomerAccountAPI(query, accessToken, variables = {}) {
   const shopId = process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID;
   if (!shopId || !accessToken) {
-    console.error("❌ Missing Customer Account API variables:", {
-      shopId,
-      accessToken,
-    });
+    console.error("❌ Missing Customer Account API variables:", { shopId, accessToken });
     throw new Error("Missing shop ID or access token for Customer Account API.");
   }
 
-  const url = `https://shopify.com/${shopId}/account/customer/api/2025-07/graphql`;
+  const url = `https://shopify.com/account/customer/api/2025-07/graphql.json`;;
   const authHeader = `Bearer ${accessToken}`;
-  console.log("Sending Authorization Header:", authHeader); // Debug log
+
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -148,7 +145,7 @@ export async function fetchCustomerAccountAPI(query, accessToken, variables = {}
     });
 
     if (!res.ok) {
-      const error = await res.json();
+      const error = await res.json().catch(() => ({}));
       console.error("❌ Customer Account API HTTP Error:", res.status, error);
       throw new Error(`HTTP ${res.status}: ${error.message || "Unknown error"}`);
     }
@@ -398,18 +395,24 @@ export async function getCustomerAccount({ accessToken }) {
   }
 
   const query = `
-    query customerQuery {
-      customer {
-        id
-        firstName
-        lastName
-        emailAddress {emailAddress}
-        phoneNumber {phoneNumber}
-        tags
-        defaultAddress { address1 address2 city country zip }
+  query customerQuery {
+    customer {
+      id
+      firstName
+      lastName
+      emailAddress
+      phoneNumber
+      tags
+      defaultAddress {
+        address1
+        address2
+        city
+        country
+        zip
       }
     }
-  `;
+  }
+`;
 
   try {
     const data = await fetchCustomerAccountAPI(query, accessToken);

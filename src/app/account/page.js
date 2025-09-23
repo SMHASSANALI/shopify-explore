@@ -38,7 +38,7 @@ export default async function AccountPage() {
 
   if (!accessToken) {
     return (
-      <div>
+      <div className="flex flex-col gap-2 items-center justify-center min-h-screen">
         <h1>Account</h1>
         <p>Please log in to view your account.</p>
         <a href="/login">Log in</a>
@@ -69,7 +69,7 @@ export default async function AccountPage() {
 
   if (!customer) {
     return (
-      <div>
+      <div className="flex flex-col gap-2 items-center justify-center min-h-screen">
         <h1>Account</h1>
         <p>Unable to fetch account details. Please try again.</p>
         <a href="/login">Log in</a>

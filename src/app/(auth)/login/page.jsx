@@ -76,24 +76,24 @@ export default function LoginPage() {
   });
   async function loginAction() {
     "use server";
-  
+
     const { authUrl, verifier, state } = await initiateCustomerAuth(baseUrl);
     const cookieStore = await cookies();
-    cookieStore.set("oauth_verifier", verifier, {
-      httpOnly: true, // Set to true for security
-      secure: process.env.NODE_ENV === "production", // Use secure only in production
-      path: "/",
-      sameSite: "lax", // Change to lax for better compatibility
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-    });
     cookieStore.set("oauth_state", state, {
-      httpOnly: true, // Set to true for security
-      secure: process.env.NODE_ENV === "production", // Use secure only in production
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       path: "/",
-      sameSite: "lax", // Change to lax for better compatibility
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60, // ✅ fixed (1 day in seconds)
     });
-  
+    cookieStore.set("oauth_verifier", verifier, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60,
+    });
+
     redirect(authUrl);
   }
 

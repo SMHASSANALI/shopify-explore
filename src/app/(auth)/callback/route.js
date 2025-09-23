@@ -126,13 +126,13 @@ export async function GET(request) {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60,
+      maxAge: 24 * 60 * 60,
     });
     response.cookies.set("customer_id_token", id_token, {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60,
+      maxAge: 24 * 60 * 60,
     });
 
     response.cookies.delete("oauth_verifier");
