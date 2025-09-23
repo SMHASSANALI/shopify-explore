@@ -37,7 +37,6 @@ export default async function CartPage({ searchParams }) {
         </main>
       );
     }
-    console.log("Cart data:", cart);
   } catch (error) {
     console.error("Error fetching cart:", error);
     return (

@@ -7,8 +7,7 @@ export async function GET(request) {
   const idToken = cookieStore.get("customer_id_token")?.value;
 
   const url = new URL(request.url);
-  const origin = `${url.protocol}//${url.host}`;
-//   const origin = process.env.NEXT_PUBLIC_BASE_URL;
+  const origin = process.env.NEXT_PUBLIC_BASE_URL || url.origin;
   const response = NextResponse.redirect(new URL("/", origin));
 
   response.cookies.delete("customer_access_token");
@@ -21,8 +20,7 @@ export async function GET(request) {
   try {
     if (idToken) {
       const shopifyLogout = await customerLogout(idToken, origin);
-      console.log(shopifyLogout)
-    //   return NextResponse.redirect(new URL(shopifyLogout));
+      return NextResponse.redirect(new URL(shopifyLogout));
     }
   } catch (err) {
     console.error("Logout redirect failed:", err?.message || err);

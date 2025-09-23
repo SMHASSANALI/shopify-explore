@@ -73,60 +73,6 @@ export async function fetchShopify(query, variables = {}, options = {}) {
     throw error;
   }
 }
-
-// Customer Account API fetch function
-// export async function fetchCustomerAccountAPI(
-//   query,
-//   accessToken,
-//   variables = {}
-// ) {
-//   const token = accessToken;
-//   console.log("Shopify.js token:", token);
-//   const shopId = process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID;
-//   if (!shopId || !accessToken) {
-//     console.error("❌ Missing Customer Account API variables:", {
-//       shopId,
-//       accessToken: token,
-//     });
-//     throw new Error(
-//       "Missing shop ID or access token for Customer Account API."
-//     );
-//   }
-
-//   const url = `https://shopify.com/${shopId}/account/customer/api/2025-07/graphql`;
-//   try {
-//     const res = await fetch(url, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//       body: JSON.stringify({ query, variables }),
-//     });
-
-//     if (!res.ok) {
-//       const error = await res.json();
-//       console.error("❌ Customer Account API HTTP Error:", res.status, error);
-//       throw new Error(
-//         `HTTP ${res.status}: ${error.message || "Unknown error"}`
-//       );
-//     }
-
-//     const json = await res.json();
-//     if (json.errors) {
-//       console.error("❌ Customer Account API GraphQL Errors:", json.errors);
-//       throw new Error(json.errors.map((e) => e.message).join(", "));
-//     }
-
-//     return json.data;
-//   } catch (error) {
-//     console.error("❌ Fetch Customer Account API failed:", error.message);
-//     throw error;
-//   }
-// }
-
-
-// Customer Account API fetch function
 export async function fetchCustomerAccountAPI(query, accessToken, variables = {}) {
   const shopId = process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID;
   if (!shopId || !accessToken) {
@@ -134,7 +80,7 @@ export async function fetchCustomerAccountAPI(query, accessToken, variables = {}
     throw new Error("Missing shop ID or access token for Customer Account API.");
   }
 
-  const url = `https://shopify.com/account/customer/api/2025-07/graphql.json`;;
+  const url = `https://${shopId}/account/customer/api/2025-07/graphql.json`;
   const authHeader = `Bearer ${accessToken}`;
 
   try {
@@ -289,7 +235,6 @@ export async function customerLogout(idToken) {
 
   const logoutUrl = `https://shopify.com/authentication/${process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID
     }/logout?${params.toString()}`;
-  console.log("Logout URL:", logoutUrl);
   return logoutUrl;
 }
 
@@ -361,36 +306,6 @@ export async function customerCreate({ email, password, firstName, lastName }) {
 }
 
 // Fetch customer data using Customer Account API
-// export async function getCustomerAccount({ accessToken }) {
-//   if (!accessToken) {
-//     console.error("❌ No access token provided for getCustomerAccount");
-//     return null;
-//   }
-
-//   const query = `
-//     query customerQuery {
-//       customer {
-//         id
-//         firstName
-//         lastName
-//         emailAddress {emailAddress}
-//         phoneNumber {phoneNumber}
-//         tags
-//         defaultAddress { address1 address2 city country zip }
-//       }
-//     }
-//   `;
-
-//   try {
-//     const data = await fetchCustomerAccountAPI(query, accessToken);
-//     console.log("QUERY DATA: ", data);
-//     return data?.customer || null;
-//   } catch (error) {
-//     console.error("❌ Get customer account failed:", error.message);
-//     return null;
-//   }
-// }
-
 export async function getCustomerAccount({ accessToken }) {
   if (!accessToken) {
     console.error("❌ No access token provided for getCustomerAccount");
@@ -419,7 +334,6 @@ export async function getCustomerAccount({ accessToken }) {
 
   try {
     const data = await fetchCustomerAccountAPI(query, accessToken);
-    console.log("getCustomerAccount Response:", { accessToken, data });
     return data?.customer || null;
   } catch (error) {
     console.error("❌ Get customer account failed:", {
