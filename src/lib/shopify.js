@@ -124,6 +124,9 @@ export async function fetchShopify(query, variables = {}, options = {}) {
 //     throw error;
 //   }
 // }
+
+
+// Customer Account API fetch function
 export async function fetchCustomerAccountAPI(query, accessToken, variables = {}) {
   const shopId = process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID;
   if (!shopId || !accessToken) {
