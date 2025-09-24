@@ -21,9 +21,9 @@ export async function GET(request) {
   }
 
   const cookieStore = await cookies();
-  const storedState = cookieStore.get("oauth_state").value;
+  const storedState = cookieStore.get("oauth_state") && cookieStore.get("oauth_state").value;
   console.log("StoredState :", storedState);
-  const verifier = cookieStore.get("oauth_verifier").value;
+  const verifier = cookieStore.get("oauth_verifier") && cookieStore.get("oauth_verifier").value;
   console.log("verifier :", verifier);
 
 

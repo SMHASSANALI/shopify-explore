@@ -73,22 +73,32 @@ export async function fetchShopify(query, variables = {}, options = {}) {
     throw error;
   }
 }
-export async function fetchCustomerAccountAPI(query, accessToken, variables = {}) {
+export async function fetchCustomerAccountAPI(
+  query,
+  accessToken,
+  variables = {}
+) {
   const shopId = process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID;
+  const shopDomain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN;
   if (!shopId || !accessToken) {
-    console.error("❌ Missing Customer Account API variables:", { shopId, accessToken });
-    throw new Error("Missing shop ID or access token for Customer Account API.");
+    console.error("❌ Missing Customer Account API variables:", {
+      shopId,
+      accessToken,
+    });
+    throw new Error(
+      "Missing shop ID or access token for Customer Account API."
+    );
   }
 
-  const url = `https://${shopId}/account/customer/api/2025-07/graphql.json`;
-  const authHeader = `Bearer ${accessToken}`;
+  const url = `https://shopify.com/${shopId}/account/customer/api/2025-07/graphql.json`;
+  // const authHeader = `Bearer ${accessToken}`;
 
   try {
     const res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: authHeader,
+        Authorization: { accessToken },
       },
       body: JSON.stringify({ query, variables }),
     });
@@ -96,7 +106,11 @@ export async function fetchCustomerAccountAPI(query, accessToken, variables = {}
     if (!res.ok) {
       const error = await res.json().catch(() => ({}));
       console.error("❌ Customer Account API HTTP Error:", res.status, error);
-      throw new Error(`HTTP ${res.status}: ${error.message || "Unknown error"}`);
+      throw new Error(
+        `HTTP ${res.status}: ${
+          error.message || "There was no error.message but the error is there."
+        }`
+      );
     }
 
     const json = await res.json();
@@ -233,8 +247,9 @@ export async function customerLogout(idToken) {
     post_logout_redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/login`,
   });
 
-  const logoutUrl = `https://shopify.com/authentication/${process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID
-    }/logout?${params.toString()}`;
+  const logoutUrl = `https://shopify.com/authentication/${
+    process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID
+  }/logout?${params.toString()}`;
   return logoutUrl;
 }
 
@@ -670,8 +685,9 @@ export async function fetchAllProducts(options = {}) {
 
   const query = `
     {
-      products(first: ${first}, after: ${after ? `"${after}"` : null
-    }, query: "${queryFilter.trim()}", sortKey: ${sortKey || "BEST_SELLING"}) {
+      products(first: ${first}, after: ${
+    after ? `"${after}"` : null
+  }, query: "${queryFilter.trim()}", sortKey: ${sortKey || "BEST_SELLING"}) {
         edges {
           node {
             id
