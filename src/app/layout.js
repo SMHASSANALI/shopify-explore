@@ -22,7 +22,9 @@ const montserrat = Montserrat({
 });
 
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.haaaib.com"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.haaaib.com"
+  ),
   title: {
     default: "HAAAIB | Pinterest-perfect home & lifestyle for less",
     template: "%s | HAAAIB",
@@ -96,8 +98,16 @@ export const metadata = {
   manifest: "/assets/favicon_io/site.webmanifest",
   icons: {
     icon: [
-      { url: "/assets/favicon_io/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/assets/favicon_io/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      {
+        url: "/assets/favicon_io/favicon-32x32.png",
+        sizes: "32x32",
+        type: "image/png",
+      },
+      {
+        url: "/assets/favicon_io/favicon-16x16.png",
+        sizes: "16x16",
+        type: "image/png",
+      },
       { url: "/assets/favicon_io/favicon.ico" },
     ],
     apple: "/assets/favicon_io/apple-touch-icon.png",
@@ -107,14 +117,25 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("customer_access_token")?.value;
-  console.log("Root Layout accessToken:", { accessToken });
-  const customer = accessToken
-    ? await getCustomerAccount({ accessToken })
-    : null;
+  let customer = null; // Default to null
+
+  if (accessToken) {
+    try {
+      // ✅ Wrap the API call in a try-catch block
+      customer = await getCustomerAccount({ accessToken });
+    } catch (error) {
+      console.error("Failed to fetch customer in RootLayout:", error.message);
+      // If the token is invalid or expired, customer remains null.
+      // You could also add logic here to clear the invalid token cookie.
+    }
+  }
+
   console.log("Root Layout:", { customer });
+
   return (
     <html lang="en">
-      <body suppressHydrationWarning
+      <body
+        suppressHydrationWarning
         className={`${poppins.variable} ${montserrat.variable} antialiased`}
       >
         <CustomerProvider customer={customer}>

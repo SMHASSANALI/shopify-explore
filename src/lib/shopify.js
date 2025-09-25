@@ -73,55 +73,59 @@ export async function fetchShopify(query, variables = {}, options = {}) {
     throw error;
   }
 }
+
+// Customer Account API fetch function
 export async function fetchCustomerAccountAPI(
   query,
   accessToken,
   variables = {}
 ) {
-  const shopId = process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID;
-  const shopDomain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN;
-  if (!shopId || !accessToken) {
-    console.error("❌ Missing Customer Account API variables:", {
-      shopId,
-      accessToken,
-    });
-    throw new Error(
-      "Missing shop ID or access token for Customer Account API."
-    );
+  // const shopDomain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN;
+  const customerAccountAPIURL = process.env.NEXT_PUBLIC_CUSTOMER_ACCOUNT_API_URL
+  const apiVersion = "2025-07"; // You should use an environment variable for this
+
+  // The correct URL needs to include the API version.
+  const graphqlEndpoint = `${customerAccountAPIURL}/customer/api/${apiVersion}/graphql`;
+
+  if (!graphqlEndpoint) {
+    throw new Error("Missing GraphQL endpoint.");
   }
 
-  const url = `https://shopify.com/${shopId}/account/customer/api/2025-07/graphql.json`;
-  // const authHeader = `Bearer ${accessToken}`;
 
   try {
-    const res = await fetch(url, {
-      method: "POST",
+    const res = await fetch(graphqlEndpoint, {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: { accessToken },
+        'Content-Type': 'application/json',
+        'Authorization': accessToken,
       },
-      body: JSON.stringify({ query, variables }),
+      body: JSON.stringify({
+        query: query,
+        variables: variables,
+      }),
     });
 
+    console.log("fetchCustomerAccountAPI Response:", res);
+    const data = await res.json();
+
     if (!res.ok) {
-      const error = await res.json().catch(() => ({}));
-      console.error("❌ Customer Account API HTTP Error:", res.status, error);
-      throw new Error(
-        `HTTP ${res.status}: ${
-          error.message || "There was no error.message but the error is there."
-        }`
-      );
+      console.error("❌ Customer Account API HTTP Error:", res.status, data);
+      throw new Error(`API returned ${res.status}`);
     }
 
-    const json = await res.json();
-    if (json.errors) {
-      console.error("❌ Customer Account API GraphQL Errors:", json.errors);
-      throw new Error(json.errors.map((e) => e.message).join(", "));
+    if (data.errors) {
+      console.error("❌ Customer Account API GraphQL Errors:", data.errors);
+      throw new Error(data.errors.map((e) => e.message).join(", "));
     }
 
-    return json.data;
+    return data.data;
   } catch (error) {
-    console.error("❌ Fetch Customer Account API failed:", error.message);
+    console.error("❌ Fetch Customer Account API failed:", {
+      message: error.message,
+      cause: error.cause,
+      stack: error.stack,
+      endpoint: graphqlEndpoint
+    });
     throw error;
   }
 }
@@ -156,7 +160,10 @@ export async function initiateCustomerAuth() {
     locale: "en",
   });
 
-  const authUrl = `https://shopify.com/authentication/${shopId}/oauth/authorize?${params.toString()}`;
+  // THIS IS THE CRITICAL LINE. The `authUrl` must be the custom domain from your settings.
+  // Your Shopify settings show the URL is `https://account.haaaib.com/authentication/oauth/authorize`
+  const authUrl = `https://account.haaaib.com/authentication/oauth/authorize?${params.toString()}`;
+
   return { authUrl, verifier, state, nonce };
 }
 
@@ -176,13 +183,14 @@ export async function exchangeCodeForToken(code, verifier, state, storedState) {
 
   try {
     const response = await fetch(
-      `https://shopify.com/authentication/${process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID}/oauth/token`,
+      `https://account.haaaib.com/authentication/oauth/token`,
       {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: params,
       }
     );
+
 
     if (!response.ok) {
       const error = await response.json();
@@ -244,12 +252,12 @@ export async function refreshCustomerToken(refreshToken) {
 export async function customerLogout(idToken) {
   const params = new URLSearchParams({
     id_token_hint: idToken,
-    post_logout_redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/login`,
+    // Redirect back to the homepage after logout is complete on Shopify's end
+    post_logout_redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}`,
   });
 
-  const logoutUrl = `https://shopify.com/authentication/${
-    process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID
-  }/logout?${params.toString()}`;
+  const logoutUrl = `https://shopify.com/authentication/${process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID
+    }/logout?${params.toString()}`;
   return logoutUrl;
 }
 
@@ -328,24 +336,30 @@ export async function getCustomerAccount({ accessToken }) {
   }
 
   const query = `
-  query customerQuery {
-    customer {
-      id
-      firstName
-      lastName
-      emailAddress
-      phoneNumber
-      tags
-      defaultAddress {
-        address1
-        address2
-        city
-        country
-        zip
+    query customerQuery {
+      customer {
+        id
+        displayName
+        firstName
+        lastName
+        emailAddress {
+          emailAddress
+        }
+        phoneNumber {
+          phoneNumber
+        }
+        defaultAddress {
+          address1
+          address2
+          city
+          country
+          zip
+          province
+        }
+        tags
       }
     }
-  }
-`;
+  `;
 
   try {
     const data = await fetchCustomerAccountAPI(query, accessToken);
@@ -685,9 +699,8 @@ export async function fetchAllProducts(options = {}) {
 
   const query = `
     {
-      products(first: ${first}, after: ${
-    after ? `"${after}"` : null
-  }, query: "${queryFilter.trim()}", sortKey: ${sortKey || "BEST_SELLING"}) {
+      products(first: ${first}, after: ${after ? `"${after}"` : null
+    }, query: "${queryFilter.trim()}", sortKey: ${sortKey || "BEST_SELLING"}) {
         edges {
           node {
             id

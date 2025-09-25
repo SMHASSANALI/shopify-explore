@@ -11,6 +11,9 @@ export default function AccountTabs({ customer }) {
     { id: "wishlist", label: "Wishlist", icon: "❤️" },
   ];
 
+  console.log(customer)
+
+
   return (
     <div className="space-y-6">
       {/* Tab Navigation */}
@@ -39,14 +42,8 @@ export default function AccountTabs({ customer }) {
           <div className="space-y-6">
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
-              <div className="space-y-3">
-                <div>
-                  <span className="font-medium text-gray-700">Name:</span>
-                  <p className="text-gray-900">
-                    {customer?.firstName} {customer?.lastName}
-                  </p>
-                </div>
-                <div>
+              <div className="space-y-3 w-full">
+                <div className="flex flex-row gap-2 border items-center justify-center w-full">
                   <span className="font-medium text-gray-700">Email:</span>
                   <p className="text-gray-900">
                     {customer?.emailAddress?.emailAddress}
