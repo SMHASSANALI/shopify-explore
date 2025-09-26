@@ -130,11 +130,7 @@ const Navbar = async ({ customer }) => {
                   href="/account"
                   className="text-white !text-[12px] !font-extralight !leading-none hover:underline"
                 >
-                  {customer
-                    ? `${customer.firstName || ""} ${
-                        customer.lastName || ""
-                      }`.trim() || customer.email
-                    : "Account"}
+                  My Account
                 </Link>
                 <Link
                   href={customer ? "/logout" : "/login"}

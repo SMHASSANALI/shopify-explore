@@ -7,12 +7,15 @@ import { IoCaretDownOutline, IoCaretUpOutline } from "react-icons/io5";
 
 const Dropdown = ({ title, items }) => {
   const [isOpen, setIsOpen] = useState(false);
-
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   return (
-    <div className="relative">
+    <div className="relative" onBlur={() => setIsOpen(false)}>
       <button
+        aria-controls="dropdown"
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+        type="button"
         onClick={toggleDropdown}
         className="flex flex-row items-center justify-center gap-2 p-1 px-2 rounded-md cursor-pointer hover:bg-gray-200 font-semibold"
       >
@@ -33,6 +36,7 @@ const Dropdown = ({ title, items }) => {
               >
                 <Link
                   href={item.href}
+                  onClick={() => setIsOpen(false)}
                   className="font-semibold text-neutral-800 hover:text-[var(--accent)] p-1 w-full"
                 >
                   {item.title}

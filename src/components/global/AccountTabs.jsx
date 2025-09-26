@@ -43,7 +43,7 @@ export default function AccountTabs({ customer }) {
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
               <div className="space-y-3 w-full">
-                <div className="flex flex-row gap-2 border items-center justify-center w-full">
+                <div className="flex flex-row gap-2 items-center justify-start w-full">
                   <span className="font-medium text-gray-700">Email:</span>
                   <p className="text-gray-900">
                     {customer?.emailAddress?.emailAddress}

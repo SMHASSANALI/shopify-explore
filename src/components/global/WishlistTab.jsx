@@ -68,13 +68,13 @@ export default function WishlistTab() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">
+        <h2 className="!text-lg md:text-xl font-semibold">
           My Wishlist ({wishlist.length} {wishlist.length === 1 ? 'item' : 'items'})
         </h2>
         {wishlist.length > 0 && (
           <button
             onClick={handleClearAll}
-            className="text-red-600 hover:text-red-700 text-sm font-medium flex items-center gap-1"
+            className="text-red-600 hover:text-red-700 border rounded-md !text-xs md:text-sm font-medium flex items-center gap-1 cursor-pointer p-2"
           >
             <MdDelete className="w-4 h-4" />
             Clear All
@@ -82,7 +82,7 @@ export default function WishlistTab() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6">
         {wishlist.map((item) => (
           <div key={item.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
             <div className="relative aspect-square">
@@ -109,24 +109,24 @@ export default function WishlistTab() {
               </button>
             </div>
             
-            <div className="p-4">
+            <div className="p-2 sm:p-4">
               <Link
                 href={`/product/${item.handle}`}
                 className="block hover:text-[var(--accent)] transition-colors"
               >
-                <h3 className="font-medium text-sm line-clamp-2 mb-2">
+                <h3 className="font-medium !text-sm line-clamp-2 mb-2">
                   {item.title}
                 </h3>
               </Link>
               
-              <div className="flex items-center justify-between">
+              <div className="flex sm:flex-row flex-col items-start sm:items-center justify-between">
                 <span className="font-semibold text-lg">
                   £{item.price || '0.00'}
                 </span>
                 
                 <Link
                   href={`/product/${item.handle}`}
-                  className="text-[var(--accent)] hover:underline text-sm font-medium"
+                  className="text-[var(--accent)] p-2 hover:underline !text-xs sm:!text-sm font-medium"
                 >
                   View Product
                 </Link>

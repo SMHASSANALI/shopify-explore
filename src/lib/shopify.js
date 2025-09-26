@@ -80,11 +80,8 @@ export async function fetchCustomerAccountAPI(
   accessToken,
   variables = {}
 ) {
-  // const shopDomain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN;
   const customerAccountAPIURL = process.env.NEXT_PUBLIC_CUSTOMER_ACCOUNT_API_URL
-  const apiVersion = "2025-07"; // You should use an environment variable for this
-
-  // The correct URL needs to include the API version.
+  const apiVersion = "2025-07";
   const graphqlEndpoint = `${customerAccountAPIURL}/customer/api/${apiVersion}/graphql`;
 
   if (!graphqlEndpoint) {
@@ -252,7 +249,6 @@ export async function refreshCustomerToken(refreshToken) {
 export async function customerLogout(idToken) {
   const params = new URLSearchParams({
     id_token_hint: idToken,
-    // Redirect back to the homepage after logout is complete on Shopify's end
     post_logout_redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}`,
   });
 
@@ -386,7 +382,6 @@ export async function createCart() {
     }
   `;
   const data = await fetchShopify(query);
-  // console.log("createCart Response:", data);
   return data?.cartCreate?.cart || null;
 }
 
