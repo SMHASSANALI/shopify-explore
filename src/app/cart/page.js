@@ -47,6 +47,8 @@ export default async function CartPage({ searchParams }) {
     );
   }
 
+  console.log("Cart Data:", cart);
+
   const total = calculateTotal(cart.lines.edges);
   const currencyCode =
     cart.lines.edges[0]?.node?.merchandise?.priceV2?.currencyCode || "GBP";

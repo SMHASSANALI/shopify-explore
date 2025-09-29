@@ -4,7 +4,6 @@ import React, { useMemo, useState } from "react";
 import ProductGallery from "@/components/global/ProductGallery";
 import AddToCartButton from "@/components/global/AddToCartButton";
 import StarRating from "@/components/global/StarRating";
-import Link from "next/link";
 import Image from "next/image";
 
 export default function ProductDetailClient({
@@ -12,8 +11,6 @@ export default function ProductDetailClient({
   description,
   images = [],
   variants = [],
-  tags = [],
-  collections = {},
   totalInventory,
   reviews = [],
 }) {
@@ -181,7 +178,8 @@ export default function ProductDetailClient({
         {/* Available in Stock */}
         <div className="mb-6">
           <p>
-            In Stock (<span className="font-semibold">{totalInventory}</span>). Ready to be shipped{" "}
+            In Stock (<span className="font-semibold">{totalInventory}</span>).
+            Ready to be shipped{" "}
           </p>
         </div>
 
@@ -210,26 +208,6 @@ export default function ProductDetailClient({
           </div>
         </div>
 
-        {/* Tags and Collections */}
-        {/* <div className="flex flex-col gap-2 mb-6">
-          <div className="flex flex-row w-full gap-4 items-center">
-            <p className="font-bold">Type :</p>
-            <div className="flex flex-row gap-2 flex-wrap">
-              {collections &&
-                collections.edges.map((c) => (
-                  <Link key={c.node.id} href={`/collections/${c.node.handle}`}>
-                    <p className="!text-sm !font-normal px-2 py-1 border border-gray-300 rounded">
-                      {c.node.title}
-                    </p>
-                  </Link>
-                ))}
-            </div>
-          </div>
-          <div className="flex flex-row w-full gap-4">
-            <p className="font-bold">Tags :</p>
-            <p>{tags.map((tag) => tag).join(", ")}</p>
-          </div>
-        </div> */}
         {/* Product Description */}
         <div className="flex flex-col gap-4">
           <h3 className="font-semibold pb-3 border-b border-gray-300">

@@ -8,6 +8,8 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      new URL('https://ae01.alicdn.com/**'),
+      new URL('https://judge.me/**'),
     ],
   },
   reactStrictMode: true,

@@ -35,7 +35,7 @@ export default function Hero({ banners }) {
           onClick={handlePrev}
           aria-label="Previous slide"
           title="Previous slide"
-          className="hidden md:absolute left-4 top-[50%] transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md cursor-pointer opacity-30 hover:opacity-100 transition-opacity"
+          className="absolute left-4 top-[50%] transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md cursor-pointer opacity-40 hover:opacity-100 transition-opacity"
         >
           <MdArrowBack size={24} />
         </button>
@@ -43,7 +43,7 @@ export default function Hero({ banners }) {
           onClick={handleNext}
           aria-label="Next slide"
           title="Next slide"
-          className="hidden md:absolute right-4 top-[50%] transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md cursor-pointer opacity-30 hover:opacity-100 transition-opacity"
+          className="absolute right-4 top-[50%] transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md cursor-pointer opacity-40 hover:opacity-100 transition-opacity"
         >
           <MdArrowForward size={24} />
         </button>

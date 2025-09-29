@@ -4,6 +4,8 @@ import AddToCartButton from "@/components/global/AddToCartButton";
 import ProductsSlider from "@/components/global/ProductsSlider";
 import ProductDetailClient from "@/components/products/ProductDetailClient";
 import Breadcrumbs from "@/components/global/Breadcrumbs";
+import StarRating from "@/components/global/StarRating";
+import ReviewsSection from "@/components/products/ReviewSection";
 
 export async function generateMetadata({ params }) {
   const { handle } = await params;
@@ -33,7 +35,14 @@ export async function generateMetadata({ params }) {
       url: canonical,
       title: `${title} | HAAAIB`,
       description,
-      images: image ? [{ url: image, alt: product?.images?.edges?.[0]?.node?.altText || title }] : undefined,
+      images: image
+        ? [
+            {
+              url: image,
+              alt: product?.images?.edges?.[0]?.node?.altText || title,
+            },
+          ]
+        : undefined,
     },
     twitter: {
       card: "summary_large_image",
@@ -90,6 +99,7 @@ export default async function ProductPage({ params }) {
   const variables = { handle };
   const data = await fetchShopify(query, variables);
   const product = data?.productByHandle;
+  const externalId = product.id.split("/").pop();
   const totalInventory = product?.totalInventory || 0;
   const images = product?.images?.edges || [];
   const reviews = product?.metafields || [];
@@ -106,6 +116,33 @@ export default async function ProductPage({ params }) {
       .map((o) => `${o.name}: ${o.value}`)
       .join(" / "),
   }));
+
+  // Fetch Judge.me internal product ID
+  const productApiUrl = `https://judge.me/api/v1/products/-1?shop_domain=${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}&api_token=${process.env.JUDGEME_PRIVATE_TOKEN}&external_id=${externalId}`;
+  const productRes = await fetch(productApiUrl, { cache: "no-store" });
+  if (!productRes.ok) {
+    console.error("Error fetching Judge.me product ID:", productRes.status);
+    // Fallback: pass empty reviews
+  }
+
+  const productData = await productRes.json();
+  const internalProductId = productData?.product?.id;
+
+  // Fetch reviews if internal ID exists
+  let judgeMeReviews = [];
+  if (internalProductId) {
+    const reviewsApiUrl = `https://judge.me/api/v1/reviews?shop_domain=${process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN}&api_token=${process.env.JUDGEME_PRIVATE_TOKEN}&product_id=${internalProductId}&per_page=10&page=1`; // Adjust per_page as needed; paginate if >100 reviews
+    const reviewsRes = await fetch(reviewsApiUrl, { cache: "no-store" });
+    if (!reviewsRes.ok) {
+      console.error("Error fetching Judge.me reviews:", reviewsRes.status);
+    } else {
+      const reviewsData = await reviewsRes.json();
+      judgeMeReviews = reviewsData?.reviews || [];
+    }
+  }
+
+  console.log(`Loaded ${judgeMeReviews.length} reviews from Judge.me`);
+  console.log("Reviews data:", judgeMeReviews);
 
   if (!product) {
     return (
@@ -134,11 +171,24 @@ export default async function ProductPage({ params }) {
             (
               await (
                 await import("@/lib/shopify")
-              ).fetchCollectionByHandle(product.collections.edges[0].node.handle)
+              ).fetchCollectionByHandle(
+                product.collections.edges[0].node.handle
+              )
             ).products
           }
         />
       </div>
+
+      {/* Reviews Section */}
+      {internalProductId && (
+        <ReviewsSection
+          initialReviews={judgeMeReviews}
+          internalProductId={internalProductId}
+          shopDomain={process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN} // Pass for client fetches
+          apiToken={process.env.JUDGEME_PRIVATE_TOKEN} // Pass securely (or use a proxy API route if preferred)
+        />
+      )}
+
       <div className="mt-12">
         {/* Trending products */}
         <ProductsSlider

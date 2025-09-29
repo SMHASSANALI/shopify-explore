@@ -55,7 +55,7 @@ const ProductCard = ({ product }) => {
           <div className="ml-auto w-fit">
             <WishlistButton product={product} customer={customer} />
           </div>
-          <h3 className="product-title md:!text-[16px] leading-[110%] !tracking-tighter !text-sm md:h-[40px]">
+          <h3 className="product-title md:!text-[16px] leading-[110%] !tracking-tighter !text-sm md:h-[38px] line-clamp-2 text-ellipsis overflow-hidden">
             {product.node.title}
           </h3>
 

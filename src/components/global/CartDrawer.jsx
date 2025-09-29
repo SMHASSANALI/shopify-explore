@@ -244,6 +244,7 @@ export default function CartDrawer() {
           </div>
           <div className="flex gap-3">
             <Link
+              onClick={() => setIsOpen(false)}
               href="/cart"
               className="flex-1 text-center border rounded px-4 py-2 bg-gray-100 hover:bg-gray-200"
             >
