@@ -8,9 +8,8 @@ export const metadata = { title: "Account | HAAAIB" };
 export default async function AccountPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("customer_access_token")?.value;
-  console.log("Route.js", token);
   if (!token) {
-  redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/`);
+  redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/login`);
   }
 
   const customer = await getCustomerAccount({ accessToken: token });

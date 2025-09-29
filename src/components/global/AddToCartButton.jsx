@@ -95,7 +95,7 @@ export default function AddToCartButton({
       <button
         onClick={handleAddToCart}
         disabled={disabled || isAdding || !cartId || !!error}
-        className="text-slate-600 hover:text-[var(--primary-dark)] font-medium  px-[12px] md:px-4 py-2 rounded border border-gray-300 hover:border-[var(--primary-dark)]/90 transition disabled:bg-gray-400 cursor-pointer disabled:cursor-not-allowed w-full"
+        className="text-white hover:text-[var(--primary-dark)] bg-[var(--primary-dark)] hover:bg-transparent duration-200 ease-in font-medium  px-[12px] md:px-4 py-2 rounded border border-gray-300 hover:border-[var(--primary-dark)]/90 transition disabled:bg-gray-400 cursor-pointer disabled:cursor-not-allowed w-full"
       >
         {isAdding ? "Adding..." : "Add to Cart"}
       </button>

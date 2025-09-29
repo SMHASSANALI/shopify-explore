@@ -19,11 +19,11 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const under20_99Collection = await fetchCollectionByHandle(
-    "everything-under-20-99"
+  const mainCollection = await fetchCollectionByHandle(
+    "christmas"
   );
-  const springSlowdownSaleCollection = await fetchCollectionByHandle(
-    "spring-slowdown-sale"
+  const secondaryCollection = await fetchCollectionByHandle(
+    "spooky-autumn"
   );
   const recentBlogs = await fetchBlogs({ first: 3 });
 
@@ -53,8 +53,8 @@ export default async function Home() {
 
       <section className="bg-[#f8fcff] flex flex-col py-[20px] md:py-[50px]">
         <ProductsSlider
-          title={toTitleCase(under20_99Collection.title)}
-          data={under20_99Collection.products}
+          title={toTitleCase(mainCollection.title)}
+          data={mainCollection.products}
         />
       </section>
 
@@ -62,8 +62,8 @@ export default async function Home() {
 
       <section className="bg-[#F8FCFF] flex flex-col py-[20px] md:py-[50px]">
         <ProductsSlider
-          title={toTitleCase(springSlowdownSaleCollection.title)}
-          data={springSlowdownSaleCollection.products}
+          title={toTitleCase(secondaryCollection.title)}
+          data={secondaryCollection.products}
         />
       </section>
 

@@ -10,10 +10,7 @@ export default function AccountTabs({ customer }) {
     { id: "profile", label: "Profile", icon: "👤" },
     { id: "wishlist", label: "Wishlist", icon: "❤️" },
   ];
-
-  console.log(customer)
-
-
+  
   return (
     <div className="space-y-6">
       {/* Tab Navigation */}

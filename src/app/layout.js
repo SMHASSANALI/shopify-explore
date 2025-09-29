@@ -117,20 +117,15 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("customer_access_token")?.value;
-  let customer = null; // Default to null
+  let customer = null;
 
   if (accessToken) {
     try {
-      // ✅ Wrap the API call in a try-catch block
       customer = await getCustomerAccount({ accessToken });
     } catch (error) {
       console.error("Failed to fetch customer in RootLayout:", error.message);
-      // If the token is invalid or expired, customer remains null.
-      // You could also add logic here to clear the invalid token cookie.
     }
   }
-
-  console.log("Root Layout:", { customer });
 
   return (
     <html lang="en">

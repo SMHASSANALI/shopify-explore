@@ -39,7 +39,7 @@ export default async function CollectionPage({ params }) {
 
   const data = await fetchCollectionByHandle(handle, { first: 250 });
   const { products: initialProducts, hasNextPage: initialHasNextPage, endCursor: initialEndCursor } = data;
-
+  console.log("Collection data:", data);
 
   if (!data || !data.title) {
     return (
@@ -50,14 +50,12 @@ export default async function CollectionPage({ params }) {
     );
   }
 
-  const { title, products: productData } = data;
-
   return (
     <main className="w-full min-h-screen bg-white 2xl:px-0 lg:px-4 px-2">
       <main className="max-w-[1400px] mx-auto">
         <CollectionsSection />
         <Breadcrumbs
-          className="!mb-8"
+          className="my-4 md:!my-8"
           overrides={{ collections: "Collections" }}
         />
 

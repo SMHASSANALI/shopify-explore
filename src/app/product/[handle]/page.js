@@ -141,9 +141,6 @@ export default async function ProductPage({ params }) {
     }
   }
 
-  console.log(`Loaded ${judgeMeReviews.length} reviews from Judge.me`);
-  console.log("Reviews data:", judgeMeReviews);
-
   if (!product) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-12">Product not found</div>
@@ -152,7 +149,7 @@ export default async function ProductPage({ params }) {
 
   return (
     <main className="max-w-[1400px] mx-auto 2xl:p-0 lg:p-4 p-2">
-      <Breadcrumbs className="mb-8" overrides={{ product: "Products" }} />
+      <Breadcrumbs className="my-4 md:!my-8" overrides={{ product: "Products" }} />
       <ProductDetailClient
         title={product.title}
         description={product.descriptionHtml}

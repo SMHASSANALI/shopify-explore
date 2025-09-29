@@ -69,7 +69,8 @@ export default function ReviewsSection({ initialReviews = [], internalProductId,
   const clearFilters = () => setSelectedStars([]);
 
   return (
-    <section className="max-w-[1400px] mx-auto px-4 py-8">
+    <section className="max-w-[1400px] mx-auto">
+      <h2 className="text-3xl font-bold mb-6 w-full px-4 py-2 bg-[var(--accent)] text-white">Customer Reviews</h2>
       {reviews.length > 0 && (
         <>
           {/* Reviews Header with Count */}

@@ -9,12 +9,6 @@ export async function GET(request) {
   const state = url.searchParams.get("state");
   const origin = process.env.NEXT_PUBLIC_BASE_URL || url.origin;
 
-  console.log("Callback Env:", {
-    baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
-    shopId: process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID,
-    clientId: process.env.NEXT_PUBLIC_SHOPIFY_CLIENT_ID,
-  });
-
   if (!code || !state) {
     console.error("Missing params:", { code, state });
     return NextResponse.redirect(`${origin}/login?error=missing-params`);
@@ -22,9 +16,7 @@ export async function GET(request) {
 
   const cookieStore = await cookies();
   const storedState = cookieStore.get("oauth_state") && cookieStore.get("oauth_state").value;
-  console.log("StoredState :", storedState);
   const verifier = cookieStore.get("oauth_verifier") && cookieStore.get("oauth_verifier").value;
-  console.log("verifier :", verifier);
 
 
   if (!storedState) {

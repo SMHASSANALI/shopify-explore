@@ -46,7 +46,6 @@ const Navbar = async ({ customer }) => {
   const collectionItems = collections
     .filter((edge) => {
       return (
-        edge.node.title !== "Spooky Autumn" &&
         edge.node.title !== "Ad Banners" &&
         edge.node.title !== "Bento Images" &&
         edge.node.title !== "Hero Banners"
@@ -123,23 +122,23 @@ const Navbar = async ({ customer }) => {
             <SearchTrigger />
           </div>
           <div className="w-3/12 h-full md:flex hidden flex-row items-center gap-[10px]">
-            <div className="flex flex-row gap-1 items-end ml-auto">
+            <Link
+              href="/account"
+              className="flex flex-row gap-1 items-end ml-auto"
+            >
               <MdPerson size={"30px"} color="white" />
               <div className="flex flex-col">
-                <Link
-                  href="/account"
-                  className="text-white !text-[12px] !font-extralight !leading-none hover:underline"
-                >
+                <p className="text-white !text-[12px] !font-extralight !leading-none">
                   My Account
-                </Link>
-                <Link
+                </p>
+                <p
                   href={customer ? "/logout" : "/login"}
-                  className="text-white !text-[14px] !font-light !leading-none hover:underline"
+                  className="text-white !text-[14px] !font-light !leading-none"
                 >
                   {customer ? "Logout" : "Login"}
-                </Link>
+                </p>
               </div>
-            </div>
+            </Link>
             <CartDrawer />
           </div>
 

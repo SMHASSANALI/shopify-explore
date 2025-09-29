@@ -102,7 +102,6 @@ export async function fetchCustomerAccountAPI(
       }),
     });
 
-    console.log("fetchCustomerAccountAPI Response:", res);
     const data = await res.json();
 
     if (!res.ok) {
@@ -157,8 +156,6 @@ export async function initiateCustomerAuth() {
     locale: "en",
   });
 
-  // THIS IS THE CRITICAL LINE. The `authUrl` must be the custom domain from your settings.
-  // Your Shopify settings show the URL is `https://account.haaaib.com/authentication/oauth/authorize`
   const authUrl = `https://account.haaaib.com/authentication/oauth/authorize?${params.toString()}`;
 
   return { authUrl, verifier, state, nonce };

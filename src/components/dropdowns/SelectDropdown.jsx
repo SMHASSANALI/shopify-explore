@@ -10,7 +10,7 @@ const Dropdown = ({ title, items }) => {
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   return (
-    <div className="relative" onBlur={() => setIsOpen(false)}>
+    <div className="relative">
       <button
         aria-controls="dropdown"
         aria-expanded={isOpen}
@@ -27,7 +27,10 @@ const Dropdown = ({ title, items }) => {
         )}
       </button>
       {isOpen && (
-        <div className="absolute top-9 left-0 max-h-[50dvh] overflow-y-auto max-w-xl shadow z-10">
+        <div
+          onMouseLeave={() => setIsOpen(false)}
+          className="absolute top-9 left-0 max-h-[50dvh] overflow-y-auto max-w-xl shadow z-10"
+        >
           <ul className="bg-white w-54 flex flex-col gap-1 p-4">
             {items.map((item) => (
               <li
@@ -36,7 +39,7 @@ const Dropdown = ({ title, items }) => {
               >
                 <Link
                   href={item.href}
-                  onClick={() => setIsOpen(false)}
+                  onClick={toggleDropdown}
                   className="font-semibold text-neutral-800 hover:text-[var(--accent)] p-1 w-full"
                 >
                   {item.title}

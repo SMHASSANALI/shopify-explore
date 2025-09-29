@@ -47,8 +47,6 @@ export default async function CartPage({ searchParams }) {
     );
   }
 
-  console.log("Cart Data:", cart);
-
   const total = calculateTotal(cart.lines.edges);
   const currencyCode =
     cart.lines.edges[0]?.node?.merchandise?.priceV2?.currencyCode || "GBP";
@@ -56,7 +54,7 @@ export default async function CartPage({ searchParams }) {
   return (
     <main className="bg-white min-h-screen pt-[60px] p-2 md:p-0">
       <section className="max-w-[1400px] w-full mx-auto">
-        <Breadcrumbs className="!mb-8" overrides={{ cart: "Cart" }} />
+        <Breadcrumbs className="my-4 md:!my-8" overrides={{ cart: "Cart" }} />
         <div className="flex flex-row items-center justify-between border-b-4 border-gray-300 pb-2">
           <h1 className="font-semibold">Shopping Cart</h1>
           <Link href="/product" className="hover:text-[var(--accent)]">

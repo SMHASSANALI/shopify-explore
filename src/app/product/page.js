@@ -16,7 +16,7 @@ export default async function ProductsPage() {
         <CollectionsSection />
 
         <Breadcrumbs
-          className="!mb-8"
+          className="my-4 md:!my-8"
           overrides={{ }}
         />
 

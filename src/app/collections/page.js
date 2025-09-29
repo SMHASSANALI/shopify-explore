@@ -23,7 +23,7 @@ export default async function CollectionsPage() {
   return (
     <main className="max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <header className="mb-8">
-        <Breadcrumbs className="!mb-6" overrides={{ collections: "Collections" }} />
+        <Breadcrumbs className="my-4 md:!my-8" overrides={{ collections: "Collections" }} />
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
           All Collections
         </h1>
