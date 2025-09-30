@@ -6,10 +6,10 @@ import Image from "next/image";
 
 export default function ReviewsSection({ initialReviews = [], internalProductId, shopDomain, apiToken }) {
   const [reviews, setReviews] = useState(initialReviews);
-  const [currentPage, setCurrentPage] = useState(2); // Start from page 2 for load more
+  const [currentPage, setCurrentPage] = useState(2); 
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedStars, setSelectedStars] = useState([]); // e.g., [5, 4] for 4-5 stars
-  const [sortBy, setSortBy] = useState("mostRecent"); // "mostRecent" or "highestRated"
+  const [selectedStars, setSelectedStars] = useState([]); 
+  const [sortBy, setSortBy] = useState("mostRecent");
   const [hasMore, setHasMore] = useState(true);
 
   // Filter reviews by selected stars
@@ -39,8 +39,6 @@ export default function ReviewsSection({ initialReviews = [], internalProductId,
     if (isLoading || !hasMore) return;
     setIsLoading(true);
     try {
-      // Use proxy API route: fetch(`/api/reviews/${internalProductId}/${currentPage}`)
-      // Or direct if token is safe: const url = `https://judge.me/api/v1/reviews?shop_domain=${shopDomain}&api_token=${apiToken}&product_id=${internalProductId}&per_page=10&page=${currentPage}`;
       const url = `/api/reviews/${internalProductId}/${currentPage}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to load reviews");

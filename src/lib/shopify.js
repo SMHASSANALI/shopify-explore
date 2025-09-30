@@ -1,6 +1,33 @@
 // app/lib/shopify.js
 import { generateRandomString, generateCodeChallenge } from "./auth-utils";
 
+// export const CART_LINES_FRAGMENT = `
+//   fragment CartLines on Cart {
+//     id
+//     checkoutUrl
+//     lines(first: 50) {
+//       edges {
+//         node {
+//           id
+//           quantity
+//           merchandise {
+//             ... on ProductVariant {
+//               id
+//               selectedOptions { name value }
+//               image { src altText }
+//               product {
+//                 title
+//                 images(first: 1) { edges { node { src altText } } }
+//               }
+//               priceV2 { amount currencyCode }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// `;
+
 export const CART_LINES_FRAGMENT = `
   fragment CartLines on Cart {
     id
@@ -18,6 +45,15 @@ export const CART_LINES_FRAGMENT = `
               product {
                 title
                 images(first: 1) { edges { node { src altText } } }
+                metafields(identifiers: [
+                  {namespace: "custom", key: "discount_percentage"},
+                  {namespace: "custom", key: "discount_badge"}
+                ]) {
+                  id
+                  key
+                  value
+                  type
+                }
               }
               priceV2 { amount currencyCode }
             }
@@ -27,6 +63,7 @@ export const CART_LINES_FRAGMENT = `
     }
   }
 `;
+
 
 // Storefront API fetch function
 export async function fetchShopify(query, variables = {}, options = {}) {
@@ -80,7 +117,8 @@ export async function fetchCustomerAccountAPI(
   accessToken,
   variables = {}
 ) {
-  const customerAccountAPIURL = process.env.NEXT_PUBLIC_CUSTOMER_ACCOUNT_API_URL
+  const customerAccountAPIURL =
+    process.env.NEXT_PUBLIC_CUSTOMER_ACCOUNT_API_URL;
   const apiVersion = "2025-07";
   const graphqlEndpoint = `${customerAccountAPIURL}/customer/api/${apiVersion}/graphql`;
 
@@ -88,13 +126,12 @@ export async function fetchCustomerAccountAPI(
     throw new Error("Missing GraphQL endpoint.");
   }
 
-
   try {
     const res = await fetch(graphqlEndpoint, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': accessToken,
+        "Content-Type": "application/json",
+        Authorization: accessToken,
       },
       body: JSON.stringify({
         query: query,
@@ -120,7 +157,7 @@ export async function fetchCustomerAccountAPI(
       message: error.message,
       cause: error.cause,
       stack: error.stack,
-      endpoint: graphqlEndpoint
+      endpoint: graphqlEndpoint,
     });
     throw error;
   }
@@ -185,7 +222,6 @@ export async function exchangeCodeForToken(code, verifier, state, storedState) {
       }
     );
 
-
     if (!response.ok) {
       const error = await response.json();
       console.error("❌ Token exchange failed:", error);
@@ -249,8 +285,9 @@ export async function customerLogout(idToken) {
     post_logout_redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}`,
   });
 
-  const logoutUrl = `https://shopify.com/authentication/${process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID
-    }/logout?${params.toString()}`;
+  const logoutUrl = `https://shopify.com/authentication/${
+    process.env.NEXT_PUBLIC_SHOPIFY_SHOP_ID
+  }/logout?${params.toString()}`;
   return logoutUrl;
 }
 
@@ -475,7 +512,9 @@ export async function fetchCollectionByHandle(handle, options = {}) {
               metafields(identifiers: [
                 {namespace: "custom", key: "banner_link"},
                 {namespace: "reviews", key: "rating"},
-                {namespace: "reviews", key: "rating_count"}
+                {namespace: "reviews", key: "rating_count"},
+                {namespace: "custom", key: "discount_percentage"},
+                {namespace: "custom", key: "discount_badge"},
               ]) {
                 id
                 value
@@ -561,6 +600,97 @@ export async function fetchCollectionByHandle(handle, options = {}) {
   return {
     title: collection.title,
     products: productData,
+  };
+}
+
+// Function to Fetch a Product by Handle
+export async function fetchProductByHandle(handle, options = {}) {
+  const query = `
+    query ProductByHandle($handle: String!) {
+      productByHandle(handle: $handle) {
+        id
+        title
+        descriptionHtml
+        images(first: 10) { edges { node { src altText } } }
+        totalInventory
+        collections(first: 3) {
+          edges {
+            node {
+              id
+              title
+              handle
+            }
+          }
+        }
+        variants(first: 50) {
+          edges {
+            node {
+              id
+              availableForSale
+              price { amount currencyCode }
+              compareAtPrice { amount currencyCode }
+              image { src altText }
+              selectedOptions { name value }
+            }
+          }
+        }
+        tags
+        metafields(identifiers: [
+          { namespace: "reviews", key: "rating" },
+          { namespace: "reviews", key: "rating_count" }
+          {namespace: "custom", key: "discount_percentage"},
+          {namespace: "custom", key: "discount_badge"},
+        ]) {
+            id
+            key
+            value
+            type
+        }
+      }
+    }
+  `;
+  const variables = { handle };
+  const data = await fetchShopify(query, variables, {
+    revalidate: options.revalidate || 300,
+  });
+
+  if (!data?.productByHandle) {
+    console.error(`Product with handle "${handle}" not found.`);
+    return null;
+  }
+
+  const product = data.productByHandle;
+  const externalId = product.id.split("/").pop();
+  const totalInventory = product?.totalInventory || 0;
+  const images = product?.images || [];
+  const reviews = product?.metafields || [];
+  const collections = product?.collections?.edges || [];
+  const variants = (product?.variants?.edges || []).map(({ node: v }) => ({
+    id: v.id,
+    price: v.price,
+    compareAtPrice: v.compareAtPrice,
+    tags: product.tags,
+    image: v.image,
+    availableForSale: v.availableForSale,
+    selectedOptions: v.selectedOptions,
+    collections: product.collections,
+    title: (v.selectedOptions || [])
+      .map((o) => `${o.name}: ${o.value}`)
+      .join(" / "),
+  }));
+
+  return {
+    id: product.id,
+    externalId,
+    title: product.title,
+    handle: product.handle,
+    description: product.descriptionHtml,
+    tags: product.tags,
+    collections,
+    images,
+    variants,
+    totalInventory,
+    reviews,
   };
 }
 
@@ -691,8 +821,9 @@ export async function fetchAllProducts(options = {}) {
 
   const query = `
     {
-      products(first: ${first}, after: ${after ? `"${after}"` : null
-    }, query: "${queryFilter.trim()}", sortKey: ${sortKey || "BEST_SELLING"}) {
+      products(first: ${first}, after: ${
+    after ? `"${after}"` : null
+  }, query: "${queryFilter.trim()}", sortKey: ${sortKey || "BEST_SELLING"}) {
         edges {
           node {
             id
@@ -721,6 +852,8 @@ export async function fetchAllProducts(options = {}) {
               {namespace: "custom", key: "banner_link"},
               {namespace: "reviews", key: "rating"},
               {namespace: "reviews", key: "rating_count"}
+              {namespace: "custom", key: "discount_percentage"},
+              {namespace: "custom", key: "discount_badge"},
             ]) { id value key type }
           }
         }

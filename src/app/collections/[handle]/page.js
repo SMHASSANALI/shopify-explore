@@ -39,7 +39,6 @@ export default async function CollectionPage({ params }) {
 
   const data = await fetchCollectionByHandle(handle, { first: 250 });
   const { products: initialProducts, hasNextPage: initialHasNextPage, endCursor: initialEndCursor } = data;
-  console.log("Collection data:", data);
 
   if (!data || !data.title) {
     return (
