@@ -1,8 +1,5 @@
 import ProductsSlider from "@/components/global/ProductsSlider";
-import {
-  fetchBlogs,
-  fetchCollectionByHandle,
-} from "@/lib/shopify";
+import { fetchBlogs, fetchCollectionByHandle } from "@/lib/shopify";
 import HeroWrapper from "@/components/hero/HeroWrapper";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,19 +9,28 @@ import ReviewsSlider from "@/components/global/ReviewsSlider";
 import CollectionsSection from "@/components/global/CollectionsSection";
 
 export const metadata = {
-  title: "Home",
+  title: "Home | HAAAIB",
   description:
-    "Shop trending home décor, fashion and lifestyle pieces at HAAAIB. UK-wide delivery and budget-friendly prices.",
-  alternates: { canonical: "/" },
+    "Explore our curated collection of home décor, fashion, and lifestyle products at budget-friendly prices.",
+  openGraph: {
+    title: "Home | HAAAIB",
+    description:
+      "Explore our curated collection of home décor, fashion, and lifestyle products at budget-friendly prices.",
+    url: "/",
+    images: [
+      {
+        url: "/assets/haaaib-logo.svg",
+        width: 1200,
+        height: 630,
+        alt: "HAAAIB Products",
+      },
+    ],
+  },
 };
 
 export default async function Home() {
-  const mainCollection = await fetchCollectionByHandle(
-    "christmas"
-  );
-  const secondaryCollection = await fetchCollectionByHandle(
-    "spooky-autumn"
-  );
+  const mainCollection = await fetchCollectionByHandle("christmas");
+  const secondaryCollection = await fetchCollectionByHandle("spooky-autumn");
   const recentBlogs = await fetchBlogs({ first: 3 });
 
   const websiteJsonLd = {
@@ -34,7 +40,9 @@ export default async function Home() {
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.haaaib.com",
     potentialAction: {
       "@type": "SearchAction",
-      target: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.haaaib.com"}/search?q={search_term_string}`,
+      target: `${
+        process.env.NEXT_PUBLIC_SITE_URL || "https://www.haaaib.com"
+      }/search?q={search_term_string}`,
       "query-input": "required name=search_term_string",
     },
   };

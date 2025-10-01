@@ -8,7 +8,23 @@ import { MdDelete } from "react-icons/md";
 import Image from "next/image";
 
 export const metadata = {
-  title: "Cart | HA-AA-IB",
+  title: "Cart | HAAAIB",
+  description:
+    "Explore our curated collection of home décor, fashion, and lifestyle products at budget-friendly prices.",
+  openGraph: {
+    title: "Cart | HAAAIB",
+    description:
+      "Explore our curated collection of home décor, fashion, and lifestyle products at budget-friendly prices.",
+    url: "/cart",
+    images: [
+      {
+        url: "/assets/haaaib-logo.svg",
+        width: 1200,
+        height: 630,
+        alt: "HAAAIB Cart",
+      },
+    ],
+  },
 };
 
 export default async function CartPage({ searchParams }) {
