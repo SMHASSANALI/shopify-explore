@@ -302,8 +302,8 @@ import { IoMdCart } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import Image from "next/image";
 import Link from "next/link";
-import { createCart, addToCart, getCart } from "@/lib/shopify";
-import { calculateTotal, updateCartQuantity, removeCartItems } from "@/utils/helper";
+import { createCart, getCart } from "@/lib/shopify";
+import { updateCartQuantity, removeCartItems } from "@/utils/helper";
 import { getCartLineDiscount } from "@/utils/discount-utlis";
 
 export default function CartDrawer() {
@@ -468,7 +468,7 @@ export default function CartDrawer() {
           <button
             onClick={() => setIsOpen(false)}
             aria-label="Close cart"
-            className="p-2 hover:bg-gray-100 rounded-full"
+            className="p-2 hover:bg-gray-100 rounded-full cursor-pointer"
           >
             <IoClose size={20} />
           </button>
@@ -525,7 +525,7 @@ export default function CartDrawer() {
                     <div className="mt-2 flex items-center gap-2">
                       <button
                         onClick={() => handleQuantity(node.id, node.quantity - 1)}
-                        className="w-7 h-7 border rounded flex items-center justify-center"
+                        className="w-7 h-7 border rounded flex items-center justify-center cursor-pointer"
                         aria-label="Decrease quantity"
                       >
                         -
@@ -533,14 +533,14 @@ export default function CartDrawer() {
                       <span className="min-w-[24px] text-center text-sm">{node.quantity}</span>
                       <button
                         onClick={() => handleQuantity(node.id, node.quantity + 1)}
-                        className="w-7 h-7 border rounded flex items-center justify-center"
+                        className="w-7 h-7 border rounded flex items-center justify-center cursor-pointer"
                         aria-label="Increase quantity"
                       >
                         +
                       </button>
                       <button
                         onClick={() => handleRemove(node.id)}
-                        className="ml-auto text-gray-500 hover:text-red-600 text-sm"
+                        className="ml-auto text-gray-500 hover:text-red-600 text-sm cursor-pointer"
                         aria-label="Remove item"
                       >
                         Remove

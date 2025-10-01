@@ -11,10 +11,8 @@ export default function AddToCartButton({
 }) {
   const [cartId, setCartId] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [error, setError] = useState(null); // Add error state
-  const router = useRouter();
+  const [error, setError] = useState(null);
 
-  // Initialize or retrieve cart on mount
   useEffect(() => {
     const initializeCart = async () => {
       if (!cartId) {
@@ -42,10 +40,9 @@ export default function AddToCartButton({
 
   // Handle adding to cart
   const handleAddToCart = async (e) => {
-    // Remove e.preventDefault() since this is a standalone button
+    e.preventDefault();
     if (!cartId || !variantId || isAdding) return;
 
-    // Validate variantId format (basic check for Shopify ID)
     const isValidVariantId = variantId.startsWith(
       "gid://shopify/ProductVariant/"
     );
@@ -55,7 +52,7 @@ export default function AddToCartButton({
     }
 
     setIsAdding(true);
-    setError(null); // Clear previous errors
+    setError(null);
 
     const lines = [
       {
