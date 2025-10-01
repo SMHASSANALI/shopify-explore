@@ -45,13 +45,13 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
-      <div className="bg-[var(--secondary)]/1">
+      <div className="">
         <HeroWrapper handle={"hero-banners"} />
 
         <CollectionsSection />
       </div>
 
-      <section className="bg-[#f8fcff] flex flex-col py-[20px] md:py-[50px]">
+      <section className="flex flex-col py-[20px] md:py-[50px]">
         <ProductsSlider
           title={toTitleCase(mainCollection.title)}
           data={mainCollection.products}
@@ -60,7 +60,7 @@ export default async function Home() {
 
       <BentoWrapper />
 
-      <section className="bg-[#F8FCFF] flex flex-col py-[20px] md:py-[50px]">
+      <section className="flex flex-col py-[20px] md:py-[50px]">
         <ProductsSlider
           title={toTitleCase(secondaryCollection.title)}
           data={secondaryCollection.products}
@@ -69,7 +69,7 @@ export default async function Home() {
 
       <HeroWrapper handle={"ad-banners"} />
 
-      <section className="bg-[#F8FCFF] flex flex-col py-[20px] md:py-[50px]">
+      <section className="flex flex-col py-[20px] md:py-[50px]">
         <ReviewsSlider />
       </section>
 

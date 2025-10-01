@@ -111,7 +111,7 @@ export const ProductsClient = ({
         </div>
       </div>
       <div className="w-full lg:w-10/12 rounded flex flex-col gap-[20px]">
-        <div className="w-full bg-[var(--background)] py-1 px-2 flex flex-row justify-between items-center">
+        <div className="w-full bg-gray-100 rounded py-1 px-2 flex flex-row justify-between items-center">
           <div>
             <span className="font-light">Sort by:</span>
             <SortingSelect onSortChange={handleSortChange} />

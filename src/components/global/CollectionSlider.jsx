@@ -50,7 +50,7 @@ const CollectionsSlider = ({ data }) => {
       <div
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="py-[10px] md:py-4 bg-white rounded-md"
+        className="py-[10px] md:py-4 bg-gray-100 rounded-md"
       >
         <Swiper
           modules={[Autoplay]}
