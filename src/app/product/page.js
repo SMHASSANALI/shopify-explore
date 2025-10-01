@@ -12,7 +12,7 @@ export const metadata = {
     title: "Products | HAAAIB",
     description:
       "Explore our curated collection of home décor, fashion, and lifestyle products at budget-friendly prices.",
-    url: "/products",
+    url: "/product",
     images: [
       {
         url: "/assets/haaaib-logo.svg",
@@ -34,13 +34,13 @@ export default async function ProductsPage() {
   // Generate structured data for products
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "CollectionPage",
+    "@type": "ProductsPage",
     name: "HAAAIB Products",
     description:
       "Explore our curated collection of home décor, fashion, and lifestyle products at budget-friendly prices.",
     url: `${
       process.env.NEXT_PUBLIC_SITE_URL || "https://www.haaaib.com"
-    }/products`,
+    }/product`,
     hasPart: {
       "@type": "ItemList",
       itemListElement: initialProducts.map((product, index) => ({
@@ -51,7 +51,7 @@ export default async function ProductsPage() {
           name: product.title,
           url: `${
             process.env.NEXT_PUBLIC_SITE_URL || "https://www.haaaib.com"
-          }/products/${product.handle}`,
+          }/product/${product.handle}`,
           image: product.featuredImage?.url || "/assets/placeholder.jpg",
           description:
             product.description || "High-quality product from HAAAIB",
@@ -90,12 +90,12 @@ export default async function ProductsPage() {
 
   return (
     <html lang="en">
-      <head>
+      <Head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
-      </head>
+      </Head>
       <body>
         <main className="w-full min-h-screen 2xl:px-0 lg:px-4 px-2">
           <div className="max-w-[1400px] mx-auto mb-8">
