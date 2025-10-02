@@ -42,7 +42,7 @@ const Navbar = async ({ customer }) => {
 
   const collections = collectionsData?.collections?.edges || [];
   const blogs = collectionsData?.blogs?.edges || [];
-  // push to the collectionsItems array if the title is not "Spooky Autumn", "Ad Banners", "Bento Images", "Hero Banners"
+  // push to the collectionsItems array if the title is not "Ad Banners", "Bento Images", "Hero Banners"
   const collectionItems = collections
     .filter((edge) => {
       return (

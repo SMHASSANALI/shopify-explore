@@ -32,20 +32,23 @@ const Dropdown = ({ title, items }) => {
           className="absolute top-9 left-0 max-h-[50dvh] overflow-y-auto max-w-xl shadow z-10"
         >
           <ul className="bg-white w-54 flex flex-col gap-1 p-4">
-            {items.map((item) => (
-              <li
-                key={item.id}
-                className="hover:bg-gray-100 rounded-md w-full flex"
-              >
-                <Link
-                  href={item.href}
-                  onClick={toggleDropdown}
-                  className="font-semibold text-neutral-800 hover:text-[var(--accent)] p-1 w-full"
+            {items
+              .slice()
+              .reverse()
+              .map((item) => (
+                <li
+                  key={item.id}
+                  className="hover:bg-gray-100 rounded-md w-full flex"
                 >
-                  {item.title}
-                </Link>
-              </li>
-            ))}
+                  <Link
+                    href={item.href}
+                    onClick={toggleDropdown}
+                    className="font-semibold text-neutral-800 hover:text-[var(--accent)] p-1 w-full"
+                  >
+                    {item.title}
+                  </Link>
+                </li>
+              ))}
           </ul>
         </div>
       )}

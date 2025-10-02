@@ -23,7 +23,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "/assets/haaaib-logo.svg", // Or use a collections-specific image
+        url: "/assets/logoMark-Dark.png", // Or use a collections-specific image
         width: 1200,
         height: 630,
         alt: "HAAAIB Collections",
@@ -42,7 +42,6 @@ export const metadata = {
 };
 
 export default async function CollectionsPage() {
-  // Fetch all collections
   const allCollections = await fetchAllCollections();
 
   const structuredData = {
@@ -120,7 +119,7 @@ export default async function CollectionsPage() {
         >
           {allCollections.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-              {allCollections.map((edge) => {
+              {allCollections.slice().reverse().map((edge) => {
                 if (
                   edge.title !== "Hero Banners" &&
                   edge.title !== "Bento Images" &&

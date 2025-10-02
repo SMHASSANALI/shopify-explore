@@ -15,7 +15,7 @@ export const metadata = {
     url: "/product",
     images: [
       {
-        url: "/assets/haaaib-logo.svg",
+        url: "/assets/logoMark-Dark.png",
         width: 1200,
         height: 630,
         alt: "HAAAIB Products",

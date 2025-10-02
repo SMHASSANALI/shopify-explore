@@ -58,7 +58,7 @@ export const metadata = {
       "Discover elegant, trending home décor, fashion, and lifestyle accessories – all at budget-friendly prices. UK-wide delivery.",
     images: [
       {
-        url: "/assets/haaaib-logo.svg",
+        url: "/assets/logoMark-Dark.png",
         width: 1200,
         height: 630,
         alt: "HAAAIB logo",
@@ -74,7 +74,7 @@ export const metadata = {
       "Discover elegant, trending home décor, fashion, and lifestyle accessories – all at budget-friendly prices. UK-wide delivery.",
     images: [
       {
-        url: "/assets/haaaib-logo.svg",
+        url: "/assets/logoMark-Dark.png",
         alt: "HAAAIB logo",
       },
     ],
