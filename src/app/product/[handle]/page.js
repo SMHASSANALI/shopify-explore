@@ -178,7 +178,7 @@ export default async function ProductPage({ params }) {
       />
       <Breadcrumbs
         className="my-4 md:!my-8"
-        overrides={{ product: "Products" }}
+        overrides={{ [handle]: product.title }}
       />
       <ProductDetailClient
         title={product.title}
