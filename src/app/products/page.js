@@ -1,6 +1,6 @@
 import { fetchAllProducts } from "@/lib/shopify";
 import CollectionsSection from "@/components/global/CollectionsSection";
-import { ProductsClient } from "@/components/products/ProductsClient";
+import ProductsClient from "@/components/products/ProductsClient";
 import Breadcrumbs from "@/components/global/Breadcrumbs";
 import Head from "next/head";
 
@@ -12,7 +12,7 @@ export const metadata = {
     title: "Products | HAAAIB",
     description:
       "Explore our curated collection of home décor, fashion, and lifestyle products at budget-friendly prices.",
-    url: "/product",
+    url: "/products",
     images: [
       {
         url: "/assets/logoMark-Dark.png",
@@ -40,7 +40,7 @@ export default async function ProductsPage() {
       "Explore our curated collection of home décor, fashion, and lifestyle products at budget-friendly prices.",
     url: `${
       process.env.NEXT_PUBLIC_SITE_URL || "https://www.haaaib.com"
-    }/product`,
+    }/products`,
     hasPart: {
       "@type": "ItemList",
       itemListElement: initialProducts.map((product, index) => ({
@@ -51,7 +51,7 @@ export default async function ProductsPage() {
           name: product.title,
           url: `${
             process.env.NEXT_PUBLIC_SITE_URL || "https://www.haaaib.com"
-          }/product/${product.handle}`,
+          }/products/${product.handle}`,
           image: product.featuredImage?.url || "/assets/placeholder.jpg",
           description:
             product.description || "High-quality product from HAAAIB",
@@ -89,29 +89,29 @@ export default async function ProductsPage() {
   };
 
   return (
-    <html lang="en">
+    <>
       <Head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </Head>
-      <body>
-        <main className="w-full min-h-screen 2xl:px-0 lg:px-4 px-2">
-          <div className="max-w-[1400px] mx-auto mb-8">
-            <CollectionsSection />
-            <Breadcrumbs
-              className="my-4 md:!my-8"
-              overrides={{ products: "All Products" }}
-            />
-            <ProductsClient
-              initialProducts={initialProducts}
-              initialHasNextPage={initialHasNextPage}
-              initialEndCursor={initialEndCursor}
-            />
-          </div>
-        </main>
-      </body>
-    </html>
+
+      <main className="w-full min-h-screen 2xl:px-0 lg:px-4 px-2">
+        <div className="max-w-[1400px] mx-auto mb-8">
+          <CollectionsSection />
+          <Breadcrumbs
+            className="my-4 md:!my-8"
+            overrides={{ products: "All Products" }}
+          />
+          <ProductsClient
+            initialProducts={initialProducts}
+            initialHasNextPage={initialHasNextPage}
+            initialEndCursor={initialEndCursor}
+            collectionId={null}
+          />
+        </div>
+      </main>
+    </>
   );
 }

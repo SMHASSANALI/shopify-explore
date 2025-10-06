@@ -1,106 +1,84 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
+import { useInfiniteProducts } from "@/hooks/useInfiniteProducts";
 import FilterPanel from "@/components/products/FilterPanel";
 import SortingSelect from "@/components/products/SortingSelect";
 import ProductGrid from "@/components/products/ProductGrid";
-import { fetchAllProducts } from "@/lib/shopify";
 
-export const ProductsClient = ({
+export default function ProductsClient({
   initialProducts,
   initialHasNextPage,
   initialEndCursor,
-}) => {
-  const [products, setProducts] = useState(initialProducts);
-  const [hasNextPage, setHasNextPage] = useState(initialHasNextPage);
-  const [endCursor, setEndCursor] = useState(initialEndCursor);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [filters, setFilters] = useState({
-    availability: { inStock: false, outOfStock: false },
-    price: { min: 0, max: 100 },
+  collectionId,
+}) {
+  const {
+    products,
+    hasNextPage,
+    loading,
+    refetching,
+    filters,
+    sort,
+    loadMore,
+    resetAndFetch,
+  } = useInfiniteProducts({
+    initialProducts,
+    initialHasNextPage,
+    initialEndCursor,
+    collectionId,
   });
-  const [sort, setSort] = useState("best-selling");
 
-  // Use useRef to store the initial and accumulated products for stable reference
-  const allProductsRef = useRef(initialProducts);
+  const loaderRef = useRef(null);
+  const loadMoreRef = useRef(loadMore);
+  const filtersRef = useRef(filters);
+  const sortRef = useRef(sort);
 
-  // Apply filters and sorting when filters or sort change
+  // Sync refs
   useEffect(() => {
-    let filtered = [...allProductsRef.current];
+    filtersRef.current = filters;
+  }, [filters]);
+  useEffect(() => {
+    sortRef.current = sort;
+  }, [sort]);
 
-    // Availability filter
-    if (filters.availability.inStock) {
-      filtered = filtered.filter(
-        (product) => product.node.availableForSale === true
-      );
-    }
-    if (filters.availability.outOfStock) {
-      filtered = filtered.filter(
-        (product) => product.node.availableForSale === false
-      );
-    }
+  useEffect(() => {
+    loadMoreRef.current = loadMore;
+  }, [loadMore]);
 
-    // Price filter
-    filtered = filtered.filter((product) => {
-      const price = product.node.minPrice ?? product.node.price;
-      return price >= filters.price.min && price <= filters.price.max;
-    });
+  useEffect(() => {
+    if (!hasNextPage || loading) return;
 
-    // Sorting
-    switch (sort) {
-      case "title-ascending":
-        filtered.sort((a, b) => a.node.title.localeCompare(b.node.title));
-        break;
-      case "title-descending":
-        filtered.sort((a, b) => b.node.title.localeCompare(a.node.title));
-        break;
-      case "price-ascending":
-        filtered.sort(
-          (a, b) =>
-            (a.node.minPrice ?? a.node.price) -
-            (b.node.minPrice ?? b.node.price)
-        );
-        break;
-      case "price-descending":
-        filtered.sort(
-          (a, b) =>
-            (b.node.minPrice ?? b.node.price) -
-            (a.node.minPrice ?? a.node.price)
-        );
-        break;
-      // Add more cases as needed
-    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading) {
+          loadMoreRef.current();
+        }
+      },
+      { rootMargin: "400px" }
+    );
 
-    setProducts(filtered);
-  }, [filters, sort]);
+    if (loaderRef.current) observer.observe(loaderRef.current);
+    return () => observer.disconnect();
+  }, [hasNextPage, loading]);
 
-  const loadMore = async () => {
-    setIsLoadingMore(true);
-    const {
-      products: newProducts,
-      hasNextPage: newHasNextPage,
-      endCursor: newEndCursor,
-    } = await fetchAllProducts({
-      first: 30,
-      after: endCursor,
-    });
-    allProductsRef.current = [...allProductsRef.current, ...newProducts];
-    setProducts((prev) => [...prev, ...newProducts]); // Append to current filtered list
-    setHasNextPage(newHasNextPage);
-    setEndCursor(newEndCursor);
-    setIsLoadingMore(false);
-  };
+  const handleFilterChange = useCallback(
+    (newFilters) => {
+      resetAndFetch(newFilters, sortRef.current);
+    },
+    [resetAndFetch]
+  );
 
-  const handleFilterChange = useCallback((newFilters) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      ...newFilters,
-    }));
-  }, []);
-
-  const handleSortChange = useCallback((newSort) => {
-    setSort(newSort);
-  }, []);
+  const handleSortChange = useCallback(
+    (newSort) => {
+      resetAndFetch(filtersRef.current, newSort);
+    },
+    [resetAndFetch]
+  );
+  
+  const isInitialOrRefetchLoading = (loading || refetching) && products.length === 0;
+  const isAppendLoading = loading && products.length > 0 && hasNextPage;
+  const showNoProducts = !loading && !refetching && products.length === 0;
+  const showRefetchOverlay = refetching && products.length > 0; 
 
   return (
     <div className="flex flex-col lg:flex-row w-full h-full gap-[10px]">
@@ -110,26 +88,56 @@ export const ProductsClient = ({
           <FilterPanel onFilterChange={handleFilterChange} />
         </div>
       </div>
+
       <div className="w-full lg:w-10/12 rounded flex flex-col gap-[20px]">
-        <div className="w-full bg-gray-100 rounded py-1 px-2 flex flex-row justify-between items-center">
+        <div className="w-full bg-gray-100 rounded py-1 px-2 flex justify-between items-center">
           <div>
             <span className="font-light">Sort by:</span>
-            <SortingSelect onSortChange={handleSortChange} />
+            <SortingSelect value={sort} onChange={handleSortChange} />
           </div>
         </div>
-        <ProductGrid products={products} />
+
+        {/* Product Grid - Keep showing existing products during refetch */}
+        {products.length > 0 && <ProductGrid products={products} />}
+        {isInitialOrRefetchLoading && <SkeletonGrid />}
+        {showNoProducts && (
+          <div className="text-center py-10 text-gray-500">
+            No products found matching your filters.
+          </div>
+        )}
+
+        {/* Overlay for refetch when keeping old data */}
+        {showRefetchOverlay && (
+          <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10">
+            <SkeletonGrid />
+          </div>
+        )}
+
+        {/* Infinite Scroll Loader */}
         {hasNextPage && (
-          <div className="text-center mt-4">
-            <button
-              onClick={loadMore}
-              disabled={isLoadingMore}
-              className="bg-[var(--primary-dark)] cursor-pointer text-white px-4 py-2 rounded hover:bg-[var(--primary-dark)]/80 disabled:bg-gray-400"
-            >
-              {isLoadingMore ? "Loading..." : "Load More"}
-            </button>
+          <div ref={loaderRef} className="flex justify-center py-10">
+            {isAppendLoading && <SkeletonGrid />}
+          </div>
+        )}
+        {!hasNextPage && products.length > 0 && !loading && (
+          <div className="flex justify-center py-10">
+            <p className="text-gray-500">You've seen it all!</p>
           </div>
         )}
       </div>
     </div>
   );
-};
+}
+
+function SkeletonGrid() {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-2 w-fit">
+      {Array.from({ length: 12 }).map((_, i) => (
+        <div
+          key={i}
+          className="animate-pulse bg-gray-200 rounded-lg h-[250px]"
+        />
+      ))}
+    </div>
+  );
+}

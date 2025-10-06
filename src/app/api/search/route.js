@@ -29,7 +29,7 @@ export async function GET(request) {
       title: node.title,
       handle: node.handle,
       image: node.images?.edges?.[0]?.node || null,
-      href: `/product/${node.handle}`,
+      href: `/products/${node.handle}`,
     }));
     const collections = (data?.collections?.edges || []).map(({ node }) => ({
       id: node.id,

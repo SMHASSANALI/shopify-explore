@@ -64,7 +64,6 @@ export const CART_LINES_FRAGMENT = `
   }
 `;
 
-
 // Storefront API fetch function
 export async function fetchShopify(query, variables = {}, options = {}) {
   const shopifyDomain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN;
@@ -794,36 +793,52 @@ export async function fetchBlogs(options = {}) {
 }
 
 // Function to Fetch every Product (for /products page) except for those whose price is 0
-// Supports optional filters: availability, priceMin, priceMax, sortKey, after for pagination
+// Supports optional filters: availability, priceMin, priceMax, sortKey, after for paginationexport async function fetchAllProducts(options = {}) {
+// Replace the fetchAllProducts function in your shopify.js
+
 export async function fetchAllProducts(options = {}) {
   const {
     availability,
     priceMin,
     priceMax,
     sortKey,
+    reverse = false,
     first = 30,
     after = null,
   } = options;
+
   let queryFilter = "";
 
-  // Availability filter
-  if (availability) {
-    if (availability === "inStock") queryFilter += "available_for_sale:true ";
-    if (availability === "outOfStock")
-      queryFilter += "available_for_sale:false ";
+  // Availability filter - fixed logic
+  if (availability === "inStock") {
+    queryFilter += "available_for_sale:true ";
+  } else if (availability === "outOfStock") {
+    queryFilter += "available_for_sale:false ";
+  }
+  // If availability is null or undefined, don't add any filter (show all)
+
+  // Price filter - only add if values are provided
+  if (typeof priceMin === "number" && priceMin > 0) {
+    queryFilter += `variants.price:>=${priceMin} `;
+  }
+  if (typeof priceMax === "number" && priceMax < 1000) {
+    queryFilter += `variants.price:<=${priceMax} `;
   }
 
-  // Price filter
-  if (priceMin || priceMax) {
-    if (priceMin) queryFilter += `variants.price>${priceMin} `;
-    if (priceMax) queryFilter += `variants.price<${priceMax} `;
-  }
+  // Trim the query filter
+  const finalQuery = queryFilter.trim();
+
+  console.log("🔎 GraphQL Query Filter:", finalQuery); // Debug log
 
   const query = `
     {
-      products(first: ${first}, after: ${
-    after ? `"${after}"` : null
-  }, query: "${queryFilter.trim()}", sortKey: ${sortKey || "BEST_SELLING"}) {
+      products(
+        first: ${first}
+        ${after ? `, after: "${after}"` : ""}
+        ${finalQuery ? `, query: "${finalQuery}"` : ""}
+        ${sortKey ? `, sortKey: ${sortKey}` : ""}
+        ${reverse ? `, reverse: true` : ""}
+      ) {
         edges {
           node {
             id
@@ -850,10 +865,10 @@ export async function fetchAllProducts(options = {}) {
             }
             metafields(identifiers: [
               {namespace: "custom", key: "banner_link"},
-              {namespace: "reviews", key: "rating"},
-              {namespace: "reviews", key: "rating_count"}
               {namespace: "custom", key: "discount_percentage"},
               {namespace: "custom", key: "discount_badge"},
+              {namespace: "reviews", key: "rating"},
+              {namespace: "reviews", key: "rating_count"}
             ]) { id value key type }
           }
         }
@@ -868,7 +883,7 @@ export async function fetchAllProducts(options = {}) {
   });
 
   if (!data?.products) {
-    console.error(`No products found.`);
+    console.error("No products found in response");
     return { products: [], hasNextPage: false, endCursor: null };
   }
 
@@ -895,12 +910,13 @@ export async function fetchAllProducts(options = {}) {
       });
 
       const images = (node.images?.edges || []).map(({ node: img }) => img);
-      // Exclude products where all variant prices are 0
       const minPriceVariant = variants.reduce(
         (min, v) => (min && min.price <= v.price ? min : v),
         variants[0] || null
       );
       const minPrice = minPriceVariant ? minPriceVariant.price : 0;
+
+      // Exclude products where all variant prices are 0
       if (!minPrice || minPrice === 0) return null;
 
       const compareAtPrice = minPriceVariant?.compareAtPrice || null;
@@ -934,6 +950,8 @@ export async function fetchAllProducts(options = {}) {
       };
     })
     .filter((product) => product !== null);
+
+  console.log("✅ Processed products:", products.length); // Debug log
 
   return {
     products,

@@ -51,10 +51,10 @@ export async function generateMetadata({ params }) {
       "haaaib",
       "uk",
     ],
-    alternates: { canonical: `/product/${handle}` },
+    alternates: { canonical: `/products/${handle}` },
     openGraph: {
       type: "website", // Changed from "product"
-      url: `/product/${handle}`,
+      url: `/products/${handle}`,
       title: `${title} | HAAAIB`,
       description,
       images: [
@@ -107,7 +107,7 @@ export default async function ProductPage({ params }) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.title,
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://haaaib.com"}/product/${
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://haaaib.com"}/products/${
       product.handle
     }`,
     description: product.description || `Discover ${product.title} at HAAAIB.`,
@@ -125,7 +125,7 @@ export default async function ProductPage({ params }) {
       "@type": "Offer",
       url: `${
         process.env.NEXT_PUBLIC_SITE_URL || "https://haaaib.com"
-      }/product/${product.handle}`,
+      }/products/${product.handle}`,
       priceCurrency:
         product.variants?.edges?.[0]?.node?.priceV2?.currencyCode || "GBP",
       price: parseFloat(

@@ -73,7 +73,7 @@ export default async function CartPage({ searchParams }) {
         <Breadcrumbs className="my-4 md:!my-8" overrides={{ cart: "Cart" }} />
         <div className="flex flex-row items-center justify-between border-b-4 border-gray-300 pb-2">
           <h1 className="font-semibold">Shopping Cart</h1>
-          <Link href="/product" className="hover:text-[var(--accent)]">
+          <Link href="/products" className="hover:text-[var(--accent)]">
             Continue Shopping
           </Link>
         </div>

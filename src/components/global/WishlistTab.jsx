@@ -111,7 +111,7 @@ export default function WishlistTab() {
             
             <div className="p-2 sm:p-4">
               <Link
-                href={`/product/${item.handle}`}
+                href={`/products/${item.handle}`}
                 className="block hover:text-[var(--accent)] transition-colors"
               >
                 <h3 className="font-medium !text-sm line-clamp-2 mb-2">
@@ -125,7 +125,7 @@ export default function WishlistTab() {
                 </span>
                 
                 <Link
-                  href={`/product/${item.handle}`}
+                  href={`/products/${item.handle}`}
                   className="text-[var(--accent)] p-2 hover:underline !text-xs sm:!text-sm font-medium"
                 >
                   View Product

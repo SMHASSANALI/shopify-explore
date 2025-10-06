@@ -1,7 +1,7 @@
 import { fetchCollectionByHandle } from "@/lib/shopify";
 import CollectionsSection from "@/components/global/CollectionsSection";
 import Breadcrumbs from "@/components/global/Breadcrumbs";
-import { ProductsClient } from "@/components/products/ProductsClient";
+import ProductsClient from "@/components/products/ProductsClient";
 
 export async function generateMetadata({ params }) {
   const { handle } = await params; // Await params to resolve the Promise
@@ -9,7 +9,8 @@ export async function generateMetadata({ params }) {
     const data = await fetchCollectionByHandle(handle, { first: 1 });
     const title = data?.title || handle;
     const description = data?.description || `Explore ${title} at HAAAIB.`;
-    const image = data?.image?.src || data?.products?.[0]?.node?.image?.src || null;
+    const image =
+      data?.image?.src || data?.products?.[0]?.node?.image?.src || null;
     const canonical = `/collections/${handle}`;
     return {
       title: `${title} | HAAAIB`,
@@ -20,7 +21,9 @@ export async function generateMetadata({ params }) {
         url: canonical,
         title: `${title} | HAAAIB`,
         description,
-        images: image ? [{ url: image, alt: `${title} collection` }] : undefined,
+        images: image
+          ? [{ url: image, alt: `${title} collection` }]
+          : undefined,
       },
       twitter: {
         card: "summary_large_image",
@@ -38,7 +41,12 @@ export default async function CollectionPage({ params }) {
   const { handle } = await params; // Await params to resolve the Promise
 
   const data = await fetchCollectionByHandle(handle, { first: 250 });
-  const { products: initialProducts, hasNextPage: initialHasNextPage, endCursor: initialEndCursor } = data;
+  const {
+    products: initialProducts,
+    hasNextPage: initialHasNextPage,
+    endCursor: initialEndCursor,
+    id: collectionId,
+  } = data;
 
   if (!data || !data.title) {
     return (
@@ -58,7 +66,12 @@ export default async function CollectionPage({ params }) {
           overrides={{ collections: "Collections" }}
         />
 
-        <ProductsClient initialProducts={initialProducts} initialHasNextPage={initialHasNextPage} initialEndCursor={initialEndCursor} />
+        <ProductsClient
+          initialProducts={initialProducts}
+          initialHasNextPage={initialHasNextPage}
+          initialEndCursor={initialEndCursor}
+          collectionId={collectionId}
+        />
       </main>
     </main>
   );

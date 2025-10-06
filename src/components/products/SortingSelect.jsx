@@ -1,19 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
-export default function SortingSelect({ onSortChange }) {
-  const [sort, setSort] = useState("best-selling");
-
-  useEffect(() => {
-    onSortChange(sort);
-  }, [sort, onSortChange]);
-
+export default function SortingSelect({ value, onChange }) {
   return (
     <select
       className="ml-2 p-1 border border-[var(--primary-light)] rounded focus:outline-none focus:ring-1 focus:ring-[var(--accent)] bg-white cursor-pointer"
-      value={sort}
-      onChange={(e) => setSort(e.target.value)}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
     >
       <option value="best-selling">Best Selling</option>
       <option value="title-ascending">Title, A-Z</option>
