@@ -65,7 +65,7 @@ export default function BentoSection({ images }) {
                 alt={imageMap["top"].altText}
                 fill
                 sizes="(max-width: 768px) 100vw, 1400px"
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                className="object-center transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
               />
             </div>
@@ -92,7 +92,7 @@ export default function BentoSection({ images }) {
                   alt={imageMap["left"].altText}
                   fill
                   sizes="(max-width: 768px) 100vw, 700px"
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="object-center transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
                 />
               </div>
@@ -119,7 +119,7 @@ export default function BentoSection({ images }) {
                     alt={imageMap["top-right"].altText}
                     fill
                     sizes="(max-width: 768px) 100vw, 700px"
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="object-center transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
                   />
                 </div>
@@ -145,7 +145,7 @@ export default function BentoSection({ images }) {
                       alt={imageMap["bottom-right-1"].altText}
                       fill
                       sizes="(max-width: 768px) 100vw, 350px"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="object-center transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
                     />
                   </div>
@@ -168,7 +168,7 @@ export default function BentoSection({ images }) {
                       alt={imageMap["bottom-right-2"].altText}
                       fill
                       sizes="(max-width: 768px) 100vw, 350px"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="object-center transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
                     />
                   </div>
