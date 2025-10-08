@@ -7,6 +7,7 @@ import BentoWrapper from "@/components/bento/BentoWrapper";
 import { toTitleCase } from "@/utils/toTitleCase";
 import ReviewsSlider from "@/components/global/ReviewsSlider";
 import CollectionsSection from "@/components/global/CollectionsSection";
+import InViewAnimation from "@/components/global/InViewAnimation";
 
 export const metadata = {
   title: "Home | HAAAIB",
@@ -32,6 +33,10 @@ export default async function Home() {
   const mainCollection = await fetchCollectionByHandle("christmas");
   const secondaryCollection = await fetchCollectionByHandle("spooky-autumn");
   const recentBlogs = await fetchBlogs({ first: 3 });
+  const featureProducts = await fetchCollectionByHandle("trending-now", {
+    first: 2,
+  });
+  console.log(featureProducts);
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
@@ -73,6 +78,29 @@ export default async function Home() {
           title={toTitleCase(secondaryCollection.title)}
           data={secondaryCollection.products}
         />
+      </section>
+
+      <section className="flex flex-col">
+        {featureProducts?.products?.length > 0 &&
+          featureProducts?.products?.map((product, i) => (
+            <InViewAnimation
+              key={product.node.id}
+              direction={i % 2 === 0 ? "rtl" : "ltr"}
+              media={product.node.images}
+              title={product.node.title}
+              heading={
+                i % 2 === 0
+                  ? "Transform Any Seat Into a Cloud of Comfort"
+                  : "Heal Faster, Feel Stronger — Anytime, Anywhere"
+              }
+              text={
+                i % 2 === 0
+                  ? "Say goodbye to back pain and numb hips! This ergonomic cushion hugs your spine, relieves pressure, and supports perfect posture with memory foam that adapts to you. Whether it’s work, travel, or long drives — sit smarter, not harder."
+                  : "Experience next-level pain relief with pro-grade red light therapy that penetrates deep into your muscles and joints. Whether it’s sore backs, stiff necks, or workout recovery — this wearable belt melts away tension and restores energy at home or on the go. One session and you’ll feel the difference instantly!"
+              }
+              to={product.node.handle}
+            />
+          ))}
       </section>
 
       <HeroWrapper handle={"ad-banners"} />

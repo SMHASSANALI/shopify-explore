@@ -3,8 +3,10 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import ProductsSlider from "../global/ProductsSlider";
+import { toTitleCase } from "@/utils/toTitleCase";
 
-export default function BentoSection({ images }) {
+export default function BentoSection({ images, collectionData }) {
   // Map images by their bento_position (integer values: 1, 2, 3, 4, 5)
   const imageMap = images.reduce((acc, edge) => {
     const position = edge.node.metafields?.find(
@@ -51,9 +53,9 @@ export default function BentoSection({ images }) {
   }, {});
 
   return (
-    <section className="max-w-[1400px] mx-auto gap-[10px] py-12 flex flex-col min-h-[50vh] md:min-h-[70vh] lg:min-h-[80vh]">
+    <section className="max-w-[1400px] mx-auto gap-[10px] flex flex-col min-h-[50vh] md:min-h-[70vh] lg:min-h-[80vh]">
       {/* Top Section (14:2) */}
-      <div className="w-full relative rounded-xl overflow-hidden aspect-[14/2] group">
+      <div className="w-full relative rounded-xl overflow-hidden aspect-[14/2] group my-12">
         {imageMap["top"] ? (
           <Link
             href={imageMap["top"].link}
@@ -77,8 +79,15 @@ export default function BentoSection({ images }) {
         )}
       </div>
 
+      <div className="py-12">
+        <ProductsSlider
+          title={toTitleCase(collectionData?.title || "Trending Now")}
+          data={collectionData.products}
+        />
+      </div>
+
       {/* Bottom Section */}
-      <div className="w-full flex flex-col md:flex-row gap-[10px] h-full">
+      <div className="w-full flex flex-col md:flex-row gap-[10px] h-full my-12">
         {/* Bottom Left (1:1) */}
         <div className="w-full md:w-1/2 relative rounded-xl overflow-hidden aspect-square group">
           {imageMap["left"] ? (
