@@ -36,7 +36,6 @@ export default async function Home() {
   const featureProducts = await fetchCollectionByHandle("trending-now", {
     first: 2,
   });
-  console.log(featureProducts);
 
   const websiteJsonLd = {
     "@context": "https://schema.org",

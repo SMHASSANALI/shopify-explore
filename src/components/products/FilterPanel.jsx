@@ -22,7 +22,6 @@ export default function FilterPanel({ onFilterChange }) {
 
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
-      console.log('🎯 Applying filters:', newFilters); // Debug
       onFilterChange(newFilters);
     }, 500);
   }, [onFilterChange]);
@@ -53,13 +52,6 @@ export default function FilterPanel({ onFilterChange }) {
       nextFilters.availability !== null ||
       (typeof minPrice === 'number' && minPrice > 0) ||
       (typeof maxPrice === 'number' && maxPrice < 1000);
-
-    console.log('📊 Filter state:', {
-      availability,
-      minPrice,
-      maxPrice,
-      hasActiveFilters
-    }); // Debug
 
     if (hasActiveFilters) {
       handleDebouncedChange(nextFilters);

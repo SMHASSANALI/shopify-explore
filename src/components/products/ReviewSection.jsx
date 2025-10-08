@@ -3,12 +3,16 @@
 import React, { useState, useMemo, useCallback } from "react";
 import StarRating from "@/components/global/StarRating";
 import Image from "next/image";
+import ReviewForm from "./ReviewForm";
 
-export default function ReviewsSection({ initialReviews = [], internalProductId, shopDomain, apiToken }) {
+export default function ReviewsSection({
+  initialReviews = [],
+  internalProductId,
+}) {
   const [reviews, setReviews] = useState(initialReviews);
-  const [currentPage, setCurrentPage] = useState(2); 
+  const [currentPage, setCurrentPage] = useState(2);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedStars, setSelectedStars] = useState([]); 
+  const [selectedStars, setSelectedStars] = useState([]);
   const [sortBy, setSortBy] = useState("mostRecent");
   const [hasMore, setHasMore] = useState(true);
 
@@ -22,6 +26,8 @@ export default function ReviewsSection({ initialReviews = [], internalProductId,
     }
     return filtered;
   }, [reviews, selectedStars]);
+
+  console.log("REVIEWS :", reviews);
 
   // Sort filtered reviews
   const sortedReviews = useMemo(() => {
@@ -55,7 +61,7 @@ export default function ReviewsSection({ initialReviews = [], internalProductId,
     } finally {
       setIsLoading(false);
     }
-  }, [internalProductId, currentPage, isLoading, hasMore, shopDomain, apiToken]);
+  }, [internalProductId, currentPage, isLoading, hasMore]);
 
   // Star filter handlers
   const toggleStarFilter = (star) => {
@@ -64,11 +70,17 @@ export default function ReviewsSection({ initialReviews = [], internalProductId,
     );
   };
 
+  const handleReviewSubmitted = (newReview) => {
+    setReviews((prev) => [newReview, ...prev]);
+  };
+
   const clearFilters = () => setSelectedStars([]);
 
   return (
     <section className="max-w-[1400px] mx-auto">
-      <h2 className="text-3xl font-bold mb-6 w-full px-4 py-2 bg-[var(--accent)] text-white">Customer Reviews</h2>
+      <h2 className="text-3xl font-bold mb-6 w-full px-4 py-2 bg-[var(--accent)] text-white">
+        Customer Reviews
+      </h2>
       {reviews.length > 0 && (
         <>
           {/* Reviews Header with Count */}
@@ -88,16 +100,26 @@ export default function ReviewsSection({ initialReviews = [], internalProductId,
 
           {/* Filters */}
           <div className="flex flex-wrap gap-4 mb-6 bg-gray-50 p-4 rounded-lg">
-            <span className="text-sm font-medium text-gray-700">Filter by rating:</span>
+            <span className="text-sm font-medium text-gray-700">
+              Filter by rating:
+            </span>
             {[5, 4, 3, 2, 1].map((star) => (
-              <label key={star} className="flex items-center gap-1 cursor-pointer">
+              <label
+                key={star}
+                className="flex items-center gap-1 cursor-pointer"
+              >
                 <input
                   type="checkbox"
                   checked={selectedStars.includes(star)}
                   onChange={() => toggleStarFilter(star)}
                   className="rounded"
                 />
-                <StarRating ratingValue={star} scaleMin={1} scaleMax={5} size={12} />
+                <StarRating
+                  ratingValue={star}
+                  scaleMin={1}
+                  scaleMax={5}
+                  size={12}
+                />
               </label>
             ))}
             {selectedStars.length > 0 && (
@@ -113,7 +135,10 @@ export default function ReviewsSection({ initialReviews = [], internalProductId,
           {/* Reviews List */}
           <div className="space-y-6">
             {sortedReviews.map((review) => (
-              <article key={review.id} className="border-b border-gray-200 pb-6 last:border-b-0">
+              <article
+                key={review.id || review._id}
+                className="border-b border-gray-200 pb-6 last:border-b-0"
+              >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <StarRating
@@ -133,24 +158,33 @@ export default function ReviewsSection({ initialReviews = [], internalProductId,
                   </span>
                 </div>
                 {review.title && (
-                  <h4 className="font-medium mb-1 text-gray-900">{review.title}</h4>
+                  <h4 className="font-medium mb-1 text-gray-900">
+                    {review.title}
+                  </h4>
                 )}
-                <p className="text-gray-600 mb-3 leading-relaxed">{review.body}</p>
-                <p className="text-sm text-gray-500 italic">
-                  - {review.reviewer.name || "Anonymous"}
+                <p className="text-gray-600 mb-3 leading-relaxed">
+                  {review.body}
                 </p>
+                {/* <p className="text-sm text-gray-500 italic">
+                  - {review.reviewer.name || "Anonymous"}
+                </p> */}
                 {review.pictures && review.pictures.length > 0 && (
                   <div className="flex gap-2 mt-3 flex-wrap">
-                    {review.pictures.slice(0, 3).map((pic, idx) => ( // Limit to 3
-                      <Image
-                        key={idx}
-                        src={pic.urls?.compact || pic.url} // Fallback for API variations
-                        alt={`Review photo ${idx + 1}`}
-                        width={80}
-                        height={80}
-                        className="object-cover rounded-lg cursor-pointer hover:opacity-80"
-                      />
-                    ))}
+                    {review.pictures.slice(0, 3).map(
+                      (
+                        pic,
+                        idx // Limit to 3
+                      ) => (
+                        <Image
+                          key={idx}
+                          src={pic.urls?.compact || pic.url} // Fallback for API variations
+                          alt={`Review photo ${idx + 1}`}
+                          width={80}
+                          height={80}
+                          className="object-cover rounded-lg cursor-pointer hover:opacity-80"
+                        />
+                      )
+                    )}
                     {review.pictures.length > 3 && (
                       <span className="text-sm text-gray-500 self-center">
                         +{review.pictures.length - 3} more
@@ -168,14 +202,16 @@ export default function ReviewsSection({ initialReviews = [], internalProductId,
               <button
                 onClick={loadMore}
                 disabled={isLoading}
-                className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 disabled:opacity-50 transition"
+                className="bg-[var(--primary-dark)] text-white px-6 py-3 rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50 transition cursor-pointer"
               >
                 {isLoading ? "Loading..." : "Load More Reviews"}
               </button>
             </div>
           )}
           {!hasMore && sortedReviews.length > 0 && (
-            <p className="text-center text-gray-500 mt-8">No more reviews to load.</p>
+            <p className="text-center text-gray-500 mt-8">
+              No more reviews to load.
+            </p>
           )}
         </>
       )}
@@ -184,6 +220,12 @@ export default function ReviewsSection({ initialReviews = [], internalProductId,
           No reviews yet. Be the first to share your thoughts!
         </div>
       )}
+      <div className="mt-12">
+        <ReviewForm
+          productId={internalProductId}
+          onReviewSubmitted={handleReviewSubmitted}
+        />
+      </div>
     </section>
   );
 }

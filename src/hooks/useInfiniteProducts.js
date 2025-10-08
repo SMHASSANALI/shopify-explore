@@ -126,15 +126,11 @@ export function useInfiniteProducts({
       };
       if (collectionId) queryParams.collectionId = collectionId;
 
-      console.log('🔍 Fetching with params:', queryParams); // Debug log
-
       const {
         products: fresh,
         hasNextPage,
         endCursor,
       } = await fetchAllProducts(queryParams);
-      
-      console.log('✅ Received products:', fresh.length); // Debug log
       
       setProducts(fresh);
       setHasNextPage(hasNextPage);

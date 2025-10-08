@@ -121,7 +121,7 @@ export default function InViewAnimation({
             className="flex gap-4 mt-4"
           >
             <Link
-              href={to}
+              href={`/products/${to}` || "/"}
               className="hover:bg-transparent hover:text-[var(--accent)] duration-300 transition-all  bg-[var(--accent)] text-white rounded border border-[var(--accent)] py-2 px-4 cursor-pointer"
             >
               Buy Now

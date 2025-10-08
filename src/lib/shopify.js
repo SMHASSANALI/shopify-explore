@@ -828,8 +828,6 @@ export async function fetchAllProducts(options = {}) {
   // Trim the query filter
   const finalQuery = queryFilter.trim();
 
-  console.log("🔎 GraphQL Query Filter:", finalQuery); // Debug log
-
   const query = `
     {
       products(
@@ -950,8 +948,6 @@ export async function fetchAllProducts(options = {}) {
       };
     })
     .filter((product) => product !== null);
-
-  console.log("✅ Processed products:", products.length); // Debug log
 
   return {
     products,
