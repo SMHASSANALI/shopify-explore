@@ -7,7 +7,10 @@ import BentoWrapper from "@/components/bento/BentoWrapper";
 import { toTitleCase } from "@/utils/toTitleCase";
 import ReviewsSlider from "@/components/global/ReviewsSlider";
 import CollectionsSection from "@/components/global/CollectionsSection";
-import InViewAnimation from "@/components/global/InViewAnimation";
+import RevealGallery from "@/components/global/RevealGallery";
+import left from "/public/assets/images/ImageLeft.png";
+import right from "/public/assets/images/ImageRight.png";
+import center from "/public/assets/images/ImageCenter.png";
 
 export const metadata = {
   title: "Home | HAAAIB",
@@ -36,6 +39,7 @@ export default async function Home() {
   const featureProducts = await fetchCollectionByHandle("trending-now", {
     first: 2,
   });
+  console.log("featureProducts", featureProducts);
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
@@ -79,27 +83,36 @@ export default async function Home() {
         />
       </section>
 
-      <section className="flex flex-col">
-        {featureProducts?.products?.length > 0 &&
-          featureProducts?.products?.map((product, i) => (
-            <InViewAnimation
-              key={product.node.id}
-              direction={i % 2 === 0 ? "rtl" : "ltr"}
-              media={product.node.images}
-              title={product.node.title}
-              heading={
-                i % 2 === 0
-                  ? "Transform Any Seat Into a Cloud of Comfort"
-                  : "Heal Faster, Feel Stronger — Anytime, Anywhere"
-              }
-              text={
-                i % 2 === 0
-                  ? "Say goodbye to back pain and numb hips! This ergonomic cushion hugs your spine, relieves pressure, and supports perfect posture with memory foam that adapts to you. Whether it’s work, travel, or long drives — sit smarter, not harder."
-                  : "Experience next-level pain relief with pro-grade red light therapy that penetrates deep into your muscles and joints. Whether it’s sore backs, stiff necks, or workout recovery — this wearable belt melts away tension and restores energy at home or on the go. One session and you’ll feel the difference instantly!"
-              }
-              to={product.node.handle}
-            />
-          ))}
+      <section className="flex flex-col md:flex-row max-w-[1400px] mx-auto relative h-[200dvh] bg-gray-100 rounded-xl shadow-lg">
+        <div className="w-full md:w-4/12 flex flex-col items-start justify-start md:justify-center gap-2 sticky top-20 h-[100dvh] p-[20px]">
+          <span className="text-[var(--accent)] font-medium">
+            {featureProducts?.products[0].node.title}
+          </span>
+          <h1 className="font-semibold">
+            Transform Any Seat Into a Cloud of Comfort
+          </h1>
+          <p>
+            Say goodbye to back pain and numb hips! This ergonomic cushion hugs
+            your spine, relieves pressure, and supports perfect posture with
+            memory foam that adapts to you. Whether it’s work, travel, or long
+            drives — sit smarter, not harder.
+          </p>
+          <Link
+            href={
+              `/products/${featureProducts?.products[0].node.handle}` || "/"
+            }
+            className="hover:bg-transparent hover:text-[var(--accent)] duration-300 transition-all  bg-[var(--accent)] text-white rounded border border-[var(--accent)] py-2 px-4 cursor-pointer"
+          >
+            Buy Now
+          </Link>
+        </div>
+        <div className="w-full md:w-8/12">
+          <RevealGallery
+            mediaLeft={left}
+            mediaCenter={center}
+            mediaRight={right}
+          />
+        </div>
       </section>
 
       <HeroWrapper handle={"ad-banners"} />
