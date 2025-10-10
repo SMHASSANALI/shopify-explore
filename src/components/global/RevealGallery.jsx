@@ -38,7 +38,7 @@ const RevealGallery = () => {
             className="absolute flex items-center justify-center h-[150px] w-4/12 md:h-[400px] md:w-[250px] rounded-xl border-2 border-white/20 overflow-hidden z-10"
           >
             <Image
-              src={"/assets/right.png"}
+              src="/assets/right.png"
               alt=""
               className="h-full w-full object-cover"
               width={200}
@@ -50,7 +50,7 @@ const RevealGallery = () => {
             className="absolute flex items-center justify-center h-[150px] w-4/12 md:h-[400px] md:w-[250px] rounded-xl border-2 border-white/20 overflow-hidden z-20"
           >
             <Image
-              src={"/assets/center.png"}
+              src="/assets/center.png"
               alt=""
               className="h-full w-full object-cover"
               width={200}
@@ -62,7 +62,7 @@ const RevealGallery = () => {
             className="absolute flex items-center justify-center h-[150px] w-4/12 md:h-[400px] md:w-[250px] rounded-xl border-2 border-white/20 overflow-hidden z-10"
           >
             <Image
-              src={"/assets/left.png"}
+              src="/assets/left.png"
               alt=""
               width={200}
               height={500}

@@ -8,6 +8,9 @@ import { toTitleCase } from "@/utils/toTitleCase";
 import ReviewsSlider from "@/components/global/ReviewsSlider";
 import CollectionsSection from "@/components/global/CollectionsSection";
 import RevealGallery from "@/components/global/RevealGallery";
+import Center from "../../public/assets/center.png";
+import Left from "../../public/assets/left.png";
+import Right from "../../public/assets/right.png";
 
 export const metadata = {
   title: "Home | HAAAIB",
