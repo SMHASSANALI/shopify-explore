@@ -39,9 +39,8 @@ const RevealGallery = () => {
           >
             <Image
               src="/assets/right.png"
-              alt=""
-              width={200}
-              height={500}
+              alt="Product Image"
+              fill
             />
           </motion.div>
           <motion.div
@@ -50,9 +49,8 @@ const RevealGallery = () => {
           >
             <Image
               src="/assets/center.png"
-              alt=""
-              width={200}
-              height={500}
+              alt="Product Image"
+              fill
             />
           </motion.div>
           <motion.div
@@ -61,9 +59,8 @@ const RevealGallery = () => {
           >
             <Image
               src="/assets/left.png"
-              alt=""
-              width={200}
-              height={500}
+              alt="Product Image"
+              fill
             />
           </motion.div>
         </div>
