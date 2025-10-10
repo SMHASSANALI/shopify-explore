@@ -1,9 +1,9 @@
 "use client";
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import mediaLeft from "../../../public/assets/images/ImageLeft.png";
-import mediaCenter from "../../../public/assets/images/ImageRight.png";
-import mediaRight from "../../../public/assets/images/ImageCenter.png";
+import mediaLeft from "../../../public/assets/media/ImageLeft.png";
+import mediaCenter from "../../../public/assets/media/ImageRight.png";
+import mediaRight from "../../../public/assets/media/ImageCenter.png";
 import Image from "next/image";
 
 const RevealGallery = () => {
