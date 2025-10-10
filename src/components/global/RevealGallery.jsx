@@ -40,7 +40,8 @@ const RevealGallery = () => {
             <Image
               src="/assets/right.png"
               alt=""
-              className="h-full w-full object-cover"
+              style={{ objectFit: "contain", width: "200px", height: "500px" }}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               width={200}
               height={500}
             />
@@ -52,7 +53,8 @@ const RevealGallery = () => {
             <Image
               src="/assets/center.png"
               alt=""
-              className="h-full w-full object-cover"
+              style={{ objectFit: "contain", width: "200px", height: "500px" }}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               width={200}
               height={500}
             />
@@ -66,7 +68,8 @@ const RevealGallery = () => {
               alt=""
               width={200}
               height={500}
-              className="h-full w-full object-cover"
+              style={{ objectFit: "contain", width: "200px", height: "500px" }}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
           </motion.div>
         </div>
