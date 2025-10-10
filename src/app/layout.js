@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { getCustomerAccount } from "@/lib/shopify";
 import Footer from "@/components/global/Footer";
 import { CustomerProvider } from "@/contexts/CustomerContext";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -136,6 +137,7 @@ export default async function RootLayout({ children }) {
         <CustomerProvider customer={customer}>
           <Navbar customer={customer} />
           {children}
+          <SpeedInsights />
           <Footer />
           <MobileBottomNav />
         </CustomerProvider>
