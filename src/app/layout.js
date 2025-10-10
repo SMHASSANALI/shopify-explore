@@ -137,7 +137,7 @@ export default async function RootLayout({ children }) {
         <CustomerProvider customer={customer}>
           <Navbar customer={customer} />
           {children}
-          <SpeedInsights />
+          {/* <SpeedInsights /> */}
           <Footer />
           <MobileBottomNav />
         </CustomerProvider>
