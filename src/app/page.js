@@ -8,6 +8,9 @@ import { toTitleCase } from "@/utils/toTitleCase";
 import ReviewsSlider from "@/components/global/ReviewsSlider";
 import CollectionsSection from "@/components/global/CollectionsSection";
 import RevealGallery from "@/components/global/RevealGallery";
+import left from "public/assets/images/ImageLeft.png";
+import right from "public/assets/images/ImageRight.png";
+import center from "public/assets/images/ImageCenter.png";
 
 export const metadata = {
   title: "Home | HAAAIB",
@@ -105,9 +108,9 @@ export default async function Home() {
         </div>
         <div className="w-full md:w-8/12">
           <RevealGallery
-            mediaLeft={"/public/assets/images/ImageLeft.png"}
-            mediaCenter={"/public/assets/images/ImageCenter.png"}
-            mediaRight={"/public/assets/images/ImageRight.png"}
+            mediaLeft={left || "/public/assets/placeholder.jpg"}
+            mediaCenter={center || "/public/assets/placeholder.jpg"}
+            mediaRight={right || "/public/assets/placeholder.jpg"}
           />
         </div>
       </section>
