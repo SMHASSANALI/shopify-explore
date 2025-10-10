@@ -1,9 +1,12 @@
 "use client";
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import mediaLeft from "../../../public/assets/images/ImageLeft.png";
+import mediaCenter from "../../../public/assets/images/ImageRight.png";
+import mediaRight from "../../../public/assets/images/ImageCenter.png";
 import Image from "next/image";
 
-const RevealGallery = ({ mediaLeft, mediaCenter, mediaRight }) => {
+const RevealGallery = () => {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
