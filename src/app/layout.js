@@ -7,6 +7,7 @@ import { getCustomerAccount } from "@/lib/shopify";
 import Footer from "@/components/global/Footer";
 import { CustomerProvider } from "@/contexts/CustomerContext";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -130,8 +131,10 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <link rel="preconnect" href="https://cdn.shopify.com" />
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <head>
+        <link rel="preconnect" href="https://cdn.shopify.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+      </head>
       <body
         suppressHydrationWarning
         className={`${poppins.variable} ${montserrat.variable} antialiased`}
@@ -142,7 +145,8 @@ export default async function RootLayout({ children }) {
           <Footer />
           <MobileBottomNav />
         </CustomerProvider>
-        <SpeedInsights />
+        {process.env.NEXT_PUBLIC_BASE_URL !== "http://localhost:3000/" && <SpeedInsights />}
+        {process.env.NEXT_PUBLIC_BASE_URL !== "http://localhost:3000/" && <Analytics />}
       </body>
     </html>
   );
