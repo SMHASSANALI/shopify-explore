@@ -95,7 +95,7 @@ export default async function Footer() {
             <Link href="https://www.facebook.com/haaaib" target="_blank">
               <FaFacebook size={20} />
             </Link>
-            <Link href="https://www.instagram.com/haaaib" target="_blank">
+            <Link href="https://www.instagram.com/haaaibuk" target="_blank">
               <FaSquareInstagram size={20} />
             </Link>
           </div>
