@@ -650,7 +650,9 @@ export async function fetchProductByHandle(handle, options = {}) {
   `;
   const variables = { handle };
   const data = await fetchShopify(query, variables, {
-    revalidate: options.revalidate || 300,
+    next: {
+      revalidate: options.revalidate || 300,
+    },
   });
 
   if (!data?.productByHandle) {

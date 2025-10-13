@@ -10,11 +10,11 @@ export default async function HeroWrapper({ handle }) {
     <Suspense
       fallback={
         <div className="w-full h-fit">
-          <div className="relative aspect-[19/6] lg:max-w-[1400px] w-full md:h-auto bg-gray-200 animate-pulse rounded-lg" />
+          <div className="relative aspect-[19/6] lg:max-w-[1400px] w-full bg-gray-200 animate-pulse rounded-lg" />
         </div>
       }
     >
-      <Hero banners={banners} />
+      <Hero banners={banners} type="hero" />
     </Suspense>
   );
 }

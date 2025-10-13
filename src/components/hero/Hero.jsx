@@ -9,7 +9,7 @@ import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
 
-export default function Hero({ banners }) {
+export default function Hero({ banners, type = "ad" }) {
   const swiperRef = useRef(null);
 
   const handleNext = () => {
@@ -65,7 +65,7 @@ export default function Hero({ banners }) {
             className="w-full"
           >
             {banners.length > 0 ? (
-              banners.map((edge) => (
+              banners.map((edge, index) => (
                 <SwiperSlide key={edge.node.id}>
                   <div className=" h-fit shadow-sm">
                     <Link
@@ -76,15 +76,14 @@ export default function Hero({ banners }) {
                       className="flex flex-col h-full"
                     >
                       {edge.node.image && (
-                        <div className="relative aspect-[19/6] lg:max-w-[1400px] w-full md:h-auto">
+                        <div className="relative aspect-[19/6] lg:max-w-[1400px] w-full overflow-hidden">
                           <Image
                             src={`${edge.node.image.src}?width=1400&format=webp`}
                             alt={edge.node.image.altText || edge.node.title}
                             fill
-                            // add sizes for tablet, mobile and desktop
+                            priority={index === 0}
                             sizes="(max-width: 425px) 100vw, (max-width: 768px) 100vw, (max-width: 1400px) 100vw, 100vw"
                             className="object-cover"
-                            loading="lazy"
                           />
                         </div>
                       )}

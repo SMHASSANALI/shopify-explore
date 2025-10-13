@@ -1,51 +1,143 @@
+// "use client";
+
+// import React, { useRef } from "react";
+// import { Swiper, SwiperSlide } from "swiper/react";
+// import { Autoplay } from "swiper/modules";
+// import "swiper/css";
+// import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+// import ProductCard from "./ProductCard";
+
+// const ProductsSlider = ({ title, data }) => {
+//   const swiperRef = useRef(null);
+
+//   const handleNext = () => {
+//     swiperRef.current?.swiper?.slideNext();
+//   };
+
+//   const handlePrev = () => {
+//     swiperRef.current?.swiper?.slidePrev();
+//   };
+
+//   const handleMouseEnter = () => {
+//     swiperRef.current?.swiper?.autoplay?.stop();
+//   };
+
+//   const handleMouseLeave = () => {
+//     swiperRef.current?.swiper?.autoplay?.start();
+//   };
+
+//   return (
+//     <section className="w-full md:max-w-[1400px] mx-auto space-y-[20px]">
+//       <div className="flex flex-row items-center justify-between border-b-4 border-gray-300 pb-2">
+//         <h1 className="font-semibold">{title}</h1>
+//         <div className="w-fit flex flex-row items-center gap-2">
+//           <button
+//             onClick={handlePrev}
+//             aria-label="Previous products"
+//             title="Previous products"
+//             className="rounded-full cursor-pointer hidden md:flex items-center justify-center bg-[var(--accent)] p-1 text-white"
+//           >
+//             <IoIosArrowBack size={14} />
+//           </button>
+//           <button
+//             onClick={handleNext}
+//             aria-label="Next products"
+//             title="Next products"
+//             className="rounded-full cursor-pointer hidden md:flex items-center justify-center bg-[var(--accent)] p-1 text-white"
+//           >
+//             <IoIosArrowForward size={14} />
+//           </button>
+//         </div>
+//       </div>
+
+//       <div
+//         onMouseEnter={handleMouseEnter}
+//         onMouseLeave={handleMouseLeave}
+//         className="py-[10px] md:py-10"
+//       >
+//         <Swiper
+//           modules={[Autoplay]}
+//           spaceBetween={12}
+//           grabCursor
+//           touchRatio={1.5}
+//           breakpoints={{
+//             0: { slidesPerView: 2 },
+//             425: { slidesPerView: 2 },
+//             768: { slidesPerView: 3 },
+//             1024: { slidesPerView: 4 },
+//             1280: { slidesPerView: 5 },
+//           }}
+//           loop
+//           autoplay={{
+//             delay: 3000,
+//             pauseOnMouseEnter: true,
+//             disableOnInteraction: false,
+//           }}
+//           ref={swiperRef}
+//           className=""
+//         >
+//           {data.length > 0 ? (
+//             data.map((item) => (
+//               <SwiperSlide key={item.node.id}>
+//                 {parseInt(item.node.price) > 0 && (
+//                   <ProductCard product={item} />
+//                 )}
+//               </SwiperSlide>
+//             ))
+//           ) : (
+//             <SwiperSlide>
+//               <div className="p-4 text-center text-gray-500">
+//                 No products available
+//               </div>
+//             </SwiperSlide>
+//           )}
+//         </Swiper>
+//       </div>
+//     </section>
+//   );
+// };
+
+// export default ProductsSlider;
+
+
+
+
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useMemo } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import ProductCard from "./ProductCard";
 
-const ProductsSlider = ({ title, data }) => {
+const ProductsSlider = ({ title = "", data = [] }) => {
   const swiperRef = useRef(null);
+  const products = useMemo(() => data || [], [data]);
 
-  const handleNext = () => {
-    swiperRef.current?.swiper?.slideNext();
-  };
-
-  const handlePrev = () => {
-    swiperRef.current?.swiper?.slidePrev();
-  };
-
-  const handleMouseEnter = () => {
-    swiperRef.current?.swiper?.autoplay?.stop();
-  };
-
-  const handleMouseLeave = () => {
-    swiperRef.current?.swiper?.autoplay?.start();
-  };
+  const handleNext = () => swiperRef.current?.swiper?.slideNext();
+  const handlePrev = () => swiperRef.current?.swiper?.slidePrev();
+  const handleMouseEnter = () => swiperRef.current?.swiper?.autoplay?.stop();
+  const handleMouseLeave = () => swiperRef.current?.swiper?.autoplay?.start();
 
   return (
-    <section className="w-full md:max-w-[1400px] mx-auto space-y-[20px]">
-      <div className="flex flex-row items-center justify-between border-b-4 border-gray-300 pb-2">
-        <h1 className="font-semibold">{title}</h1>
-        <div className="w-fit flex flex-row items-center gap-2">
+    <section className="w-full md:max-w-[1400px] mx-auto space-y-5 px-2">
+      <div className="flex items-center justify-between border-b-4 border-gray-300 pb-2">
+        <h2 className="font-semibold text-base md:text-lg">{title}</h2>
+        <div className="hidden md:flex items-center gap-2">
           <button
             onClick={handlePrev}
             aria-label="Previous products"
-            title="Previous products"
-            className="rounded-full cursor-pointer hidden md:flex items-center justify-center bg-[var(--accent)] p-1 text-white"
+            className="rounded-full bg-[var(--accent)] text-white p-1.5 hover:opacity-90 transition"
           >
-            <IoIosArrowBack size={14} />
+            <IoIosArrowBack size={16} />
           </button>
           <button
             onClick={handleNext}
             aria-label="Next products"
-            title="Next products"
-            className="rounded-full cursor-pointer hidden md:flex items-center justify-center bg-[var(--accent)] p-1 text-white"
+            className="rounded-full bg-[var(--accent)] text-white p-1.5 hover:opacity-90 transition"
           >
-            <IoIosArrowForward size={14} />
+            <IoIosArrowForward size={16} />
           </button>
         </div>
       </div>
@@ -53,11 +145,11 @@ const ProductsSlider = ({ title, data }) => {
       <div
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="py-[10px] md:py-10"
+        className="py-4 md:py-8"
       >
         <Swiper
           modules={[Autoplay]}
-          spaceBetween={12}
+          spaceBetween={16}
           grabCursor
           touchRatio={1.5}
           breakpoints={{
@@ -69,21 +161,22 @@ const ProductsSlider = ({ title, data }) => {
           }}
           loop
           autoplay={{
-            delay: 3000,
+            delay: 3500,
             pauseOnMouseEnter: true,
             disableOnInteraction: false,
           }}
           ref={swiperRef}
-          className=""
         >
-          {data.length > 0 ? (
-            data.map((item) => (
-              <SwiperSlide key={item.node.id}>
-                {parseInt(item.node.price) > 0 && (
+          {products.length > 0 ? (
+            products.map((item) => {
+              const price = parseFloat(item.node.price || 0);
+              if (price <= 0) return null;
+              return (
+                <SwiperSlide key={item.node.id}>
                   <ProductCard product={item} />
-                )}
-              </SwiperSlide>
-            ))
+                </SwiperSlide>
+              );
+            })
           ) : (
             <SwiperSlide>
               <div className="p-4 text-center text-gray-500">
@@ -97,4 +190,4 @@ const ProductsSlider = ({ title, data }) => {
   );
 };
 
-export default ProductsSlider;
+export default React.memo(ProductsSlider);

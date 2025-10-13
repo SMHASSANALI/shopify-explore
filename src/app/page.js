@@ -33,13 +33,13 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const mainCollection = await fetchCollectionByHandle("christmas");
-  const secondaryCollection = await fetchCollectionByHandle("spooky-autumn");
-  const recentBlogs = await fetchBlogs({ first: 3 });
-  const featureProducts = await fetchCollectionByHandle("trending-now", {
-    first: 2,
-  });
-  console.log("featureProducts", featureProducts);
+  const [mainCollection, secondaryCollection, recentBlogs, featureProducts] =
+    await Promise.all([
+      fetchCollectionByHandle("christmas"),
+      fetchCollectionByHandle("spooky-autumn"),
+      fetchBlogs({ first: 3 }),
+      fetchCollectionByHandle("trending-now", { first: 2 }),
+    ]);
 
   const websiteJsonLd = {
     "@context": "https://schema.org",

@@ -130,6 +130,8 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
+      <link rel="preconnect" href="https://cdn.shopify.com" />
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
       <body
         suppressHydrationWarning
         className={`${poppins.variable} ${montserrat.variable} antialiased`}
