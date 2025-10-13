@@ -170,7 +170,7 @@ const ProductsSlider = ({ title = "", data = [] }) => {
               if (price <= 0) return null;
               return (
                 <SwiperSlide key={item.node.id}>
-                  <div className="aspect-auto border max-w-[265px]">
+                  <div className="aspect-auto max-w-[265px]">
                     <ProductCard product={item} />
                   </div>
                 </SwiperSlide>
