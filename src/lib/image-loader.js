@@ -1,6 +1,6 @@
-const { NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN } = process.env;
+const storefrontToken = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN;
 
-if (!NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN) {
+if (!storefrontToken) {
   throw new Error("NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN is not defined");
 }
 
@@ -16,7 +16,7 @@ export default function imageLoader({ src, width, quality }) {
   // Only add token for Shopify CDN
   if (url.hostname === "cdn.shopify.com") {
     const params = new URLSearchParams(url.search);
-    params.set("token", NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN);
+    params.set("token", storefrontToken);
     return `${url.origin}${url.pathname}?${params.toString()}&w=${width}&q=${
       quality || 75
     }`;
