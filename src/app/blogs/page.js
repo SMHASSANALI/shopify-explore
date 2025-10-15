@@ -20,12 +20,13 @@ export default async function BlogsPage() {
                   href={`/blogs/${blog.blog.handle}`}
                   className="p-4 bg-white rounded-lg shadow-md flex flex-col justify-between hover:shadow-lg transition-shadow"
                 >
-                  <div className="relative w-full h-48 object-cover rounded-md overflow-hidden mb-4">
+                  <div className="relative w-full h-[200px] object-cover rounded-md overflow-hidden mb-4">
                     <Image
                       src={blog.image || "/public/assets/placeholder.jpg"}
                       alt={blog.image?.altText || blog.title}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                      fill
+                      height={200}
+                      width={400}
                       className="object-cover"
                       loading="lazy"
                     />

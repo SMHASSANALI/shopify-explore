@@ -27,7 +27,8 @@ export default function CollectionCard({ edge }) {
             <Image
               src={edge.image.src}
               alt={edge.image.altText || edge.title}
-              fill
+              width={200}
+              height={200}
               className="object-cover rounded-t-lg"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               loading="lazy"

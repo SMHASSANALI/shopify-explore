@@ -112,23 +112,23 @@ export default async function BlogPage({ params }) {
                 className="bg-white rounded-md shadow p-4 hover:shadow-lg transition-shadow flex flex-col justify-between"
               >
                 {edge.node.image ? (
-                  <div className="relative w-full h-32 rounded-t overflow-hidden mb-2">
+                  <div className="relative w-full h-[200px] rounded-t overflow-hidden mb-2">
                     <Image
                       src={edge.node.image.url}
                       alt={edge.node.image.altText || edge.node.title}
-                      fill
+                      width={400}
+                      height={200}
                       className="object-cover rounded"
                     />
                   </div>
                 ) : (
-                  <div className="relative w-full h-32 rounded-t overflow-hidden mb-2">
+                  <div className="relative w-full h-[200px] rounded-t overflow-hidden mb-2">
                     <Image
                       src="/assets/placeholder.jpg"
                       alt="Placeholder Image"
                       fill
                       className="object-cover rounded"
                       sizes="100vw"
-                      priority
                     />
                   </div>
                 )}

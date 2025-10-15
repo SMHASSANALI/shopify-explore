@@ -90,7 +90,8 @@ export default function WishlistTab() {
                 <Image
                   src={item.image.src}
                   alt={item.image.altText || item.title}
-                  fill
+                  width={400}
+                  height={400}
                   className="object-cover"
                   sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 />

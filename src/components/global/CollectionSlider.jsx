@@ -73,7 +73,8 @@ const CollectionsSlider = ({ data = [] }) => {
                     <Image
                       src={item.image?.src}
                       alt={item.image?.altText || item.title}
-                      fill
+                      width={130}
+                      height={130}
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 130px"
                       priority

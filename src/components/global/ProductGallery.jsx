@@ -41,7 +41,9 @@ export default function ProductGallery({ images = [], className = "" }) {
               <Image
                 src={img.src}
                 alt={img.altText || "Product image"}
-                fill
+                width={600}
+                height={600}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 className="object-cover"
                 priority
               />
@@ -83,7 +85,8 @@ export default function ProductGallery({ images = [], className = "" }) {
                 <Image
                   src={img.src}
                   alt={img.altText || "Thumbnail"}
-                  fill
+                  width={100}
+                  height={100}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                   className="object-cover"
                   priority

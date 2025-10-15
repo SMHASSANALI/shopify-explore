@@ -199,9 +199,9 @@ export default function CartDrawer() {
                       <Image
                         src={img.src}
                         alt={img.altText || title}
-                        fill
+                        width={64}
+                        height={64}
                         className="object-cover"
-                        sizes="64px"
                       />
                     )}
                   </div>

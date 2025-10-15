@@ -67,7 +67,8 @@ export default function SearchModal({ open, onClose }) {
                       <Image
                         src={item.image.src}
                         alt={item.image.altText || item.title}
-                        fill
+                        width={48}
+                        height={48}
                         className="object-cover"
                       />
                     </div>

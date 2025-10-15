@@ -1,6 +1,10 @@
 import { getCart } from "@/lib/shopify";
 import { cookies } from "next/headers";
-import { calculateTotal, updateCartQuantity, removeCartItems } from "@/utils/helper";
+import {
+  calculateTotal,
+  updateCartQuantity,
+  removeCartItems,
+} from "@/utils/helper";
 import { revalidatePath } from "next/cache";
 import Breadcrumbs from "@/components/global/Breadcrumbs";
 import Link from "next/link";
@@ -30,7 +34,6 @@ export const metadata = {
 export default async function CartPage({ searchParams }) {
   const cookieStore = await cookies();
   const cartId = cookieStore.get("cartId")?.value || searchParams?.cartId;
-
 
   if (!cartId) {
     return (
@@ -92,7 +95,9 @@ export default async function CartPage({ searchParams }) {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {cart.lines.edges.map(({ node }) => {
-                    const image = node.merchandise.image || node.merchandise.product.images.edges[0]?.node;
+                    const image =
+                      node.merchandise.image ||
+                      node.merchandise.product.images.edges[0]?.node;
                     const price = parseFloat(node.merchandise.priceV2.amount);
                     const variantType =
                       node.merchandise.selectedOptions?.[0]?.value || "Default";
@@ -113,7 +118,8 @@ export default async function CartPage({ searchParams }) {
                                     image.altText ||
                                     node.merchandise.product.title
                                   }
-                                  fill
+                                  height={250}
+                                  width={250}
                                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                                 />
                               </div>
@@ -123,9 +129,12 @@ export default async function CartPage({ searchParams }) {
                                 {node.merchandise.product.title}
                               </h2>
                               <h2 className="font-semibold pb-2 !text-sm md:!text-lg">
-                                £ {price} {node.merchandise.priceV2.currencyCode}
+                                £ {price}{" "}
+                                {node.merchandise.priceV2.currencyCode}
                               </h2>
-                              <h3 className="font-light !text-sm md:!text-lg">{variantType}</h3>
+                              <h3 className="font-light !text-sm md:!text-lg">
+                                {variantType}
+                              </h3>
                             </div>
                           </div>
                         </td>

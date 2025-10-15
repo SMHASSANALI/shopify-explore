@@ -63,9 +63,10 @@ export default function BentoSection({ images, collectionData }) {
           >
             <div className="relative w-full h-full">
               <Image
-                src={`${imageMap["top"].src}?width=1400&format=webp`}
+                src={`${imageMap["top"].src}`}
                 alt={imageMap["top"].altText}
-                fill
+                width={1400}
+                height={200}
                 sizes="(max-width: 768px) 100vw, 1400px"
                 className="object-center transition-transform duration-300 group-hover:scale-105"
                 priority
@@ -97,9 +98,10 @@ export default function BentoSection({ images, collectionData }) {
             >
               <div className="relative w-full h-full">
                 <Image
-                  src={`${imageMap["left"].src}?width=700&format=webp`}
+                  src={`${imageMap["left"].src}`}
                   alt={imageMap["left"].altText}
-                  fill
+                  width={700}
+                  height={700}
                   sizes="(max-width: 768px) 100vw, 700px"
                   className="object-center transition-transform duration-300 group-hover:scale-105"
                   priority
@@ -124,9 +126,10 @@ export default function BentoSection({ images, collectionData }) {
               >
                 <div className="relative w-full h-full">
                   <Image
-                    src={`${imageMap["top-right"].src}?width=700&format=webp`}
+                    src={`${imageMap["top-right"].src}`}
                     alt={imageMap["top-right"].altText}
-                    fill
+                    width={700}
+                    height={262}
                     sizes="(max-width: 768px) 100vw, 700px"
                     className="object-center transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
@@ -150,9 +153,10 @@ export default function BentoSection({ images, collectionData }) {
                 >
                   <div className="relative w-full h-full">
                     <Image
-                      src={`${imageMap["bottom-right-1"].src}?width=350&format=webp`}
+                      src={`${imageMap["bottom-right-1"].src}`}
                       alt={imageMap["bottom-right-1"].altText}
-                      fill
+                      width={350}
+                      height={467}
                       sizes="(max-width: 768px) 100vw, 350px"
                       className="object-center transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
@@ -173,9 +177,10 @@ export default function BentoSection({ images, collectionData }) {
                 >
                   <div className="relative w-full h-full">
                     <Image
-                      src={`${imageMap["bottom-right-2"].src}?width=350&format=webp`}
+                      src={`${imageMap["bottom-right-2"].src}`}
                       alt={imageMap["bottom-right-2"].altText}
-                      fill
+                      width={350}
+                      height={467}
                       sizes="(max-width: 768px) 100vw, 350px"
                       className="object-center transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"

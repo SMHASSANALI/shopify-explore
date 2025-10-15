@@ -8,9 +8,6 @@ import { toTitleCase } from "@/utils/toTitleCase";
 import ReviewsSlider from "@/components/global/ReviewsSlider";
 import CollectionsSection from "@/components/global/CollectionsSection";
 import RevealGallery from "@/components/global/RevealGallery";
-import Center from "../../public/assets/center.png";
-import Left from "../../public/assets/left.png";
-import Right from "../../public/assets/right.png";
 
 export const metadata = {
   title: "Home | HAAAIB",
@@ -67,7 +64,7 @@ export default async function Home() {
         <CollectionsSection />
       </div>
 
-      <section className="flex flex-col py-[20px] md:py-[50px]">
+      {/* <section className="flex flex-col py-[20px] md:py-[50px]">
         <ProductsSlider
           title={toTitleCase(mainCollection.title)}
           data={mainCollection.products}
@@ -81,7 +78,7 @@ export default async function Home() {
           title={toTitleCase(secondaryCollection.title)}
           data={secondaryCollection.products}
         />
-      </section>
+      </section> */}
 
       <section className="flex flex-col md:flex-row max-w-[1400px] mx-auto relative h-[200dvh] bg-gray-100 rounded-xl shadow-lg">
         <div className="w-full md:w-4/12 flex flex-col items-start justify-start md:justify-center gap-2 sticky top-20 h-[100dvh] p-[20px]">
@@ -132,12 +129,13 @@ export default async function Home() {
                 href={`/blogs/${blog.blog.handle}`}
                 className="p-4 bg-white rounded-lg shadow-md flex flex-col justify-between hover:shadow-lg transition-shadow"
               >
-                <div className="relative w-full h-48 object-cover rounded-md overflow-hidden mb-4">
+                <div className="relative w-full h-[200px] object-cover rounded-md overflow-hidden mb-4">
                   <Image
                     src={blog.image || "/public/assets/placeholder.jpg"}
                     alt={blog.image?.altText || blog.title}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                    fill
+                    height={200}
+                    width={400}
                     className="object-cover"
                     loading="lazy"
                   />

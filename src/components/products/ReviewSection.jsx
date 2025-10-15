@@ -170,21 +170,16 @@ export default function ReviewsSection({
                 </p> */}
                 {review.pictures && review.pictures.length > 0 && (
                   <div className="flex gap-2 mt-3 flex-wrap">
-                    {review.pictures.slice(0, 3).map(
-                      (
-                        pic,
-                        idx // Limit to 3
-                      ) => (
-                        <Image
-                          key={idx}
-                          src={pic.urls?.compact || pic.url} // Fallback for API variations
-                          alt={`Review photo ${idx + 1}`}
-                          width={80}
-                          height={80}
-                          className="object-cover rounded-lg cursor-pointer hover:opacity-80"
-                        />
-                      )
-                    )}
+                    {review.pictures.slice(0, 3).map((pic, idx) => (
+                      <Image
+                        key={idx}
+                        src={pic.urls?.compact || pic.url}
+                        alt={`Review photo ${idx + 1}`}
+                        width={80}
+                        height={80}
+                        className="object-cover rounded-lg cursor-pointer hover:opacity-80"
+                      />
+                    ))}
                     {review.pictures.length > 3 && (
                       <span className="text-sm text-gray-500 self-center">
                         +{review.pictures.length - 3} more

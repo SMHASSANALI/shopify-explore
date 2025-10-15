@@ -58,13 +58,14 @@ const ProductCard = ({ product }) => {
         </div>
 
         {displayImage && (
-          <div className="relative aspect-[1/1] flex items-center justify-center w-full border border-gray-300 shadow-sm rounded-md overflow-hidden h-full">
+          <div className="relative w-full h-[300px] border border-gray-300 shadow-sm rounded-md overflow-hidden">
             <Image
               src={displayImage.src}
               alt={
                 displayImage.altText || `${product.node.title} product image`
               }
-              fill
+              width={300}
+              height={300}
               className="object-cover"
               priority
               sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 10vw, 10vw"
