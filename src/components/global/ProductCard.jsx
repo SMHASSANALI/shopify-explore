@@ -67,6 +67,7 @@ const ProductCard = ({ product }) => {
               width={300}
               height={300}
               className="object-cover"
+              styles={{ width: "auto", height: "auto" }}
               priority
               sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 10vw, 10vw"
             />

@@ -111,7 +111,7 @@ export default async function CartPage({ searchParams }) {
                         <td className="p-2">
                           <div className="flex flex-col md:flex-row items-start md:items-center justify-start gap-2 md:gap-4">
                             {image && (
-                              <div className="relative h-[80px] w-[80px] md:h-[250px] md:w-[250px] aspect-[1/1]">
+                              <div className="h-[80px] w-[80px] md:h-[250px] md:w-[250px] aspect-[1/1]">
                                 <Image
                                   src={image.src}
                                   alt={
@@ -121,6 +121,7 @@ export default async function CartPage({ searchParams }) {
                                   height={250}
                                   width={250}
                                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                                  styles={{ width: "auto", height: "auto" }}
                                 />
                               </div>
                             )}

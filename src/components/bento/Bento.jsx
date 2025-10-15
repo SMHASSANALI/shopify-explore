@@ -7,7 +7,6 @@ import ProductsSlider from "../global/ProductsSlider";
 import { toTitleCase } from "@/utils/toTitleCase";
 
 export default function BentoSection({ images, collectionData }) {
-  // Map images by their bento_position (integer values: 1, 2, 3, 4, 5)
   const imageMap = images.reduce((acc, edge) => {
     const position = edge.node.metafields?.find(
       (mf) => mf?.key === "bento_position"
@@ -23,7 +22,7 @@ export default function BentoSection({ images, collectionData }) {
         link = parsed.url;
       }
     } catch (error) {
-      // If parsing fails, assume it's a direct URL
+      console.error("Error parsing banner_link:", error);
     }
 
     const positionMap = {
@@ -55,19 +54,21 @@ export default function BentoSection({ images, collectionData }) {
   return (
     <section className="max-w-[1400px] mx-auto gap-[10px] flex flex-col min-h-[50vh] md:min-h-[70vh] lg:min-h-[80vh]">
       {/* Top Section (14:2) */}
-      <div className="w-full relative rounded-xl overflow-hidden aspect-[14/2] group my-12">
+      <div className="w-full rounded-xl overflow-hidden aspect-[14/2] group my-12">
         {imageMap["top"] ? (
           <Link
             href={imageMap["top"].link}
             aria-label={`View ${imageMap["top"].altText}`}
           >
-            <div className="relative w-full h-full">
+            <div className="w-full h-full">
               <Image
-                src={`${imageMap["top"].src}`}
+                src={imageMap["top"].src}
                 alt={imageMap["top"].altText}
                 width={1400}
                 height={200}
+                quality={100}
                 sizes="(max-width: 768px) 100vw, 1400px"
+                styles={{ width: "auto", height: "auto" }}
                 className="object-center transition-transform duration-300 group-hover:scale-105"
                 priority
               />
@@ -90,19 +91,21 @@ export default function BentoSection({ images, collectionData }) {
       {/* Bottom Section */}
       <div className="w-full flex flex-col md:flex-row gap-[10px] h-full my-12">
         {/* Bottom Left (1:1) */}
-        <div className="w-full md:w-1/2 relative rounded-xl overflow-hidden aspect-square group">
+        <div className="w-full md:w-1/2 rounded-xl overflow-hidden aspect-square group">
           {imageMap["left"] ? (
             <Link
               href={imageMap["left"].link}
               aria-label={`View ${imageMap["left"].altText}`}
             >
-              <div className="relative w-full h-full">
+              <div className="w-full h-full">
                 <Image
-                  src={`${imageMap["left"].src}`}
+                  src={imageMap["left"].src}
                   alt={imageMap["left"].altText}
                   width={700}
                   height={700}
+                  quality={100}
                   sizes="(max-width: 768px) 100vw, 700px"
+                  styles={{ width: "auto", height: "auto" }}
                   className="object-center transition-transform duration-300 group-hover:scale-105"
                   priority
                 />
@@ -118,19 +121,21 @@ export default function BentoSection({ images, collectionData }) {
         {/* Bottom Right */}
         <div className="w-full md:w-1/2 flex flex-col gap-[10px]">
           {/* Top Right (16:6) */}
-          <div className="w-full relative rounded-xl overflow-hidden aspect-[16/6] group">
+          <div className="w-full rounded-xl overflow-hidden aspect-[16/6] group">
             {imageMap["top-right"] ? (
               <Link
                 href={imageMap["top-right"].link}
                 aria-label={`View ${imageMap["top-right"].altText}`}
               >
-                <div className="relative w-full h-full">
+                <div className="w-full h-full">
                   <Image
-                    src={`${imageMap["top-right"].src}`}
+                    src={imageMap["top-right"].src}
                     alt={imageMap["top-right"].altText}
                     width={700}
                     height={262}
+                    quality={100}
                     sizes="(max-width: 768px) 100vw, 700px"
+                    styles={{ width: "auto", height: "auto" }}
                     className="object-center transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
                   />
@@ -145,19 +150,21 @@ export default function BentoSection({ images, collectionData }) {
 
           {/* Bottom Right Row (4:3 each) */}
           <div className="w-full flex flex-col sm:flex-row gap-[10px]">
-            <div className="w-full sm:w-1/2 relative rounded-xl overflow-hidden aspect-[3/4] group">
+            <div className="w-full sm:w-1/2 rounded-xl overflow-hidden aspect-[3/4] group">
               {imageMap["bottom-right-1"] ? (
                 <Link
                   href={imageMap["bottom-right-1"].link}
                   aria-label={`View ${imageMap["bottom-right-1"].altText}`}
                 >
-                  <div className="relative w-full h-full">
+                  <div className="w-full h-full">
                     <Image
-                      src={`${imageMap["bottom-right-1"].src}`}
+                      src={imageMap["bottom-right-1"].src}
                       alt={imageMap["bottom-right-1"].altText}
                       width={350}
                       height={467}
+                      quality={100}
                       sizes="(max-width: 768px) 100vw, 350px"
+                      styles={{ width: "auto", height: "auto" }}
                       className="object-center transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
                     />
@@ -169,19 +176,21 @@ export default function BentoSection({ images, collectionData }) {
                 </div>
               )}
             </div>
-            <div className="w-full sm:w-1/2 relative rounded-xl overflow-hidden aspect-[4/3] group">
+            <div className="w-full sm:w-1/2 rounded-xl overflow-hidden aspect-[4/3] group">
               {imageMap["bottom-right-2"] ? (
                 <Link
                   href={imageMap["bottom-right-2"].link}
                   aria-label={`View ${imageMap["bottom-right-2"].altText}`}
                 >
-                  <div className="relative w-full h-full">
+                  <div className="w-full h-full">
                     <Image
-                      src={`${imageMap["bottom-right-2"].src}`}
+                      src={imageMap["bottom-right-2"].src}
                       alt={imageMap["bottom-right-2"].altText}
                       width={350}
                       height={467}
+                      quality={100}
                       sizes="(max-width: 768px) 100vw, 350px"
+                      styles={{ width: "auto", height: "auto" }}
                       className="object-center transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
                     />

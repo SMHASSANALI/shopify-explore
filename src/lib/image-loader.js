@@ -5,26 +5,26 @@ if (!storefrontToken) {
 }
 
 export default function imageLoader({ src, width, quality }) {
-  // LOCAL ASSETS - Return as-is (no changes)
+  const q = quality ?? 75;
+  const w = width ?? 800;
+
+  // LOCAL ASSETS
   if (src.startsWith("/")) {
-    return `${src}?w=${width}&q=${quality || 75}`;
+    return `${src}?w=${w}&q=${q}`;
   }
 
-  // SHOPIFY CDN - Add token authentication
-  const url = new URL(decodeURIComponent(src));
+  try {
+    const url = new URL(decodeURIComponent(src));
 
-  // Only add token for Shopify CDN
-  if (url.hostname === "cdn.shopify.com") {
-    const params = new URLSearchParams(url.search);
-    params.set("token", storefrontToken);
-    return `${url.origin}${url.pathname}?${params.toString()}&w=${width}&q=${
-      quality || 75
-    }`;
+    // SHOPIFY CDN
+    if (url.hostname === "cdn.shopify.com") {
+      return `${url.origin}${url.pathname}?w=${w}&q=${q}`;
+    }
+
+    // OTHER EXTERNAL
+    return `${url.origin}${url.pathname}?w=${w}&q=${q}`;
+  } catch {
+    // Fallback if URL parsing fails
+    return `${src}?w=${w}&q=${q}`;
   }
-
-  // OTHER EXTERNAL (alicdn, judge.me) - Just optimize
-  const params = new URLSearchParams(url.search);
-  return `${url.origin}${url.pathname}?${params.toString()}&w=${width}&q=${
-    quality || 75
-  }`;
 }

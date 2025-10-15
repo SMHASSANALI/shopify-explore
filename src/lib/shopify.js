@@ -1,33 +1,6 @@
 // app/lib/shopify.js
 import { generateRandomString, generateCodeChallenge } from "./auth-utils";
 
-// export const CART_LINES_FRAGMENT = `
-//   fragment CartLines on Cart {
-//     id
-//     checkoutUrl
-//     lines(first: 50) {
-//       edges {
-//         node {
-//           id
-//           quantity
-//           merchandise {
-//             ... on ProductVariant {
-//               id
-//               selectedOptions { name value }
-//               image { src altText }
-//               product {
-//                 title
-//                 images(first: 1) { edges { node { src altText } } }
-//               }
-//               priceV2 { amount currencyCode }
-//             }
-//           }
-//         }
-//       }
-//     }
-//   }
-// `;
-
 export const CART_LINES_FRAGMENT = `
   fragment CartLines on Cart {
     id

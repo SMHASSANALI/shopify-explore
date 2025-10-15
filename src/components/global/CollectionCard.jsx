@@ -32,6 +32,7 @@ export default function CollectionCard({ edge }) {
               className="object-cover rounded-t-lg"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               loading="lazy"
+              styles={{ width: "auto", height: "auto" }}
             />
           </div>
         ) : (
@@ -39,10 +40,12 @@ export default function CollectionCard({ edge }) {
             <Image
               src="/assets/placeholder.jpg"
               alt={edge.title}
-              fill
+              width={200}
+              height={200}
               className="object-cover rounded-t-lg"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               loading="lazy"
+              styles={{ width: "auto", height: "auto" }}
             />
           </div>
         )}

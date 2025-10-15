@@ -46,6 +46,7 @@ export default function ProductGallery({ images = [], className = "" }) {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 className="object-cover"
                 priority
+                styles={{ width: "auto", height: "auto" }}
               />
             </div>
           </SwiperSlide>
@@ -89,6 +90,7 @@ export default function ProductGallery({ images = [], className = "" }) {
                   height={100}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                   className="object-cover"
+                  styles={{ width: "auto", height: "auto" }}
                   priority
                 />
               </button>

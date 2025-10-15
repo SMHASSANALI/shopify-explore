@@ -17,10 +17,11 @@ export default async function Footer() {
         <div className="relative w-[250px] h-[100px] aspect-[16/9] mb-[50px]">
           <Image
             src={logo}
-            alt="logo"
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            alt="HAAAIB logo"
+            height={100}
+            width={250}
+            quality={75}
+            styles={{ width: "auto", height: "auto" }}
           />
         </div>
         <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-400 gap-[20px] pb-[50px]">
@@ -84,7 +85,10 @@ export default async function Footer() {
             >
               Privacy Policy
             </Link>
-            <Link className="pr-2 !text-sm !text-gray-400" href="/policies/refund">
+            <Link
+              className="pr-2 !text-sm !text-gray-400"
+              href="/policies/refund"
+            >
               Return Policy
             </Link>
             <Link className="!text-sm !text-gray-400" href="/policies/terms">
@@ -113,28 +117,25 @@ export default async function Footer() {
           </p>
           <div className="flex flex-row gap-2">
             <Image
+              styles={{ width: "auto", height: "auto" }}
               src="/assets/visa.svg"
               alt="Visa Logo"
               width={40}
               height={30}
-              style={{ objectFit: "contain", width: "40px", height: "30px" }}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
             <Image
+              styles={{ width: "auto", height: "auto" }}
               src="/assets/masterCard.svg"
               alt="Mastercard Logo"
               width={40}
               height={30}
-              style={{ objectFit: "contain", width: "40px", height: "30px" }}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
             <Image
+              styles={{ width: "auto", height: "auto" }}
               src="/assets/paypal.svg"
               alt="Paypal Logo"
               width={40}
               height={30}
-              style={{ objectFit: "contain", width: "40px", height: "30px" }}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
           </div>
         </div>

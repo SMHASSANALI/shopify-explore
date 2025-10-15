@@ -136,7 +136,6 @@ export default async function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
       </head>
       <body
-        suppressHydrationWarning
         className={`${poppins.variable} ${montserrat.variable} antialiased`}
       >
         <CustomerProvider customer={customer}>

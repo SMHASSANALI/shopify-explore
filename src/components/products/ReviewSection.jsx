@@ -178,6 +178,7 @@ export default function ReviewsSection({
                         width={80}
                         height={80}
                         className="object-cover rounded-lg cursor-pointer hover:opacity-80"
+                        styles={{ width: "auto", height: "auto" }}
                       />
                     ))}
                     {review.pictures.length > 3 && (

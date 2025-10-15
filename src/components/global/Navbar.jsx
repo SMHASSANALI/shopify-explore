@@ -101,7 +101,7 @@ const Navbar = async ({ customer }) => {
       </header>
       <main className="w-full flex items-center justify-center bg-[var(--primary-dark)] 2xl:px-0 lg:px-4 px-2">
         <div className="flex flex-row items-center justify-between h-auto w-full max-w-[1400px] gap-2 py-1.5">
-          <div className="w-full md:w-3/12 h-full relative">
+          <div className="w-full md:w-3/12 h-full">
             <Link
               href="/"
               className="flex items-start justify-start"
@@ -113,8 +113,8 @@ const Navbar = async ({ customer }) => {
                 alt="HAAAIB logo"
                 height={60}
                 width={160}
-                className="w-auto h-auto"
-                priority
+                quality={75}
+                styles={{ width: "auto", height: "auto" }}
               />
             </Link>
           </div>

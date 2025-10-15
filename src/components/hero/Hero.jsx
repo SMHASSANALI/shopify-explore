@@ -78,13 +78,15 @@ export default function Hero({ banners, type = "ad" }) {
                       {edge.node.image && (
                         <div className="relative aspect-[19/6] lg:max-w-[1400px] w-full overflow-hidden">
                           <Image
-                            src={`${edge.node.image.src}?width=1400&format=webp`}
+                            src={edge.node.image.src}
                             alt={edge.node.image.altText || edge.node.title}
                             width={1400}
                             height={443}
+                            quality={100}
                             priority
-                            sizes="(max-width: 425px) 100vw, (max-width: 768px) 100vw, (max-width: 1400px) 100vw, 100vw"
-                            className="object-cover"
+                            sizes="(max-width: 1400px) 100vw, 1400px"
+                            className="object-cover w-full h-full"
+                            styles={{ width: "auto", height: "auto" }}
                           />
                         </div>
                       )}

@@ -70,6 +70,7 @@ export default function SearchModal({ open, onClose }) {
                         width={48}
                         height={48}
                         className="object-cover"
+                        styles={{ width: "auto", height: "auto" }}
                       />
                     </div>
                   )}

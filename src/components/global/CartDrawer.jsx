@@ -202,6 +202,7 @@ export default function CartDrawer() {
                         width={64}
                         height={64}
                         className="object-cover"
+                        styles={{ width: "auto", height: "auto" }}
                       />
                     )}
                   </div>

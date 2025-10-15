@@ -20,7 +20,7 @@ export default async function BlogsPage() {
                   href={`/blogs/${blog.blog.handle}`}
                   className="p-4 bg-white rounded-lg shadow-md flex flex-col justify-between hover:shadow-lg transition-shadow"
                 >
-                  <div className="relative w-full h-[200px] object-cover rounded-md overflow-hidden mb-4">
+                  <div className="w-full h-[200px] object-cover rounded-md overflow-hidden mb-4">
                     <Image
                       src={blog.image || "/public/assets/placeholder.jpg"}
                       alt={blog.image?.altText || blog.title}
@@ -29,6 +29,7 @@ export default async function BlogsPage() {
                       width={400}
                       className="object-cover"
                       loading="lazy"
+                      styles={{ width: "auto", height: "auto" }}
                     />
                   </div>
                   <h3 className="text-lg font-semibold mb-2">{blog.title}</h3>
@@ -36,7 +37,8 @@ export default async function BlogsPage() {
                     {blog.excerpt || blog.content}
                   </p>
                   <p className="text-black font-semibold ml-auto w-fit text-xs">
-                    Published on {new Date(blog.publishedAt).toLocaleDateString()}
+                    Published on{" "}
+                    {new Date(blog.publishedAt).toLocaleDateString()}
                   </p>
                 </Link>
               ))

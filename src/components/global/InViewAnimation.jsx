@@ -61,6 +61,7 @@ export default function InViewAnimation({
                       width={1200}
                       height={1200}
                       loading="lazy"
+                      styles={{ width: "auto", height: "auto" }}
                     />
                   ))}
                 </div>
@@ -73,6 +74,7 @@ export default function InViewAnimation({
                   width={1200}
                   height={1200}
                   loading="lazy"
+                  styles={{ width: "auto", height: "auto" }}
                 />
               )}
             </motion.div>

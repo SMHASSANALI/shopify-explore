@@ -93,6 +93,7 @@ export default function WishlistTab() {
                   width={400}
                   height={400}
                   className="object-cover"
+                  styles={{ width: "auto", height: "auto" }}
                   sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 />
               ) : (

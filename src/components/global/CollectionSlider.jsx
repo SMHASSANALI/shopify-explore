@@ -77,6 +77,7 @@ const CollectionsSlider = ({ data = [] }) => {
                       height={130}
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 130px"
+                      styles={{ width: "auto", height: "auto" }}
                       priority
                     />
                   </div>

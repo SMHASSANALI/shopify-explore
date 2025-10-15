@@ -188,18 +188,21 @@ export default function ProductDetailClient({
           <p>Secure Checkout With</p>
           <div className="flex flex-row gap-2">
             <Image
+            styles={{ width: "auto", height: "auto" }}
               src="/assets/visa.svg"
               alt="Visa Logo"
               width={40}
               height={30}
             />
             <Image
+            styles={{ width: "auto", height: "auto" }}
               src="/assets/masterCard.svg"
               alt="Mastercard Logo"
               width={40}
               height={30}
             />
             <Image
+            styles={{ width: "auto", height: "auto" }}
               src="/assets/paypal.svg"
               alt="Paypal Logo"
               width={40}
