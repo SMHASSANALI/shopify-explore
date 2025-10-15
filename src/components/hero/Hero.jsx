@@ -81,7 +81,7 @@ export default function Hero({ banners, type = "ad" }) {
                             src={`${edge.node.image.src}?width=1400&format=webp`}
                             alt={edge.node.image.altText || edge.node.title}
                             fill
-                            priority={index === 0}
+                            priority
                             sizes="(max-width: 425px) 100vw, (max-width: 768px) 100vw, (max-width: 1400px) 100vw, 100vw"
                             className="object-cover"
                           />

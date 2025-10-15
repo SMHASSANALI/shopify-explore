@@ -43,7 +43,7 @@ export default function ProductGallery({ images = [], className = "" }) {
                 alt={img.altText || "Product image"}
                 fill
                 className="object-cover"
-                priority={idx === 0}
+                priority
               />
             </div>
           </SwiperSlide>
@@ -86,6 +86,7 @@ export default function ProductGallery({ images = [], className = "" }) {
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                   className="object-cover"
+                  priority
                 />
               </button>
             </SwiperSlide>

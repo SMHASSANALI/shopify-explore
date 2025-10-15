@@ -68,7 +68,7 @@ export default function BentoSection({ images, collectionData }) {
                 fill
                 sizes="(max-width: 768px) 100vw, 1400px"
                 className="object-center transition-transform duration-300 group-hover:scale-105"
-                loading="lazy"
+                priority
               />
             </div>
           </Link>
@@ -102,7 +102,7 @@ export default function BentoSection({ images, collectionData }) {
                   fill
                   sizes="(max-width: 768px) 100vw, 700px"
                   className="object-center transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
+                  priority
                 />
               </div>
             </Link>
