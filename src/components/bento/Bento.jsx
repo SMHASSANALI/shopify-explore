@@ -4,7 +4,6 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ProductsSlider from "../global/ProductsSlider";
-import { toTitleCase } from "@/utils/toTitleCase";
 
 export default function BentoSection({ images, collectionData }) {
   const imageMap = images.reduce((acc, edge) => {
@@ -14,16 +13,6 @@ export default function BentoSection({ images, collectionData }) {
     let link =
       edge.node.metafields?.find((mf) => mf?.key === "banner_link")?.value ||
       "#";
-
-    // Parse banner_link if it's a JSON string (e.g., {"text":"","url":"https://..."})
-    try {
-      const parsed = JSON.parse(link);
-      if (parsed.url) {
-        link = parsed.url;
-      }
-    } catch (error) {
-      console.error("Error parsing banner_link:", error);
-    }
 
     const positionMap = {
       1: "top",
@@ -36,7 +25,7 @@ export default function BentoSection({ images, collectionData }) {
     const mappedPosition = positionMap[position];
     if (mappedPosition) {
       acc[mappedPosition] = {
-        src: edge.node.images.edges[0]?.node.src || "/assets/placeholder.jpg",
+        src: edge.node.images.edges[0]?.node.url || "/assets/placeholder.jpg",
         altText:
           edge.node.images.edges[0]?.node.altText ||
           edge.node.title ||
@@ -52,8 +41,8 @@ export default function BentoSection({ images, collectionData }) {
   }, {});
 
   return (
-    <section className="max-w-[1400px] mx-auto gap-[10px] flex flex-col min-h-[50vh] md:min-h-[70vh] lg:min-h-[80vh]">
-      {/* Top Section (14:2) */}
+    <section className="max-w-[1400px] mx-auto gap-[10px] flex flex-col min-h-[50vh] md:min-h-[70vh] lg:min-h-[80vh] ">
+      {/* Top Section (14:3) */}
       <div className="w-full rounded-xl overflow-hidden aspect-[14/2] group my-12">
         {imageMap["top"] ? (
           <Link
@@ -69,7 +58,7 @@ export default function BentoSection({ images, collectionData }) {
                 quality={100}
                 sizes="(max-width: 768px) 100vw, 1400px"
                 styles={{ width: "auto", height: "auto" }}
-                className="object-center transition-transform duration-300 group-hover:scale-105"
+                className="object-center object-fit transition-transform duration-300 group-hover:scale-105 h-full w-full"
                 priority
               />
             </div>
@@ -83,15 +72,14 @@ export default function BentoSection({ images, collectionData }) {
 
       <div className="py-12">
         <ProductsSlider
-          title={toTitleCase(collectionData?.title || "Trending Now")}
-          data={collectionData.products}
+          data={collectionData}
         />
       </div>
 
       {/* Bottom Section */}
       <div className="w-full flex flex-col md:flex-row gap-[10px] h-full my-12">
         {/* Bottom Left (1:1) */}
-        <div className="w-full md:w-1/2 rounded-xl overflow-hidden aspect-square group">
+        <div className="w-full md:w-1/2 rounded-xl overflow-hidden aspect-[1/1] group">
           {imageMap["left"] ? (
             <Link
               href={imageMap["left"].link}
@@ -106,7 +94,7 @@ export default function BentoSection({ images, collectionData }) {
                   quality={100}
                   sizes="(max-width: 768px) 100vw, 700px"
                   styles={{ width: "auto", height: "auto" }}
-                  className="object-center transition-transform duration-300 group-hover:scale-105"
+                  className="object-center object-cover transition-transform duration-300 group-hover:scale-105 h-full w-full"
                   priority
                 />
               </div>
@@ -136,7 +124,7 @@ export default function BentoSection({ images, collectionData }) {
                     quality={100}
                     sizes="(max-width: 768px) 100vw, 700px"
                     styles={{ width: "auto", height: "auto" }}
-                    className="object-center transition-transform duration-300 group-hover:scale-105"
+                    className="object-center transition-transform duration-300 group-hover:scale-105 h-full w-full"
                     loading="lazy"
                   />
                 </div>
@@ -165,7 +153,7 @@ export default function BentoSection({ images, collectionData }) {
                       quality={100}
                       sizes="(max-width: 768px) 100vw, 350px"
                       styles={{ width: "auto", height: "auto" }}
-                      className="object-center transition-transform duration-300 group-hover:scale-105"
+                      className="object-center transition-transform duration-300 group-hover:scale-105 h-full w-full"
                       loading="lazy"
                     />
                   </div>
@@ -191,7 +179,7 @@ export default function BentoSection({ images, collectionData }) {
                       quality={100}
                       sizes="(max-width: 768px) 100vw, 350px"
                       styles={{ width: "auto", height: "auto" }}
-                      className="object-center transition-transform duration-300 group-hover:scale-105"
+                      className="object-center transition-transform duration-300 group-hover:scale-105 h-full w-full"
                       loading="lazy"
                     />
                   </div>

@@ -14,16 +14,17 @@ export default async function Footer() {
   return (
     <footer className="w-full bg-[var(--primary-dark)] text-white p-4">
       <div className="max-w-[1400px] mx-auto flex flex-col">
-        <div className="relative w-[250px] h-[100px] aspect-[16/9] mb-[50px]">
+        <Link href="/" className="mb-[50px] relative">
           <Image
             src={logo}
             alt="HAAAIB logo"
-            height={100}
             width={250}
-            quality={75}
-            styles={{ width: "auto", height: "auto" }}
+            height={50}
+            priority
+            unoptimized
+            style={{ width: "auto", height: "auto" }}
           />
-        </div>
+        </Link>
         <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-400 gap-[20px] pb-[50px]">
           <div className="w-full md:max-w-6/12 md:w-fit flex flex-row gap-[60px]">
             <div>
@@ -116,27 +117,30 @@ export default async function Footer() {
             </Link>
           </p>
           <div className="flex flex-row gap-2">
-            <Image
-              styles={{ width: "auto", height: "auto" }}
-              src="/assets/visa.svg"
-              alt="Visa Logo"
-              width={40}
-              height={30}
-            />
-            <Image
-              styles={{ width: "auto", height: "auto" }}
-              src="/assets/masterCard.svg"
-              alt="Mastercard Logo"
-              width={40}
-              height={30}
-            />
-            <Image
-              styles={{ width: "auto", height: "auto" }}
-              src="/assets/paypal.svg"
-              alt="Paypal Logo"
-              width={40}
-              height={30}
-            />
+            <div className="relative w-[40px] h-[36px]">
+              <Image
+                src="/assets/visa.svg"
+                alt="Visa Logo"
+                fill
+                unoptimized
+              />
+            </div>
+            <div className="relative w-[40px] h-[36px]">
+              <Image
+                src="/assets/masterCard.svg"
+                alt="Mastercard Logo"
+                fill
+                unoptimized
+              />
+            </div>
+            <div className="relative w-[40px] h-[36px]">
+              <Image
+                src="/assets/paypal.svg"
+                alt="Paypal Logo"
+                fill
+                unoptimized
+              />
+            </div>
           </div>
         </div>
       </div>

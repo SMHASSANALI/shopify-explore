@@ -1,6 +1,51 @@
 // app/lib/shopify.js
 import { generateRandomString, generateCodeChallenge } from "./auth-utils";
 
+export async function shopifyFetch({ query, variables = {}, revalidate = 60 }) {
+  const shopifyDomain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN;
+  const storefrontToken = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN;
+
+  if (!shopifyDomain || !storefrontToken) {
+    console.error("❌ Missing Shopify environment variables:");
+    console.error("NEXT_PUBLIC_SHOPIFY_DOMAIN:", shopifyDomain);
+    console.error("NEXT_PUBLIC_SHOPIFY_STOREFRONT_API_TOKEN:", storefrontToken);
+    throw new Error(
+      "Shopify environment variables are missing. Please check your .env file."
+    );
+  }
+  try {
+    const res = await fetch(
+      `https://${shopifyDomain}/api/2025-07/graphql.json`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token": storefrontToken,
+        },
+        body: JSON.stringify({ query, variables }),
+        next: { revalidate },
+      }
+    );
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`❌ Shopify API HTTP Error: ${res.status}`, errorText);
+      throw new Error(`Shopify API request failed with status ${res.status}`);
+    }
+
+    const json = await res.json();
+    if (json.errors) {
+      console.error("❌ Shopify GraphQL Errors:", json.errors);
+      throw new Error(json.errors.map((e) => e.message).join(", "));
+    }
+
+    return json.data;
+  } catch (error) {
+    console.error("❌ Fetch Shopify failed:", error.message);
+    throw error;
+  }
+}
+
 export const CART_LINES_FRAGMENT = `
   fragment CartLines on Cart {
     id

@@ -6,11 +6,12 @@ import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import ProductCard from "./ProductCard";
+import Link from "next/link";
+import { toTitleCase } from "@/utils/toTitleCase";
 
-const ProductsSlider = ({ title = "", data = [] }) => {
+const ProductsSlider = ({ data }) => {
   const swiperRef = useRef(null);
-  const products = useMemo(() => data || [], [data]);
-
+  const products = useMemo(() => data?.products || [], [data?.products]);
   const handleNext = () => swiperRef.current?.swiper?.slideNext();
   const handlePrev = () => swiperRef.current?.swiper?.slidePrev();
   const handleMouseEnter = () => swiperRef.current?.swiper?.autoplay?.stop();
@@ -19,30 +20,38 @@ const ProductsSlider = ({ title = "", data = [] }) => {
   return (
     <section className="w-full md:max-w-[1400px] mx-auto space-y-5 px-2">
       <div className="flex items-center justify-between border-b-4 border-gray-300 pb-2">
-        <h2 className="font-semibold text-base md:text-lg">{title}</h2>
-        <div className="hidden md:flex items-center gap-2">
-          <button
-            onClick={handlePrev}
-            aria-label="Previous products"
-            className="rounded-full bg-[var(--accent)] text-white p-1.5 hover:opacity-90 transition"
+        <h2 className="font-semibold text-base md:text-lg">
+          {toTitleCase(data?.title)}
+        </h2>
+        <div className="w-fit">
+          <Link
+            href={`/collections/${data.handle}`}
+            className="underline font-medium text-base md:text-lg p-2"
           >
-            <IoIosArrowBack size={16} />
-          </button>
-          <button
-            onClick={handleNext}
-            aria-label="Next products"
-            className="rounded-full bg-[var(--accent)] text-white p-1.5 hover:opacity-90 transition"
-          >
-            <IoIosArrowForward size={16} />
-          </button>
+            View All
+          </Link>
         </div>
       </div>
 
       <div
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="py-4 md:py-8"
+        className="py-4 md:py-8 relative"
       >
+        <button
+          onClick={handlePrev}
+          aria-label="Previous products"
+          className="cursor-pointer rounded-full bg-[var(--accent)] text-white p-1.5 opacity-60 hover:opacity-100 transition absolute left-0 top-1/2 transform -translate-y-1/2 z-10"
+        >
+          <IoIosArrowBack size={32} />
+        </button>
+        <button
+          onClick={handleNext}
+          aria-label="Next products"
+          className="cursor-pointer rounded-full bg-[var(--accent)] text-white p-1.5 opacity-60 hover:opacity-100 transition absolute right-0 top-1/2 transform -translate-y-1/2 z-10"
+        >
+          <IoIosArrowForward size={32} />
+        </button>
         <Swiper
           modules={[Autoplay]}
           spaceBetween={16}
@@ -63,9 +72,11 @@ const ProductsSlider = ({ title = "", data = [] }) => {
           }}
           ref={swiperRef}
         >
-          {products.length > 0 ? (
-            products.map((item) => {
-              const price = parseFloat(item.node.price || 0);
+          {products.edges.length > 0 ? (
+            products.edges.map((item) => {
+              const price = parseFloat(
+                item.node?.variants?.edges[0]?.node?.price?.amount || 0
+              );
               if (price <= 0) return null;
               return (
                 <SwiperSlide key={item.node.id}>

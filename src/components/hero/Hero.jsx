@@ -9,7 +9,7 @@ import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
 
-export default function Hero({ banners, type = "ad" }) {
+export default function Hero({ banners }) {
   const swiperRef = useRef(null);
 
   const handleNext = () => {
@@ -64,8 +64,8 @@ export default function Hero({ banners, type = "ad" }) {
             ref={swiperRef}
             className="w-full"
           >
-            {banners.length > 0 ? (
-              banners.map((edge, index) => (
+            {banners.edges.length > 0 ? (
+              banners.edges.map((edge) => (
                 <SwiperSlide key={edge.node.id}>
                   <div className=" h-fit shadow-sm">
                     <Link
@@ -75,18 +75,19 @@ export default function Hero({ banners, type = "ad" }) {
                       }
                       className="flex flex-col h-full"
                     >
-                      {edge.node.image && (
+                      {edge.node.images && (
                         <div className="relative aspect-[19/6] lg:max-w-[1400px] w-full overflow-hidden">
                           <Image
-                            src={edge.node.image.src}
-                            alt={edge.node.image.altText || edge.node.title}
-                            width={1400}
-                            height={443}
+                            src={edge.node.images.edges[0].node.url}
+                            alt={
+                              edge.node.images.edges[0].node.altText ||
+                              edge.node.title
+                            }
+                            fill
                             quality={100}
                             priority
+                            className="object-cover w-full h-full object-center"
                             sizes="(max-width: 1400px) 100vw, 1400px"
-                            className="object-cover w-full h-full"
-                            styles={{ width: "auto", height: "auto" }}
                           />
                         </div>
                       )}

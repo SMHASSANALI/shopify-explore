@@ -8,9 +8,14 @@ export default function imageLoader({ src, width, quality }) {
   const q = quality ?? 75;
   const w = width ?? 800;
 
+  // For SVGs, return the original source (no optimization needed)
+  if (src.endsWith(".svg")) {
+    return src;
+  }
+
   // LOCAL ASSETS
   if (src.startsWith("/")) {
-    return `${src}?w=${w}&q=${q}`;
+    return src;
   }
 
   try {

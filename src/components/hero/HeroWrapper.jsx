@@ -1,10 +1,8 @@
 import { Suspense } from "react";
-import { fetchCollectionByHandle } from "@/lib/shopify";
 import Hero from "./Hero";
 
-export default async function HeroWrapper({ handle }) {
-  const collection = await fetchCollectionByHandle(handle);
-  const banners = collection.products || [];
+export default function HeroWrapper({ data }) {
+  const banners = data?.products || [];
 
   return (
     <Suspense

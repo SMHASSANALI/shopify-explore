@@ -5,7 +5,7 @@ import React, { useMemo } from "react";
 function Star({ fill = 0, size = 16 }) {
   const clamped = Math.max(0, Math.min(1, fill));
   return (
-    <span className="inline-block relative" style={{ width: size, height: size }} aria-hidden>
+    <span className="inline-block relative" styles={{ width: size, height: size }} aria-hidden>
       <svg
         width={size}
         height={size}
@@ -21,7 +21,7 @@ function Star({ fill = 0, size = 16 }) {
       </svg>
       <div
         className="absolute inset-0 overflow-hidden"
-        style={{ width: `${clamped * 100}%` }}
+        styles={{ width: `${clamped * 100}%` }}
       >
         <svg
           width={size}

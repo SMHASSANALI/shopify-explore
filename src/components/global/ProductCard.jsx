@@ -10,21 +10,23 @@ import { useCustomer } from "@/contexts/CustomerContext";
 import { getPriceDisplay } from "@/utils/discount-utlis";
 
 const ProductCard = ({ product }) => {
+
   const customer = useCustomer();
-  const variants = product?.node?.variants || [];
+  const variants = product?.node?.variants?.edges || [];
   const chosenVariant = useMemo(() => {
-    const available = variants.find((v) => v.availableForSale);
-    return available || variants[0] || null;
+    const available = variants.find((v) => v.node.availableForSale);
+    return available?.node || variants[0]?.node || null;
   }, [variants]);
 
   const [isHover, setIsHover] = useState(false);
-  const images = product?.node?.images || [];
-  const primaryImage = images[0] || product?.node?.image;
-  const secondaryImage = images[1] || images[0] || product?.node?.image;
+  const images = product?.node?.images?.edges || [];
+  const primaryImage = images[0]?.node || product?.node?.image;
+  const secondaryImage =
+    images[1]?.node || images[0]?.node || product?.node?.image;
   const displayImage = isHover ? secondaryImage : primaryImage;
 
   // Get discount information
-  const originalPrice = chosenVariant?.price ?? product?.node?.price;
+  const originalPrice = chosenVariant?.price?.amount || 0;
   const priceInfo = getPriceDisplay(
     originalPrice,
     product?.node?.metafields || []
@@ -66,7 +68,7 @@ const ProductCard = ({ product }) => {
               }
               width={300}
               height={300}
-              className="object-cover"
+              className="object-cover w-full h-full"
               styles={{ width: "auto", height: "auto" }}
               priority
               sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 10vw, 10vw"
@@ -142,7 +144,7 @@ const ProductCard = ({ product }) => {
           <AddToCartButton
             variantId={chosenVariant?.id || variants[0]?.id}
             quantity={1}
-            disabled={!product.node.availableForSale}
+            disabled={!chosenVariant?.availableForSale}
           />
         </div>
       </Link>

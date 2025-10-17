@@ -1,42 +1,16 @@
-import ProductsSlider from "@/components/global/ProductsSlider";
-import { fetchBlogs, fetchCollectionByHandle } from "@/lib/shopify";
-import HeroWrapper from "@/components/hero/HeroWrapper";
-import Link from "next/link";
-import Image from "next/image";
 import BentoWrapper from "@/components/bento/BentoWrapper";
-import { toTitleCase } from "@/utils/toTitleCase";
-import ReviewsSlider from "@/components/global/ReviewsSlider";
 import CollectionsSection from "@/components/global/CollectionsSection";
+import ProductsSlider from "@/components/global/ProductsSlider";
 import RevealGallery from "@/components/global/RevealGallery";
-
-export const metadata = {
-  title: "Home | HAAAIB",
-  description:
-    "Explore our curated collection of home décor, fashion, and lifestyle products at budget-friendly prices.",
-  openGraph: {
-    title: "Home | HAAAIB",
-    description:
-      "Explore our curated collection of home décor, fashion, and lifestyle products at budget-friendly prices.",
-    url: "/",
-    images: [
-      {
-        url: "/assets/logoMark-Dark.png",
-        width: 1200,
-        height: 630,
-        alt: "HAAAIB Products",
-      },
-    ],
-  },
-};
+import ReviewsSlider from "@/components/global/ReviewsSlider";
+import HeroWrapper from "@/components/hero/HeroWrapper";
+import { fetchHomePageData } from "@/lib/shopify/fetch/home";
+import Image from "next/image";
+import Link from "next/link";
 
 export default async function Home() {
-  const [mainCollection, secondaryCollection, recentBlogs, featureProducts] =
-    await Promise.all([
-      fetchCollectionByHandle("christmas"),
-      fetchCollectionByHandle("spooky-autumn"),
-      fetchBlogs({ first: 3 }),
-      fetchCollectionByHandle("trending-now", { first: 2 }),
-    ]);
+  const { hero, ads, main, secondary, collections, blogs, bento, trending } =
+    await fetchHomePageData();
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
@@ -59,31 +33,25 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       <div className="">
-        <HeroWrapper handle={"hero-banners"} />
+        <HeroWrapper data={hero} />
 
-        <CollectionsSection />
+        <CollectionsSection data={collections} />
       </div>
 
       <section className="flex flex-col py-[20px] md:py-[50px]">
-        <ProductsSlider
-          title={toTitleCase(mainCollection.title)}
-          data={mainCollection.products}
-        />
+        <ProductsSlider data={main} />
       </section>
 
-      <BentoWrapper />
+      <BentoWrapper data={bento} trendingData={trending} />
 
       <section className="flex flex-col py-[20px] md:py-[50px]">
-        <ProductsSlider
-          title={toTitleCase(secondaryCollection.title)}
-          data={secondaryCollection.products}
-        />
+        <ProductsSlider data={secondary} />
       </section>
 
       <section className="flex flex-col md:flex-row max-w-[1400px] mx-auto relative h-[200dvh] bg-gray-100 rounded-xl shadow-lg">
         <div className="w-full md:w-4/12 flex flex-col items-start justify-start md:justify-center gap-2 sticky top-20 h-[100dvh] p-[20px]">
           <span className="text-[var(--accent)] font-medium">
-            {featureProducts?.products[0].node.title}
+            {trending?.products.edges[1]?.node.title}
           </span>
           <h1 className="font-semibold">
             Transform Any Seat Into a Cloud of Comfort
@@ -96,7 +64,7 @@ export default async function Home() {
           </p>
           <Link
             href={
-              `/products/${featureProducts?.products[0].node.handle}` || "/"
+              `/products/${trending?.products.edges[1]?.node.handle}` || "/"
             }
             className="hover:bg-transparent hover:text-[var(--accent)] duration-300 transition-all  bg-[var(--accent)] text-white rounded border border-[var(--accent)] py-2 px-4 cursor-pointer"
           >
@@ -108,7 +76,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <HeroWrapper handle={"ad-banners"} />
+      <HeroWrapper data={ads} />
 
       <section className="flex flex-col py-[20px] md:py-[50px]">
         <ReviewsSlider />
@@ -122,23 +90,23 @@ export default async function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {recentBlogs.length > 0 ? (
-            recentBlogs.map((blog) => (
+          {blogs.length > 0 ? (
+            blogs.map((blog) => (
               <Link
                 key={blog.id}
-                href={`/blogs/${blog.blog.handle}`}
+                href={`/blogs/${blog.handle}`}
                 className="p-4 bg-white rounded-lg shadow-md flex flex-col justify-between hover:shadow-lg transition-shadow"
               >
                 <div className="w-full h-[200px] object-cover rounded-md overflow-hidden mb-4">
                   <Image
-                    src={blog.image || "/public/assets/placeholder.jpg"}
+                    src={blog.image?.url || "/assets/placeholder.jpg"}
                     alt={blog.image?.altText || blog.title}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                    height={200}
                     width={400}
-                    className="object-cover"
+                    height={200}
+                    className="object-cover w-full h-full object-center"
+                    style={{ width: "auto", height: "auto" }}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1400px) 50vw, 25vw"
                     loading="lazy"
-                    styles={{ width: "auto", height: "auto" }}
                   />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{blog.title}</h3>

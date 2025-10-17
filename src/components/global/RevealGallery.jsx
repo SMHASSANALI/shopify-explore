@@ -29,47 +29,49 @@ const RevealGallery = () => {
   return (
     <section
       ref={containerRef}
-      className="h-[100dvh] md:h-[200dvh] flex items-start justify-center relative overflow-x-clip"
+      className="h-[100dvh] md:h-[200dvh] flex items-start justify-center relative"
     >
-      <main className="h-[50dvh] md:h-[100dvh] sticky top-[50%]  md:top-20 w-full">
+      <main className="h-[50dvh] md:h-[100dvh] top-[50%] md:top-20 w-full sticky">
         <div className="flex items-center justify-center relative w-full h-full py-[30px]">
           <motion.div
             style={{ x: card1.x, rotate: card1.rotate }}
-            className="absolute flex items-center justify-center h-[150px] w-4/12 md:h-[400px] md:w-[300px] rounded-xl border-2 border-white/20 overflow-hidden z-10"
+            className="absolute flex items-center justify-center h-[150px] w-4/12 md:h-[400px] md:w-[300px] z-10"
           >
             <Image
-              styles={{ width: "auto", height: "auto" }}
+              style={{ width: "auto", height: "auto" }}
               src="/assets/right.png"
               alt="Product Image"
               width={400}
               height={150}
+              unoptimized
               priority
             />
           </motion.div>
           <motion.div
             style={{ x: card2.x, rotate: card2.rotate, scale: card2.scale }}
-            className="absolute flex items-center justify-center h-[150px] w-4/12 md:h-[400px] md:w-[300px] rounded-xl border-2 border-white/20 overflow-hidden z-20"
+            className="absolute flex items-center justify-center h-[150px] w-4/12 md:h-[400px] md:w-[300px] z-20"
           >
             <Image
-              styles={{ width: "auto", height: "auto" }}
+              style={{ width: "auto", height: "auto" }}
+              className="h-full w-full object-cover object-center"
               src="/assets/center.png"
               alt="Product Image"
               width={400}
               height={150}
-              priority
+              unoptimized
             />
           </motion.div>
           <motion.div
             style={{ x: card3.x, rotate: card3.rotate }}
-            className="absolute flex items-center justify-center h-[150px] w-4/12 md:h-[400px] md:w-[300px] rounded-xl border-2 border-white/20 overflow-hidden z-10"
+            className="absolute flex items-center justify-center h-[150px] w-4/12 md:h-[400px] md:w-[300px] z-10"
           >
             <Image
-              styles={{ width: "auto", height: "auto" }}
+              style={{ width: "auto", height: "auto" }}
               src="/assets/left.png"
               alt="Product Image"
               width={400}
               height={150}
-              priority
+              unoptimized
             />
           </motion.div>
         </div>

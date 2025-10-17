@@ -11,7 +11,6 @@ import Link from "next/link";
 
 const CollectionsSlider = ({ data = [] }) => {
   const swiperRef = useRef(null);
-
   const collections = useMemo(() => data || [], [data]);
 
   const handleNext = () => swiperRef.current?.swiper?.slideNext();
@@ -71,13 +70,13 @@ const CollectionsSlider = ({ data = [] }) => {
                 >
                   <div className="relative h-[130px] w-[130px] overflow-hidden rounded-sm flex-shrink-0">
                     <Image
-                      src={item.image?.src}
+                      src={item.image?.url}
                       alt={item.image?.altText || item.title}
                       width={130}
                       height={130}
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 130px"
+                      className="object-cover w-full h-full object-center"
                       styles={{ width: "auto", height: "auto" }}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 130px"
                       priority
                     />
                   </div>

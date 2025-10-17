@@ -104,17 +104,18 @@ const Navbar = async ({ customer }) => {
           <div className="w-full md:w-3/12 h-full">
             <Link
               href="/"
-              className="flex items-start justify-start"
+              className="flex items-start justify-start relative"
               aria-label="HAAAIB Home"
               title="HAAAIB Home"
             >
               <Image
                 src={logo}
                 alt="HAAAIB logo"
-                height={60}
                 width={160}
-                quality={75}
-                styles={{ width: "auto", height: "auto" }}
+                height={32}
+                priority
+                unoptimized
+                style={{ width: "auto", height: "auto" }}
               />
             </Link>
           </div>
