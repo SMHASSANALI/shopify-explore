@@ -1,13 +1,13 @@
 "use client";
 
+import { fetchCollectionPageData } from "@/lib/shopify/fetch/collection";
 import { useState, useCallback, useRef, useEffect } from "react";
-import { fetchAllProducts } from "@/lib/shopify";
 
 export function useInfiniteProducts({
   initialProducts = [],
   initialHasNextPage,
   initialEndCursor,
-  collectionId,
+  collectionId = null,
 }) {
   const [products, setProducts] = useState(initialProducts);
   const [hasNextPage, setHasNextPage] = useState(initialHasNextPage);
@@ -15,78 +15,87 @@ export function useInfiniteProducts({
   const [loading, setLoading] = useState(false);
   const [refetching, setRefetching] = useState(false);
   const [filters, setFilters] = useState({});
-  const [sort, setSort] = useState("best-selling");
+  const [sort, setSort] = useState("relevance");
 
   const abortController = useRef(null);
-  const isClient = useRef(false);
-  const isInitialized = useRef(false);
   const filtersRef = useRef(filters);
   const sortRef = useRef(sort);
 
+  // Sync refs
   useEffect(() => {
     filtersRef.current = filters;
   }, [filters]);
-  
+
   useEffect(() => {
     sortRef.current = sort;
   }, [sort]);
 
-  const sortMap = {
-    "best-selling": "BEST_SELLING",
-    "title-ascending": "TITLE",
-    "title-descending": "TITLE",
-    "price-ascending": "PRICE",
-    "price-descending": "PRICE",
-    "created-ascending": "CREATED_AT",
-    "created-descending": "CREATED_AT",
-  };
+  // Helper function to apply client-side filters
+  const applyClientSideFilters = useCallback((productsList, filterOptions) => {
+    let filtered = [...productsList];
 
-  const sortReverseMap = {
-    "best-selling": false,
-    "title-ascending": false,
-    "title-descending": true,
-    "price-ascending": false,
-    "price-descending": true,
-    "created-ascending": false,
-    "created-descending": true,
-  };
-
-  useEffect(() => {
-    if (!isClient.current && initialProducts.length > 0) {
-      isClient.current = true;
-      isInitialized.current = true;
+    // Out of Stock filter - only show products where ALL variants are unavailable
+    if (filterOptions.availability === "outOfStock") {
+      filtered = filtered.filter((p) => {
+        const allVariantsUnavailable = p.node.variants.edges.every(
+          (edge) => !edge.node.availableForSale
+        );
+        return allVariantsUnavailable;
+      });
     }
-  }, [initialProducts.length]);
+
+    // Price filter - apply strict boundary checking
+    if (filterOptions.priceMin !== undefined || filterOptions.priceMax !== undefined) {
+      filtered = filtered.filter((p) => {
+        const price = parseFloat(p.node.price);
+        const min = filterOptions.priceMin !== undefined ? filterOptions.priceMin : 0;
+        const max = filterOptions.priceMax !== undefined ? filterOptions.priceMax : Infinity;
+        
+        // Use strict comparison with small epsilon for floating point
+        return price >= min && price <= max;
+      });
+    }
+
+    return filtered;
+  }, []);
 
   const loadMore = useCallback(async () => {
-    if (loading || !hasNextPage || !isInitialized.current) return;
+    if (loading || !hasNextPage || !collectionId) return;
 
     setLoading(true);
     if (abortController.current) abortController.current.abort();
     abortController.current = new AbortController();
 
     try {
+      // Build query filters - exclude outOfStock from server query
+      const queryFilters = { ...filtersRef.current };
+      const isOutOfStockFilter = queryFilters.availability === "outOfStock";
+      
+      // Remove outOfStock from server query, we'll filter client-side
+      if (isOutOfStockFilter) {
+        delete queryFilters.availability;
+      }
+
       const queryParams = {
+        handle: collectionId,
         after: endCursor,
-        first: 30,
-        sortKey: sortMap[sortRef.current],
-        reverse: sortReverseMap[sortRef.current],
-        availability: filtersRef.current.availability || null,
-        priceMin: filtersRef.current.priceMin ?? undefined,
-        priceMax: filtersRef.current.priceMax ?? undefined,
-        signal: abortController.current.signal,
+        firstProducts: isOutOfStockFilter ? 100 : 32, // Fetch more if filtering out of stock
+        sort: sortRef.current,
+        filters: queryFilters,
       };
-      if (collectionId) queryParams.collectionId = collectionId;
 
       const {
         products: newProducts,
         hasNextPage: next,
         endCursor: cursor,
-      } = await fetchAllProducts(queryParams);
+      } = await fetchCollectionPageData(queryParams);
+
+      // Apply client-side filters
+      const filteredProducts = applyClientSideFilters(newProducts, filtersRef.current);
 
       setProducts((prev) => {
         const existingIds = new Set(prev.map((p) => p.node.id));
-        const deduped = newProducts.filter((p) => !existingIds.has(p.node.id));
+        const deduped = filteredProducts.filter((p) => !existingIds.has(p.node.id));
         return [...prev, ...deduped];
       });
 
@@ -94,53 +103,62 @@ export function useInfiniteProducts({
       setEndCursor(cursor);
     } catch (err) {
       if (err.name !== "AbortError") {
-        console.error("Infinite scroll fetch failed:", err);
+        console.error("❌ Infinite scroll failed:", err.message);
       }
     } finally {
       setLoading(false);
     }
-  }, [loading, hasNextPage, endCursor, collectionId]);
+  }, [loading, hasNextPage, endCursor, collectionId, applyClientSideFilters]);
 
-  const resetAndFetch = useCallback(async (newFilters = filtersRef.current, newSort = sortRef.current) => {
-    if (!isInitialized.current) {
+  const resetAndFetch = useCallback(
+    async (newFilters = filtersRef.current, newSort = sortRef.current) => {
+
+      if (abortController.current) abortController.current.abort();
+      setRefetching(true);
       setFilters(newFilters);
       setSort(newSort);
-      isInitialized.current = true;
-      return;
-    }
+      setHasNextPage(true);
 
-    if (abortController.current) abortController.current.abort();
-    setRefetching(true);
-    setFilters(newFilters);
-    setSort(newSort);
-    setHasNextPage(true);
+      try {
+        // Build query filters - exclude outOfStock from server query
+        const queryFilters = { ...newFilters };
+        const isOutOfStockFilter = queryFilters.availability === "outOfStock";
+        
+        // Remove outOfStock from server query
+        if (isOutOfStockFilter) {
+          delete queryFilters.availability;
+        }
 
-    try {
-      const queryParams = {
-        first: 30,
-        sortKey: sortMap[newSort],
-        reverse: sortReverseMap[newSort],
-        availability: newFilters?.availability || null,
-        priceMin: newFilters?.priceMin ?? undefined,
-        priceMax: newFilters?.priceMax ?? undefined,
-      };
-      if (collectionId) queryParams.collectionId = collectionId;
+        const queryParams = {
+          handle: collectionId,
+          firstProducts: isOutOfStockFilter ? 100 : 32, // Fetch more if filtering out of stock
+          sort: newSort,
+          filters: queryFilters,
+        };
 
-      const {
-        products: fresh,
-        hasNextPage,
-        endCursor,
-      } = await fetchAllProducts(queryParams);
-      
-      setProducts(fresh);
-      setHasNextPage(hasNextPage);
-      setEndCursor(endCursor);
-    } catch (err) {
-      console.error("Error refetching products:", err);
-    } finally {
-      setRefetching(false);
-    }
-  }, [collectionId]);
+        const {
+          products: fresh,
+          hasNextPage,
+          endCursor,
+        } = await fetchCollectionPageData(queryParams);
+
+        // Apply client-side filters
+        const filteredProducts = applyClientSideFilters(fresh, newFilters);
+
+        setProducts(filteredProducts);
+        setHasNextPage(hasNextPage);
+        setEndCursor(endCursor);
+      } catch (err) {
+        console.error("❌ Error refetching products:", err);
+        setProducts([]);
+        setHasNextPage(false);
+        setEndCursor(null);
+      } finally {
+        setRefetching(false);
+      }
+    },
+    [collectionId, applyClientSideFilters]
+  );
 
   return {
     products,

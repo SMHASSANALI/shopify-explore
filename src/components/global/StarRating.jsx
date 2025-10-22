@@ -5,7 +5,11 @@ import React, { useMemo } from "react";
 function Star({ fill = 0, size = 16 }) {
   const clamped = Math.max(0, Math.min(1, fill));
   return (
-    <span className="inline-block relative" styles={{ width: size, height: size }} aria-hidden>
+    <span
+      className="inline-block relative"
+      style={{ width: size, height: size }}
+      aria-hidden
+    >
       <svg
         width={size}
         height={size}
@@ -21,7 +25,7 @@ function Star({ fill = 0, size = 16 }) {
       </svg>
       <div
         className="absolute inset-0 overflow-hidden"
-        styles={{ width: `${clamped * 100}%` }}
+        style={{ width: `${clamped * 100}px` }}
       >
         <svg
           width={size}
@@ -55,26 +59,28 @@ export default function StarRating({
     const max = Number(scaleMax) || 5;
     const raw = Number(ratingValue) || 0;
     const clamped = Math.min(Math.max(raw, min), max);
-    return (clamped - min) / (max - min) * 5;
+    return ((clamped - min) / (max - min)) * 5;
   }, [ratingValue, scaleMin, scaleMax]);
 
   const full = Math.floor(normalized);
   const frac = normalized - full;
 
   return (
-    <div className={`flex md:flex-row flex-col md:items-center gap-0 md:gap-2 ${className}`} aria-label={`Rating ${ratingValue} out of ${scaleMax}`}>
+    <div
+      className={`flex md:flex-row flex-col md:items-center gap-0 md:gap-2 ${className}`}
+      aria-label={`Rating ${ratingValue} out of ${scaleMax}`}
+    >
       <div className="flex items-center gap-0.5 md:text-sm text-xs">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Star key={i} fill={i < full ? 1 : i === full ? frac : 0} />
+          <Star key={i} fill={i < full ? 1 : i === full ? frac : 0} size={size} />
         ))}
       </div>
       {showText && (
         <span className="md:text-sm !text-xs text-gray-600">
-          {Number(ratingValue).toFixed(2)}{typeof ratingCount === "number" ? ` (${ratingCount})` : "0"}
+          {Number(ratingValue).toFixed(2)}
+          {typeof ratingCount === "number" ? ` (${ratingCount})` : "0"}
         </span>
       )}
     </div>
   );
 }
-
-

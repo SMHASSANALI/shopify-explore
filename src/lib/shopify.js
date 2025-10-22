@@ -823,7 +823,7 @@ export async function fetchAllProducts(options = {}) {
     priceMax,
     sortKey,
     reverse = false,
-    first = 30,
+    first = 32,
     after = null,
   } = options;
 

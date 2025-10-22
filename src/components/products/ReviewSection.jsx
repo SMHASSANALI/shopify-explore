@@ -27,8 +27,6 @@ export default function ReviewsSection({
     return filtered;
   }, [reviews, selectedStars]);
 
-  console.log("REVIEWS :", reviews);
-
   // Sort filtered reviews
   const sortedReviews = useMemo(() => {
     return [...filteredReviews].sort((a, b) => {

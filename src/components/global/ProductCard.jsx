@@ -10,7 +10,6 @@ import { useCustomer } from "@/contexts/CustomerContext";
 import { getPriceDisplay } from "@/utils/discount-utlis";
 
 const ProductCard = ({ product }) => {
-
   const customer = useCustomer();
   const variants = product?.node?.variants?.edges || [];
   const chosenVariant = useMemo(() => {
@@ -123,7 +122,7 @@ const ProductCard = ({ product }) => {
                   scaleMax={scaleMax}
                   ratingCount={count}
                   showText={true}
-                  className="mb-1"
+                  className="mb-2"
                 />
               );
             } catch (e) {
@@ -133,7 +132,7 @@ const ProductCard = ({ product }) => {
                   scaleMin={1}
                   scaleMax={5}
                   ratingCount={0}
-                  size={14}
+                  size={16}
                   showText={true}
                   className="mb-1"
                 />

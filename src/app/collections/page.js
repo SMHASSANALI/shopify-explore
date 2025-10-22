@@ -1,7 +1,7 @@
-import { fetchAllCollections, fetchShopify } from "@/lib/shopify";
 import CollectionCard from "@/components/global/CollectionCard";
 import { Suspense } from "react";
 import Breadcrumbs from "@/components/global/Breadcrumbs";
+import { fetchAllCollections } from "@/lib/shopify/fetch/allCollections";
 
 export const metadata = {
   title: "Collections | HAAAIB",
@@ -23,7 +23,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "/assets/logoMark-Dark.png", // Or use a collections-specific image
+        url: "/assets/logoMark-Dark.png",
         width: 1200,
         height: 630,
         alt: "HAAAIB Collections",
@@ -42,7 +42,7 @@ export const metadata = {
 };
 
 export default async function CollectionsPage() {
-  const allCollections = await fetchAllCollections();
+  const allCollections = await fetchAllCollections({ first: 100, revalidate: 300 });
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -50,42 +50,19 @@ export default async function CollectionsPage() {
     name: "HAAAIB Collections",
     description:
       "Explore our curated jewelry collections, crafted with elegance and meaning to celebrate your unique story.",
-    url: `${
-      process.env.NEXT_PUBLIC_SITE_URL || "https://haaaib.com"
-    }/collections`,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://haaaib.com"}/collections`,
     hasPart: {
       "@type": "ItemList",
-      itemListElement: allCollections.map((edge, index) => ({
+      itemListElement: allCollections.map((collection, index) => ({
         "@type": "ListItem",
         position: index + 1,
         item: {
           "@type": "Collection",
-          name: edge.title,
+          name: collection.title,
           url: `${
             process.env.NEXT_PUBLIC_SITE_URL || "https://haaaib.com"
-          }/collections/${edge.handle}`,
-          description:
-            edge.description ||
-            `Discover the ${edge.title} collection from HAAAIB, featuring elegant and meaningful designs.`,
-          image:
-            edge.image?.url ||
-            edge.featuredImage?.url ||
-            "/assets/placeholder-collection.jpg", // Adjust based on your data
-          numberOfItems: edge.productsCount || 0,
-          // Optional: Link to first product in collection for deeper hierarchy
-          hasPart: {
-            "@type": "ItemList",
-            itemListElement: edge.products?.edges
-              ?.slice(0, 3)
-              .map((product, pIndex) => ({
-                "@type": "ListItem",
-                position: pIndex + 1,
-                item: {
-                  "@type": "Product",
-                  name: product.node.title,
-                },
-              })),
-          },
+          }/collections/${collection.handle}`,
+          image: collection.image?.src || "/assets/placeholder-collection.jpg",
         },
       })),
     },
@@ -119,15 +96,17 @@ export default async function CollectionsPage() {
         >
           {allCollections.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-              {allCollections.slice().reverse().map((edge) => {
-                if (
-                  edge.title !== "Hero Banners" &&
-                  edge.title !== "Bento Images" &&
-                  edge.title !== "Ad Banners"
-                ) {
-                  return <CollectionCard key={edge.id} edge={edge} />;
-                }
-              })}
+              {allCollections
+                .filter(
+                  (collection) =>
+                    collection.title !== "Hero Banners" &&
+                    collection.title !== "Bento Images" &&
+                    collection.title !== "Ad Banners"
+                )
+                .reverse()
+                .map((collection) => (
+                  <CollectionCard key={collection.id} edge={collection} />
+                ))}
             </div>
           ) : (
             <div className="text-center py-12 text-gray-600">

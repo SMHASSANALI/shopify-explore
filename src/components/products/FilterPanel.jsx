@@ -12,19 +12,21 @@ export default function FilterPanel({ onFilterChange }) {
   const timeoutRef = useRef(null);
   const prevFiltersRef = useRef(null);
 
-  const handleDebouncedChange = useCallback((newFilters) => {
-    // Skip if same as previous
-    const filtersStr = JSON.stringify(newFilters);
-    if (filtersStr === JSON.stringify(prevFiltersRef.current)) {
-      return;
-    }
-    prevFiltersRef.current = newFilters;
+  const handleDebouncedChange = useCallback(
+    (newFilters) => {
+      const filtersStr = JSON.stringify(newFilters);
+      if (filtersStr === JSON.stringify(prevFiltersRef.current)) {
+        return;
+      }
+      prevFiltersRef.current = newFilters;
 
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      onFilterChange(newFilters);
-    }, 500);
-  }, [onFilterChange]);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        onFilterChange(newFilters);
+      }, 500);
+    },
+    [onFilterChange]
+  );
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -32,31 +34,25 @@ export default function FilterPanel({ onFilterChange }) {
       return;
     }
 
-    // Build availability filter
     let availability = null;
     if (inStock && !outOfStock) availability = "inStock";
     else if (outOfStock && !inStock) availability = "outOfStock";
 
-    // Parse prices (empty string means no filter)
     const minPrice = priceFrom === "" ? undefined : Number(priceFrom);
     const maxPrice = priceTo === "" ? undefined : Number(priceTo);
 
+    // Build filters object
     const nextFilters = {
-      availability,
-      priceMin: minPrice,
-      priceMax: maxPrice,
+      ...(availability !== null && { availability }),
+      ...(minPrice >= 0 && { priceMin: minPrice }),
+      ...(maxPrice >= 0 && maxPrice <= 1000 && { priceMax: maxPrice }),
     };
 
-    // Check if any filter is actually active
-    const hasActiveFilters = 
-      nextFilters.availability !== null ||
-      (typeof minPrice === 'number' && minPrice > 0) ||
-      (typeof maxPrice === 'number' && maxPrice < 1000);
+    const hasActiveFilters = Object.keys(nextFilters).length > 0;
 
     if (hasActiveFilters) {
       handleDebouncedChange(nextFilters);
     } else {
-      // Reset to show all products when no filters are active
       handleDebouncedChange({});
     }
   }, [inStock, outOfStock, priceFrom, priceTo, handleDebouncedChange]);
@@ -120,22 +116,36 @@ export default function FilterPanel({ onFilterChange }) {
             <span className="!text-sm !font-light !text-nowrap">From:</span>
             <input
               type="number"
-              min="0"
+              min="1"
               className="w-[60px] p-1 border border-[var(--primary-light)] rounded focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
-              placeholder="0"
+              placeholder="1"
               value={priceFrom}
-              onChange={(e) => setPriceFrom(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "" || (!isNaN(value) && Number(value) >= 0)) {
+                  setPriceFrom(value);
+                }
+              }}
             />
           </div>
           <div className="flex items-center gap-2">
             <span className="!text-sm !font-light !text-nowrap">To:</span>
             <input
               type="number"
+              min="0"
               max="1000"
               className="w-[60px] p-1 border border-[var(--primary-light)] rounded focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
               placeholder="1000"
               value={priceTo}
-              onChange={(e) => setPriceTo(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (
+                  value === "" ||
+                  (!isNaN(value) && Number(value) >= 0 && Number(value) <= 1000)
+                ) {
+                  setPriceTo(value);
+                }
+              }}
             />
           </div>
         </div>

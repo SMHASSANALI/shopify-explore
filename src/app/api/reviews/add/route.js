@@ -45,7 +45,6 @@ export async function POST(req) {
     });
 
     const data = await res.json();
-    console.log("Judge.me Create Review Response:", data);
 
     if (data?.error) {
       console.error("Judge.me API Error:", data.error);
