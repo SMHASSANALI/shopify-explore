@@ -33,7 +33,7 @@ export default function ProductGallery({ images = [], className = "" }) {
         }}
         onSlideChange={(s) => setActiveIndex(s.activeIndex)}
         thumbs={{ swiper: thumbsSwiperRef.current }}
-        className="rounded-lg overflow-hidden border"
+        className="rounded-lg overflow-hidden"
       >
         {normalized.map((img, idx) => (
           <SwiperSlide key={`${img.src}-${idx}`}>
@@ -41,12 +41,10 @@ export default function ProductGallery({ images = [], className = "" }) {
               <Image
                 src={img.src}
                 alt={img.altText || "Product image"}
-                width={600}
-                height={600}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                quality={100}
+                fill
                 className="object-cover"
-                priority
-                styles={{ width: "auto", height: "auto" }}
+                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 10vw, 10vw"
               />
             </div>
           </SwiperSlide>
@@ -86,11 +84,8 @@ export default function ProductGallery({ images = [], className = "" }) {
                 <Image
                   src={img.src}
                   alt={img.altText || "Thumbnail"}
-                  width={100}
-                  height={100}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                  fill
                   className="object-cover"
-                  styles={{ width: "auto", height: "auto" }}
                   priority
                 />
               </button>

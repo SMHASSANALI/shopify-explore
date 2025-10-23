@@ -9,7 +9,7 @@ import ProductCard from "./ProductCard";
 import Link from "next/link";
 import { toTitleCase } from "@/utils/toTitleCase";
 
-const ProductsSlider = ({ data }) => {
+const ProductsSlider = ({ data, title = "" }) => {
   const swiperRef = useRef(null);
   const products = useMemo(() => data?.products || [], [data?.products]);
   const handleNext = () => swiperRef.current?.swiper?.slideNext();
@@ -21,7 +21,7 @@ const ProductsSlider = ({ data }) => {
     <section className="w-full md:max-w-[1400px] mx-auto space-y-5 px-2">
       <div className="flex items-center justify-between border-b-4 border-gray-300 pb-2">
         <h2 className="font-semibold text-base md:text-lg">
-          {toTitleCase(data?.title)}
+          {toTitleCase(title !== "" ? title : data?.title)}
         </h2>
         <div className="w-fit">
           <Link
