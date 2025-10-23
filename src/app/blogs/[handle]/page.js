@@ -1,10 +1,10 @@
-import { fetchShopify } from "@/lib/shopify";
+import { shopifyFetch } from "@/lib/shopify";
 
 export async function generateMetadata({ params }) {
   const { handle } = await Promise.resolve(params);
   const query = `query ($handle: String!) { blog(handle: $handle) { title } }`;
   try {
-    const data = await fetchShopify(query, { handle });
+    const data = await shopifyFetch(query, { handle });
     const title = data?.blog?.title || handle;
     const canonical = `/blogs/${handle}`;
     return {
@@ -59,7 +59,7 @@ export default async function BlogPage({ params }) {
   // Fetch data with error handling
   const fetchData = async () => {
     try {
-      const data = await fetchShopify(query, { handle: blogHandle });
+      const data = await shopifyFetch(query, { handle: blogHandle });
       if (!data?.blog) {
         console.error("No blog data received for handle:", blogHandle);
         return { blog: null };

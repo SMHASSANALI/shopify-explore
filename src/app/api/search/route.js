@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { fetchShopify } from "@/lib/shopify";
+import { shopifyFetch } from "@/lib/shopify";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -23,7 +23,7 @@ export async function GET(request) {
   `;
 
   try {
-    const data = await fetchShopify(query, { query: q }, { cache: 'no-store', revalidate: 0 });
+    const data = await shopifyFetch(query, { query: q });
     const products = (data?.products?.edges || []).map(({ node }) => ({
       id: node.id,
       title: node.title,
@@ -49,8 +49,9 @@ export async function GET(request) {
     return NextResponse.json({ products, collections, articles });
   } catch (e) {
     console.error("Search API error:", e?.message || e);
-    return NextResponse.json({ products: [], collections: [], articles: [] }, { status: 200 });
+    return NextResponse.json(
+      { products: [], collections: [], articles: [] },
+      { status: 200 }
+    );
   }
 }
-
-

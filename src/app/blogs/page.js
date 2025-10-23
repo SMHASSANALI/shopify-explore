@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { fetchBlogs, fetchShopify } from "@/lib/shopify";
+import { fetchBlogs } from "@/lib/shopify";
 import Image from "next/image";
 
 export default async function BlogsPage() {

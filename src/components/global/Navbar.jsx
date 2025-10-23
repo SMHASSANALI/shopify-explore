@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { fetchShopify } from "@/lib/shopify";
+import { shopifyFetch } from "@/lib/shopify";
 import logo from "../../../public/assets/haaaib-logo.svg";
 import { MdFacebook, MdPerson, MdSearch } from "react-icons/md";
 import { PiInstagramLogo } from "react-icons/pi";
@@ -34,7 +34,7 @@ const Navbar = async ({ customer }) => {
 
   let collectionsData;
   try {
-    collectionsData = await fetchShopify(query);
+    collectionsData = await shopifyFetch({ query });
   } catch (error) {
     console.error("Failed to fetch navbar data:", error);
     collectionsData = { collections: { edges: [] }, blogs: { edges: [] } };

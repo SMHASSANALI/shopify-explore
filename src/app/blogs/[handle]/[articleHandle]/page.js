@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { fetchShopify } from "@/lib/shopify";
+import { shopifyFetch } from "@/lib/shopify";
 
 export async function generateMetadata({ params }) {
   const { handle: blogHandle, articleHandle } = await Promise.resolve(params);
@@ -14,7 +14,7 @@ export async function generateMetadata({ params }) {
     }
   `;
   try {
-    const data = await fetchShopify(query, { blogHandle, articleHandle });
+    const data = await shopifyFetch(query, { blogHandle, articleHandle });
     const blog = data?.blog;
     const article = blog?.articles?.edges?.[0]?.node;
     const title = article?.title || articleHandle;
@@ -65,7 +65,7 @@ export default async function ArticlePage({ params }) {
   // Fetch data with error handling
   const fetchData = async () => {
     try {
-      const data = await fetchShopify(query, { blogHandle, articleHandle });
+      const data = await shopifyFetch(query, { blogHandle, articleHandle });
       if (!data?.blog || !data.blog.articles.edges.length) {
         console.error("No article data received for handle:", articleHandle);
         return { blog: null };

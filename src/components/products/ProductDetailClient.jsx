@@ -187,27 +187,30 @@ export default function ProductDetailClient({
         <div className="flex items-center justify-between px-2 py-1 border border-gray-400 rounded text-sm text-gray-600 mb-6">
           <p>Secure Checkout With</p>
           <div className="flex flex-row gap-2">
+            <div className="relative size-[40px]">
             <Image
-            styles={{ width: "auto", height: "auto" }}
+              fill
+              unoptimized
               src="/assets/visa.svg"
               alt="Visa Logo"
-              width={40}
-              height={30}
             />
+            </div>
+            <div className="relative size-[40px]">
             <Image
-            styles={{ width: "auto", height: "auto" }}
+              fill
+              unoptimized
               src="/assets/masterCard.svg"
               alt="Mastercard Logo"
-              width={40}
-              height={30}
             />
+            </div>
+            <div className="relative size-[40px]">
             <Image
-            styles={{ width: "auto", height: "auto" }}
+              fill
+              unoptimized
               src="/assets/paypal.svg"
               alt="Paypal Logo"
-              width={40}
-              height={30}
             />
+            </div>
           </div>
         </div>
 

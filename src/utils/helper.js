@@ -1,4 +1,4 @@
-import { fetchShopify, CART_LINES_FRAGMENT } from '@/lib/shopify';
+import { shopifyFetch, CART_LINES_FRAGMENT } from '@/lib/shopify';
 
 // Helper function to calculate total price
 export const calculateTotal = (lines) => {
@@ -20,7 +20,7 @@ export async function updateCartQuantity(cartId, lines) {
   `;
 
   const variables = { cartId, lines };
-  const data = await fetchShopify(query, variables);
+  const data = await shopifyFetch(query, variables);
   return data?.cartLinesUpdate?.cart || null;
 }
 
@@ -36,6 +36,6 @@ export async function removeCartItems(cartId, lineIds) {
   `;
 
   const variables = { cartId, lineIds };
-  const data = await fetchShopify(query, variables);
+  const data = await shopifyFetch(query, variables);
   return data?.cartLinesRemove?.cart || null;
 }

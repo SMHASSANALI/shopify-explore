@@ -87,6 +87,7 @@ export default function ProductGallery({ images = [], className = "" }) {
                   fill
                   className="object-cover"
                   priority
+                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 10vw, 10vw"
                 />
               </button>
             </SwiperSlide>
