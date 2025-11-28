@@ -6,8 +6,6 @@ import { cookies } from "next/headers";
 import { getCustomerAccount } from "@/lib/shopify";
 import Footer from "@/components/global/Footer";
 import { CustomerProvider } from "@/contexts/CustomerContext";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -145,8 +143,6 @@ export default async function RootLayout({ children }) {
           <Footer />
           <MobileBottomNav />
         </CustomerProvider>
-        {process.env.NEXT_PUBLIC_BASE_URL !== "http://localhost:3000/" && <SpeedInsights />}
-        {process.env.NEXT_PUBLIC_BASE_URL !== "http://localhost:3000/" && <Analytics />}
       </body>
     </html>
   );
