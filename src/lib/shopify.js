@@ -184,7 +184,7 @@ export async function initiateCustomerAuth() {
     scope: "openid email customer-account-api:full",
     client_id: clientId,
     response_type: "code",
-    redirect_uri: `${baseUrl}callback`,
+    redirect_uri: `${baseUrl}/auth/callback`,
     state,
     nonce,
     code_challenge: codeChallenge,
@@ -206,7 +206,7 @@ export async function exchangeCodeForToken(code, verifier, state, storedState) {
   const params = new URLSearchParams({
     grant_type: "authorization_code",
     client_id: process.env.NEXT_PUBLIC_SHOPIFY_CLIENT_ID,
-    redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}callback`,
+    redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/callback`,
     code,
     code_verifier: verifier,
   });
