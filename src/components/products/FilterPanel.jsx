@@ -12,19 +12,22 @@ export default function FilterPanel({ onFilterChange }) {
   const timeoutRef = useRef(null);
   const prevFiltersRef = useRef(null);
 
-  const handleDebouncedChange = useCallback((newFilters) => {
-    // Skip if same as previous
-    const filtersStr = JSON.stringify(newFilters);
-    if (filtersStr === JSON.stringify(prevFiltersRef.current)) {
-      return;
-    }
-    prevFiltersRef.current = newFilters;
+  const handleDebouncedChange = useCallback(
+    (newFilters) => {
+      // Skip if same as previous
+      const filtersStr = JSON.stringify(newFilters);
+      if (filtersStr === JSON.stringify(prevFiltersRef.current)) {
+        return;
+      }
+      prevFiltersRef.current = newFilters;
 
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      onFilterChange(newFilters);
-    }, 500);
-  }, [onFilterChange]);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        onFilterChange(newFilters);
+      }, 500);
+    },
+    [onFilterChange]
+  );
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -38,8 +41,8 @@ export default function FilterPanel({ onFilterChange }) {
     else if (outOfStock && !inStock) availability = "outOfStock";
 
     // Parse prices (empty string means no filter)
-    const minPrice = priceFrom === "" ? undefined : Number(priceFrom);
-    const maxPrice = priceTo === "" ? undefined : Number(priceTo);
+    const minPrice = priceFrom === "" ? undefined : priceFrom;
+    const maxPrice = priceTo === "" ? undefined : priceTo;
 
     const nextFilters = {
       availability,
@@ -48,10 +51,10 @@ export default function FilterPanel({ onFilterChange }) {
     };
 
     // Check if any filter is actually active
-    const hasActiveFilters = 
+    const hasActiveFilters =
       nextFilters.availability !== null ||
-      (typeof minPrice === 'number' && minPrice > 0) ||
-      (typeof maxPrice === 'number' && maxPrice < 1000);
+      (typeof minPrice === "number" && minPrice > 0) ||
+      (typeof maxPrice === "number" && maxPrice < 1000);
 
     if (hasActiveFilters) {
       handleDebouncedChange(nextFilters);

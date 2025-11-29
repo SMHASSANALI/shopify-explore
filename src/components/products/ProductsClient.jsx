@@ -74,11 +74,12 @@ export default function ProductsClient({
     },
     [resetAndFetch]
   );
-  
-  const isInitialOrRefetchLoading = (loading || refetching) && products.length === 0;
+
+  const isInitialOrRefetchLoading =
+    (loading || refetching) && products.length === 0;
   const isAppendLoading = loading && products.length > 0 && hasNextPage;
   const showNoProducts = !loading && !refetching && products.length === 0;
-  const showRefetchOverlay = refetching && products.length > 0; 
+  const showRefetchOverlay = refetching && products.length > 0;
 
   return (
     <div className="flex flex-col lg:flex-row w-full h-full gap-[10px]">
@@ -96,34 +97,43 @@ export default function ProductsClient({
             <SortingSelect value={sort} onChange={handleSortChange} />
           </div>
         </div>
+        <div className="relative">
+          {/* Product Grid - Keep showing existing products during refetch */}
+          {products.length > 0 && <ProductGrid products={products} />}
 
-        {/* Product Grid - Keep showing existing products during refetch */}
-        {products.length > 0 && <ProductGrid products={products} />}
-        {isInitialOrRefetchLoading && <SkeletonGrid />}
-        {showNoProducts && (
-          <div className="text-center py-10 text-gray-500">
-            No products found matching your filters.
-          </div>
-        )}
+          {isInitialOrRefetchLoading && (
+            <div className="absolute inset-0">
+              <SkeletonGrid />
+            </div>
+          )}
 
-        {/* Overlay for refetch when keeping old data */}
-        {showRefetchOverlay && (
-          <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10">
-            <SkeletonGrid />
-          </div>
-        )}
+          {showNoProducts && (
+            <div className="text-center py-10 text-gray-500">
+              No products found matching your filters.
+            </div>
+          )}
 
-        {/* Infinite Scroll Loader */}
-        {hasNextPage && (
-          <div ref={loaderRef} className="flex justify-center py-10">
-            {isAppendLoading && <SkeletonGrid />}
-          </div>
-        )}
-        {!hasNextPage && products.length > 0 && !loading && (
-          <div className="flex justify-center py-10">
-            <p className="text-gray-500">You've seen it all!</p>
-          </div>
-        )}
+          {/* Overlay for refetch when keeping old data */}
+          {showRefetchOverlay && (
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+              <SkeletonGrid />
+            </div>
+          )}
+
+          {/* Infinite Scroll Loader */}
+          {hasNextPage && !isInitialOrRefetchLoading && (
+            <div ref={loaderRef} className="mt-8">
+              <SkeletonGrid />
+            </div>
+          )}
+
+          {/* End message */}
+          {!hasNextPage && products.length > 0 && !loading && (
+            <div className="flex justify-center py-10">
+              <p className="text-gray-500">You've seen it all!</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -131,13 +141,43 @@ export default function ProductsClient({
 
 function SkeletonGrid() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-2 w-fit">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-2 w-full">
       {Array.from({ length: 12 }).map((_, i) => (
-        <div
-          key={i}
-          className="animate-pulse bg-gray-200 rounded-lg h-[250px]"
-        />
+        <SkeletonCard key={i} />
       ))}
+    </div>
+  );
+}
+
+function SkeletonCard() {
+  return (
+    <div className="flex flex-col h-full animate-pulse rounded-lg">
+      {/* Image */}
+      <div className="w-full aspect-square bg-gray-200 rounded-md mb-3" />
+
+      <div className="flex flex-col gap-2 px-1 flex-1">
+        {/* Wishlist icon */}
+        <div className="ml-auto bg-gray-200 rounded-full h-5 w-5" />
+
+        {/* Title lines */}
+        <div className="h-3 bg-gray-200 rounded w-4/5" />
+        <div className="h-3 bg-gray-200 rounded w-3/5" />
+
+        {/* Price */}
+        <div className="h-3 bg-gray-200 rounded w-1/3" />
+
+        {/* Rating */}
+        <div className="flex gap-1">
+          <div className="h-3 w-3 bg-gray-200 rounded" />
+          <div className="h-3 w-3 bg-gray-200 rounded" />
+          <div className="h-3 w-3 bg-gray-200 rounded" />
+          <div className="h-3 w-3 bg-gray-200 rounded" />
+          <div className="h-3 w-3 bg-gray-200 rounded" />
+        </div>
+
+        {/* Add to Cart button */}
+        <div className="h-9 bg-gray-200 rounded-md mt-2" />
+      </div>
     </div>
   );
 }

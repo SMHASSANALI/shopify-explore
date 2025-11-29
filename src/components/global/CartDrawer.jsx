@@ -5,88 +5,87 @@ import { IoMdCart } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import Image from "next/image";
 import Link from "next/link";
-import { createCart, getCart } from "@/lib/shopify";
+import { getCart } from "@/lib/shopify";
 import { updateCartQuantity, removeCartItems } from "@/utils/helper";
 import { getCartLineDiscount } from "@/utils/discount-utlis";
+import { useCart } from "@/contexts/CartContext";
 
 export default function CartDrawer() {
   const [isOpen, setIsOpen] = useState(false);
-  const [cartId, setCartId] = useState(null);
+  const { cartId } = useCart();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const itemCount = useMemo(() => {
     if (!cart) return 0;
-    return cart.lines?.edges?.reduce((sum, { node }) => sum + (node.quantity || 0), 0) || 0;
+    return (
+      cart.lines?.edges?.reduce(
+        (sum, { node }) => sum + (node.quantity || 0),
+        0
+      ) || 0
+    );
   }, [cart]);
 
   const subtotal = useMemo(() => {
     if (!cart) return "0.00";
     // Calculate with discounts if available
-    const total = cart.lines?.edges?.reduce((sum, { node }) => {
-      const originalPrice = parseFloat(node.merchandise?.priceV2?.amount || 0);
-      const productMetafields = node.merchandise?.product?.metafields || [];
-      const priceInfo = getCartLineDiscount(node.merchandise, productMetafields);
-      const price = parseFloat(priceInfo.price);
-      return sum + (price * node.quantity);
-    }, 0) || 0;
+    const total =
+      cart.lines?.edges?.reduce((sum, { node }) => {
+        const originalPrice = parseFloat(
+          node.merchandise?.priceV2?.amount || 0
+        );
+        const productMetafields = node.merchandise?.product?.metafields || [];
+        const priceInfo = getCartLineDiscount(
+          node.merchandise,
+          productMetafields
+        );
+        const price = parseFloat(priceInfo.price);
+        return sum + price * node.quantity;
+      }, 0) || 0;
     return total.toFixed(2);
   }, [cart]);
 
   const checkoutUrl = cart?.checkoutUrl || "/cart";
-
-  // Init or load cart
+  // Load cart when cartId is available
   useEffect(() => {
-    const init = async () => {
+    if (!cartId) {
+      setCart(null);
+      return;
+    }
+
+    const loadCart = async () => {
+      setLoading(true);
       try {
-        const stored = typeof window !== "undefined" ? localStorage.getItem("cartId") : null;
-        let id = stored;
-        if (!id) {
-          const created = await createCart();
-          id = created?.id || null;
-          if (id) {
-            localStorage.setItem("cartId", id);
-            document.cookie = `cartId=${encodeURIComponent(id)}; path=/; max-age=604800`;
-          }
-        }
-        setCartId(id);
-        if (id) {
-          const c = await getCart(id);
-          setCart(c);
-        }
+        const c = await getCart(cartId);
+        setCart(c);
       } catch (e) {
-        setError("Failed to initialize cart");
+        setError("Failed to load cart");
+        console.error(e);
+      } finally {
+        setLoading(false);
       }
     };
-    init();
-  }, []);
+
+    loadCart();
+  }, [cartId]);
 
   // Listen for open events
   useEffect(() => {
-    const onOpen = async (e) => {
-      const incomingCartId = e?.detail?.cartId;
-      if (incomingCartId && incomingCartId !== cartId) {
-        setCartId(incomingCartId);
-      }
+    const onOpen = () => {
       setIsOpen(true);
-      await refreshCart();
+      refreshCart();
     };
-    const onRefresh = async () => {
-      await refreshCart();
-    };
-    if (typeof window !== "undefined") {
-      window.addEventListener("cart:open", onOpen);
-      window.addEventListener("cart:refresh", onRefresh);
-    }
+    const onRefresh = () => refreshCart();
+
+    window.addEventListener("cart:open", onOpen);
+    window.addEventListener("cart:refresh", onRefresh);
+
     return () => {
-      if (typeof window !== "undefined") {
-        window.removeEventListener("cart:open", onOpen);
-        window.removeEventListener("cart:refresh", onRefresh);
-      }
+      window.removeEventListener("cart:open", onOpen);
+      window.removeEventListener("cart:refresh", onRefresh);
     };
   }, [cartId]);
-
   const refreshCart = async () => {
     if (!cartId) return;
     setLoading(true);
@@ -143,8 +142,12 @@ export default function CartDrawer() {
           )}
         </div>
         <div>
-          <p className="text-white text-[12px] font-extralight leading-none">Cart</p>
-          <p className="text-white !text-[14px] font-light leading-none">£ {subtotal}</p>
+          <p className="text-white text-[12px] font-extralight leading-none">
+            Cart
+          </p>
+          <p className="text-white !text-[14px] font-light leading-none">
+            £ {subtotal}
+          </p>
         </div>
       </button>
 
@@ -186,14 +189,23 @@ export default function CartDrawer() {
             cart.lines.edges.map(({ node }) => {
               const img = node.merchandise?.image;
               const title = node.merchandise?.product?.title || "Item";
-              const originalPrice = parseFloat(node.merchandise?.priceV2?.amount || 0);
-              const productMetafields = node.merchandise?.product?.metafields || [];
-              const priceInfo = getCartLineDiscount(node.merchandise, productMetafields);
+              const originalPrice = parseFloat(
+                node.merchandise?.priceV2?.amount || 0
+              );
+              const productMetafields =
+                node.merchandise?.product?.metafields || [];
+              const priceInfo = getCartLineDiscount(
+                node.merchandise,
+                productMetafields
+              );
               const displayPrice = parseFloat(priceInfo.price);
               const lineTotal = (displayPrice * node.quantity).toFixed(2);
 
               return (
-                <div key={node.id} className="flex gap-3 items-start border-b pb-3">
+                <div
+                  key={node.id}
+                  className="flex gap-3 items-start border-b pb-3"
+                >
                   <div className="relative w-16 h-16 rounded overflow-hidden border">
                     {img?.src && (
                       <Image
@@ -207,7 +219,7 @@ export default function CartDrawer() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium line-clamp-2">{title}</p>
-                    
+
                     {/* Price with discount badge */}
                     <div className="flex items-center gap-2 mt-1">
                       <p className="text-sm font-semibold text-[var(--accent)]">
@@ -227,15 +239,21 @@ export default function CartDrawer() {
 
                     <div className="mt-2 flex items-center gap-2">
                       <button
-                        onClick={() => handleQuantity(node.id, node.quantity - 1)}
+                        onClick={() =>
+                          handleQuantity(node.id, node.quantity - 1)
+                        }
                         className="w-7 h-7 border rounded flex items-center justify-center cursor-pointer"
                         aria-label="Decrease quantity"
                       >
                         -
                       </button>
-                      <span className="min-w-[24px] text-center text-sm">{node.quantity}</span>
+                      <span className="min-w-[24px] text-center text-sm">
+                        {node.quantity}
+                      </span>
                       <button
-                        onClick={() => handleQuantity(node.id, node.quantity + 1)}
+                        onClick={() =>
+                          handleQuantity(node.id, node.quantity + 1)
+                        }
                         className="w-7 h-7 border rounded flex items-center justify-center cursor-pointer"
                         aria-label="Increase quantity"
                       >
