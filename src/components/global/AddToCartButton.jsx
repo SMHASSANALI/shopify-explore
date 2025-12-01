@@ -27,6 +27,10 @@ export default function AddToCartButton({
 
     try {
       const updatedCart = await addToCart(cartId, lines);
+      if (!cartId?.startsWith?.("gid://shopify/Cart/")) {
+        console.error("Invalid cartId in addToCart");
+        return;
+      }
       if (updatedCart?.id) {
         updateCartId(updatedCart.id); // in case cart ID changed (rare)
         window.dispatchEvent(

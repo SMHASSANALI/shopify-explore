@@ -14,25 +14,35 @@ export function CartProvider({ children }) {
     const initCart = async () => {
       let id = null;
 
-      // 1. Try cookie first (more reliable across tabs)
+      // Try cookie
       const cookieMatch = document.cookie.match(/cartId=([^;]+)/);
-      if (cookieMatch) {
-        id = cookieMatch[1];
+      if (cookieMatch) id = decodeURIComponent(cookieMatch[1]);
+
+      // Try localStorage
+      if (!id) id = localStorage.getItem("cartId");
+
+      // Validate format
+      const isValid =
+        id && typeof id === "string" && id.startsWith("gid://shopify/Cart/");
+
+      if (!isValid) {
+        console.debug("Invalid cart ID found, clearing:", id);
+        localStorage.removeItem("cartId");
+        document.cookie =
+          "cartId=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        id = null;
       }
 
-      // 2. Fallback to localStorage
-      if (!id) {
-        id = localStorage.getItem("cartId");
-      }
-
-      // 3. Create new cart if none exists
+      // Create new cart if needed
       if (!id) {
         try {
           const newCart = await createCart();
           if (newCart?.id) {
             id = newCart.id;
             localStorage.setItem("cartId", id);
-            document.cookie = `cartId=${id}; path=/; max-age=604800`;
+            document.cookie = `cartId=${encodeURIComponent(
+              id
+            )}; path=/; max-age=604800`;
           }
         } catch (err) {
           console.error("Failed to create cart", err);

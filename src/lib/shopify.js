@@ -433,7 +433,16 @@ export async function addToCart(cartId, lines) {
 }
 
 export async function getCart(cartId) {
-  if (!cartId) return null;
+  // Critical validation — prevent GraphQL error
+  if (
+    !cartId ||
+    typeof cartId !== "string" ||
+    !cartId.startsWith("gid://shopify/Cart/")
+  ) {
+    console.debug("Invalid or missing cartId:", cartId);
+    return null;
+  }
+
   const query = `
     ${CART_LINES_FRAGMENT}
     query getCart($cartId: ID!) {
@@ -442,9 +451,18 @@ export async function getCart(cartId) {
       }
     }
   `;
-  const variables = { cartId };
-  const data = await fetchShopify(query, variables, { revalidate: 0 });
-  return data?.cart || null;
+
+  try {
+    const data = await fetchShopify(query, { cartId }, { revalidate: 0 });
+    return data?.cart || null;
+  } catch (error) {
+    // If cart is expired or invalid, Shopify returns null — we handle gracefully
+    if (error.message?.includes("cartId") || error.message?.includes("invalid")) {
+      console.debug("Cart expired or invalid, will create new one on next action");
+      return null;
+    }
+    throw error; // re-throw network/auth errors
+  }
 }
 
 // Function to Fetch a Collection's Products by Handle
