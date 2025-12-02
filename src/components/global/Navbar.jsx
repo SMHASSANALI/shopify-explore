@@ -66,7 +66,7 @@ const Navbar = async ({ customer }) => {
   }));
 
   return (
-    <main className="w-full  md:sticky top-0 z-[1000]">
+    <main className="w-full sticky top-0 z-[1000]">
       <header className="w-full bg-[var(--accent)] flex items-center justify-center text-white 2xl:px-0 lg:px-4 px-2">
         <main className="max-w-[1400px] w-full py-1 hidden md:flex flex-row relative">
           <div className="w-fit flex flex-row gap-[10px]">
@@ -104,7 +104,22 @@ const Navbar = async ({ customer }) => {
           <div className="w-full md:w-3/12 h-full relative">
             <Link
               href="/"
-              className="flex items-start justify-start"
+              className="hidden md:flex items-start justify-start"
+              aria-label="HAAAIB Home"
+              title="HAAAIB Home"
+            >
+              <Image
+                src={logo}
+                alt="HAAAIB logo"
+                height={60}
+                width={160}
+                className="w-auto h-auto"
+                priority
+              />
+            </Link>
+            <Link
+              href="/"
+              className="md:hidden flex items-start justify-start"
               aria-label="HAAAIB Home"
               title="HAAAIB Home"
             >
@@ -118,13 +133,17 @@ const Navbar = async ({ customer }) => {
               />
             </Link>
           </div>
+          {/* Mobile Navigation */}
+          <div className="flex items-center gap-2">
+            <MobileDrawer collections={collections} blogs={blogs} />
+          </div>
           <div className="md:flex hidden w-6/12 h-full">
             <SearchTrigger />
           </div>
-          <div className="w-3/12 h-full md:flex hidden flex-row items-center gap-[10px]">
+          <div className="w-fit md:w-3/12 h-full flex flex-row items-center gap-[10px]">
             <Link
               href="/account"
-              className="flex flex-row gap-1 items-end ml-auto"
+              className="hidden md:flex flex-row gap-1 items-end ml-auto"
             >
               <MdPerson size={"30px"} color="white" />
               <div className="flex flex-col">
@@ -140,11 +159,6 @@ const Navbar = async ({ customer }) => {
               </div>
             </Link>
             <CartDrawer />
-          </div>
-
-          {/* Mobile Navigation */}
-          <div className="md:hidden flex items-center gap-2">
-            <MobileDrawer collections={collections} blogs={blogs} />
           </div>
         </div>
       </main>

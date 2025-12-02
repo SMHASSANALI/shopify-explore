@@ -35,19 +35,19 @@ const RevealGallery = () => {
         <div className="flex items-center justify-center relative w-full h-full py-[30px]">
           <motion.div
             style={{ x: card1.x, rotate: card1.rotate }}
-            className="absolute flex items-center justify-center h-[150px] w-4/12 md:h-[400px] md:w-[300px] rounded-xl border-2 border-white/20 overflow-hidden z-10"
+            className="absolute flex items-center justify-center h-[60%] w-4/12 md:h-[400px] md:w-[300px] rounded-xl border-2 border-white/20 overflow-hidden z-10"
           >
             <Image src="/assets/right.png" alt="Product Image" fill priority />
           </motion.div>
           <motion.div
             style={{ x: card2.x, rotate: card2.rotate, scale: card2.scale }}
-            className="absolute flex items-center justify-center h-[150px] w-4/12 md:h-[400px] md:w-[300px] rounded-xl border-2 border-white/20 overflow-hidden z-20"
+            className="absolute flex items-center justify-center h-[60%] w-4/12 md:h-[400px] md:w-[300px] rounded-xl border-2 border-white/20 overflow-hidden z-20"
           >
             <Image src="/assets/center.png" alt="Product Image" fill priority />
           </motion.div>
           <motion.div
             style={{ x: card3.x, rotate: card3.rotate }}
-            className="absolute flex items-center justify-center h-[150px] w-4/12 md:h-[400px] md:w-[300px] rounded-xl border-2 border-white/20 overflow-hidden z-10"
+            className="absolute flex items-center justify-center h-[60%] w-4/12 md:h-[400px] md:w-[300px] rounded-xl border-2 border-white/20 overflow-hidden z-10"
           >
             <Image src="/assets/left.png" alt="Product Image" fill priority />
           </motion.div>

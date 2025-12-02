@@ -129,19 +129,19 @@ export default function CartDrawer() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex flex-row gap-1 items-end cursor-pointer"
+        className="flex flex-row gap-1 items-center justify-center cursor-pointer"
         aria-label="Open cart"
         title="Open cart"
       >
         <div className="relative mr-1">
-          <IoMdCart size={30} color="white" />
+          <IoMdCart color="white" className="md:text-2xl text-xl" />
           {itemCount > 0 && (
             <span className="absolute top-[-10px] right-[-10px] bg-[var(--accent)] text-white rounded-full flex items-center justify-center w-[18px] h-[18px] !text-xs font-bold">
               {itemCount}
             </span>
           )}
         </div>
-        <div>
+        <div className="md:block hidden">
           <p className="text-white text-[12px] font-extralight leading-none">
             Cart
           </p>

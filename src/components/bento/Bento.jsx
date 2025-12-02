@@ -55,7 +55,7 @@ export default function BentoSection({ images, collectionData }) {
   return (
     <section className="max-w-[1400px] mx-auto gap-[10px] flex flex-col min-h-[50vh] md:min-h-[70vh] lg:min-h-[80vh]">
       {/* Top Section (14:2) */}
-      <div className="w-full relative rounded-xl overflow-hidden aspect-[14/2] group my-12">
+      <div className="w-full relative rounded-xl overflow-hidden aspect-[14/3] md:aspect-[7/1] group my-0 md:my-12">
         {imageMap["top"] ? (
           <Link
             href={imageMap["top"].link}
@@ -165,7 +165,7 @@ export default function BentoSection({ images, collectionData }) {
                 </div>
               )}
             </div>
-            <div className="w-full sm:w-1/2 relative rounded-xl overflow-hidden aspect-[4/3] group">
+            <div className="w-full sm:w-1/2 relative rounded-xl overflow-hidden aspect-[3/4] group">
               {imageMap["bottom-right-2"] ? (
                 <Link
                   href={imageMap["bottom-right-2"].link}
